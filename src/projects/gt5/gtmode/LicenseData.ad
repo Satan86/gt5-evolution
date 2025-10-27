@@ -54,7 +54,7 @@ static sMetaData = [
     "019" : ["c4_coupe_20_vts_05",            0, "new_fisco",           2, [    1,     2,     3]],
 // IC
     "020" : ["lancer_evo10_gsr_premium_07",   2, "highspeedring",       2, [    1,     3,     7]],
-    "021" : ["db9_06",                        9, "topgear_license",     1, [26700, 27000, 28500]],
+    "021" : ["db9_06",                        9, "topgear_license",     1, [26950, 27150, 28500]],
     "022" : ["m5_08",                         0, "trialmt",             1, [16200, 16700, 19000]],
     "023" : ["fairlady_z_st_08",              5, "indianapolis_f1",     1, [18300, 19000, 22000]],
     "024" : ["lancer_evo9_gsr_05",            1, "r_eiger_dirt_east",   1, [27000, 28000, 32000]],
@@ -65,7 +65,7 @@ static sMetaData = [
     "029" : ["corvette_z06_06",               1, "new_fisco",           2, [    1,     2,     3]],
     "030" : ["_512bb_76",                    14, "rome",                2, [    1,     3,     7]],
 // IB
-    "031" : ["gtr_specv_09",                  2, "topgear_license_wet", 1, [14900, 15400, 16800]],
+    "031" : ["gtr_specv_09",                  2, "topgear_license_wet", 1, [15150, 15400, 16800]],
     "032" : ["r8_v10_09",                     8, "madrid",              1, [16000, 16500, 18600]],
     "033" : ["ft_86_concept_09",              5, "topgear_license",     1, [18500, 19300, 22500]],
     "034" : ["sx4_wrc_08",                    0, "snow_2010",           1, [19900, 20300, 23500]],
