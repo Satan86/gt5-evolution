@@ -32,9 +32,9 @@ module ROOT
     static sGORDON = SPEventInfo(2, SpecialEventUtil::EVENT_TYPE::JEFF_G_DS, "gordon", 5, 3, [5, 10, 15], [2, 4, 3], "NASCAR_school_intro", "gordon");  
     static sSTIG = SPEventInfo(3, SpecialEventUtil::EVENT_TYPE::STIG_CHG, "stig", 5, 3, [5, 10, 15], [1, 1, 1], "Topgear_intro", "stig_C");    
     static sAMG = SPEventInfo(4, SpecialEventUtil::EVENT_TYPE::AMG_DS, "amg", 5, 4, [5, 10, 15, 20], [5, 5, 5, 5], nil, "amg");   
-    static sRALLY = SPEventInfo(5, SpecialEventUtil::EVENT_TYPE::GT_RALLY, "rally", 5, 3, [5, 10, 15], [3, 3, 3], nil, "rally");  
+    static sRALLY = SPEventInfo(5, SpecialEventUtil::EVENT_TYPE::GT_RALLY, "rally", 10, 3, [10, 15, 20], [3, 3, 3], nil, "rally");  
     static sTOUR = SPEventInfo(6, SpecialEventUtil::EVENT_TYPE::GRAND_TOUR, "tour", 15, 1, [15], [5], nil, "tour"); 
-    static sLOEB = SPEventInfo(7, SpecialEventUtil::EVENT_TYPE::LOEB_RC, "loeb", 15, 1, [15], [3], "loeb_Rally_Challenge", "loeb");  
+    static sLOEB = SPEventInfo(7, SpecialEventUtil::EVENT_TYPE::LOEB_RC, "loeb", 20, 1, [20], [3], "loeb_Rally_Challenge", "loeb");  
     static sVETTEL = SPEventInfo(8, SpecialEventUtil::EVENT_TYPE::X1_CHG, "vettel", 25, 1, [25], [3], "X1challenge_intro", "vettel"); 
 
     static sSPEventsData = [sKART, sGORDON, sSTIG, sAMG, sRALLY, sTOUR, sLOEB, sVETTEL];    
