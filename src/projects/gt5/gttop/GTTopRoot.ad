@@ -89,7 +89,7 @@ module GTTopRoot
         /*
         if (pdistd::MNetworkInterface::isUp() && !GAME_STATUS.config.no_request_NP_sign_in)
             LoginUtil::tryLogin(context);
-        /*
+        */
 
         if (EventPresentUtil::getWelcomeMessageFlag() && !GAME_STATUS.user_profile.option.kiosk_mode)
         {
@@ -1405,9 +1405,9 @@ module GTTopRoot::Menus::SideMenu::Manual
 
         LeaveDetectUtil::suspend(context);
 
-        setFrameInterval(context, 1);
+        //setFrameInterval(context, 1);
         ManualProject::ManualPopup.open(context);
-        setFrameInterval(context, 2);
+        //setFrameInterval(context, 2);
 
         LeaveDetectUtil::resume(context);
 
