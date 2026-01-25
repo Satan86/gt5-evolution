@@ -49,8 +49,8 @@ static sMetaData = [
     "014" : ["_135i_07",                      2, "monza",               1, [18900, 20000, 22000]],
     "015" : ["eagle_type122_09",              1, "london",              1, [14500, 15000, 17000]],
     "016" : ["roadster_89",                   2, "trialmt",             1, [19000, 19300, 21000]],
-    "017" : ["focus_st_06",                   0, "eiger_long",          1, [32000, 33000, 34000]],
-    "018" : ["concept_1_series_tii_07",       0, "nurburgring_GP",      1, [13800, 14200, 16000]],
+    "017" : ["focus_st_06",                   0, "eiger_long",          1, [31000, 32000, 33000]],
+    "018" : ["concept_1_series_tii_07",       0, "nurburgring_GP",      1, [13650, 14000, 15000]],
     "019" : ["c4_coupe_20_vts_05",            0, "new_fisco",           2, [    1,     2,     3]],
 // IC
     "020" : ["lancer_evo10_gsr_premium_07",   2, "highspeedring",       2, [    1,     3,     7]],
