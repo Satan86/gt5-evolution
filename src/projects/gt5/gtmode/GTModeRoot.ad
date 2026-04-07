@@ -8,7 +8,7 @@ module PresentFunction
 }
 
 #define CHECK_NOT_DEMO() \
-    if (GetVersionBranch() == "demo") \
+    if (pdiext::isQABuild()) \
     { \
         main::sound.play("disable"); \
         DialogUtil::openConfirmDialog(context, DialogUtil::ERROR, context.translate(ROOT, "Arcade", "cannot_select_in_this_version")); \
@@ -1232,7 +1232,6 @@ module GTModeRoot
             {
                 method onActivate(context)
                 {
-                    CHECK_NOT_DEMO();
                     CHECK_ONLINE_PROMPT();
                     
                     main::sound.play("ok");
@@ -1252,8 +1251,6 @@ module GTModeRoot
             {
                 method onActivate(context)
                 {
-                    CHECK_NOT_DEMO();
-
                     sound.play("ok");
 
                     SaveDataUtilGT5::saveAutoForGame(context);
@@ -1394,7 +1391,6 @@ module GTModeRoot
             {
                 method onActivate(context)
                 {
-                    CHECK_NOT_DEMO();
 
                     main::sound.play("ok");
                     var project = main::manager.loadProject("%{main::PROJECT_ROOT_DIR}/manual/manual");
@@ -1625,7 +1621,6 @@ module GTModeRoot
                     method onActivate(context)
                     {
                         CHECK_ONLINE_GRANDTOP();
-                        CHECK_NOT_DEMO();
                         CHECK_GARAGE_NOT_EMPTY();
 
                         main::sound.play("ok");
@@ -1716,7 +1711,6 @@ module GTModeRoot
                     method onActivate(context)
                     {
                         CHECK_ONLINE_GRANDTOP();
-                        CHECK_NOT_DEMO();
 
                         main::sound.play("ok");
 
@@ -2196,7 +2190,6 @@ module GTModeRoot
             {
                 method onActivate(context)
                 {
-                    CHECK_NOT_DEMO();
                     CHECK_GARAGE_NOT_EMPTY();
                     CHECK_CAR_NOT_ONEMAKE_ONLY();
                     CHECK_CAR_NOT_KART();
@@ -2250,7 +2243,6 @@ module GTModeRoot
             {
                 method onActivate(context)
                 {
-                    CHECK_NOT_DEMO();
                     CHECK_GARAGE_NOT_EMPTY();
 
                     main::sound.play("ok");
@@ -2280,11 +2272,6 @@ module GTModeRoot
             {
                 method onActivate(context)
                 {
-                    if (GAME_STATUS.user_profile.option.demo_version_code != "school_record")
-                    {
-                        CHECK_NOT_DEMO();
-                    }
-
                     CHECK_GARAGE_NOT_EMPTY();
 
                     main::sound.play("ok");
@@ -2299,7 +2286,6 @@ module GTModeRoot
             {
                 method onActivate(context)
                 {
-                    CHECK_NOT_DEMO();
                     CHECK_GARAGE_NOT_EMPTY();
                     CHECK_CAR_NOT_FRIEND();
 
@@ -2338,7 +2324,6 @@ module GTModeRoot
             {
                 method onActivate(context)
                 {
-                    CHECK_NOT_DEMO();
                     CHECK_GARAGE_NOT_EMPTY();
 
                     main::sound.play("ok");
@@ -2353,7 +2338,6 @@ module GTModeRoot
             {
                 method onActivate(context)
                 {
-                    CHECK_NOT_DEMO();
                     CHECK_GARAGE_NOT_EMPTY();
                     CHECK_CAR_NOT_FRIEND();
 
@@ -2374,7 +2358,6 @@ module GTModeRoot
 
                 method onActivate(context)
                 {
-                    CHECK_NOT_DEMO();
                     CHECK_GARAGE_NOT_EMPTY();
     
                     main::sound.play("ok");
@@ -2584,8 +2567,6 @@ module GTModeRoot
 
             method onActivate(context)
             {
-                CHECK_NOT_DEMO();
-
                 var tickets = GameItemUtil::ItemBox::getPresentCarTicket();
                 if (tickets.size == 0)
                 {
