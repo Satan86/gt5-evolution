@@ -2243,6 +2243,7 @@ module GTModeRoot
             {
                 method onActivate(context)
                 {
+                    CHECK_NOT_DEMO();
                     CHECK_GARAGE_NOT_EMPTY();
 
                     main::sound.play("ok");
