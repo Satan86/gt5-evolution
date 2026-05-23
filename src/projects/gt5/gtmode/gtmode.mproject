@@ -69085,7 +69085,7 @@ Project {
                 SBox {
                   name string{"SBox"}
                   pack_side digit{2}
-                  geometry rectangle{870 606 1002 110}
+                  geometry rectangle{770 606 1102 110}
                   clip digit{0}
                   children[1] {
                     HBox {
@@ -69102,7 +69102,7 @@ Project {
                       children[7] {
                         HBox {
                           name string{"RewardItemList"}
-                          can_focus digit{1}
+                          can_focus digit{0}
                           pack_pad_right digit{14}
                           pack_expand_y digit{1}
                           pack_shrink_x digit{1}
@@ -69126,7 +69126,7 @@ Project {
                               shadow_delta vector{1 1}
                               penumbra_width digit{2}
                               umbra_color RGBA{0 0 0 255}
-                              image_path string{"image/gt5/ABspec/present_item.dds"}
+                              image_path string{"image/gt5/ABspec/nothing.dds"}
                             }
                             ImageFace {
                               name string{"Star"}
@@ -69134,7 +69134,7 @@ Project {
                               shadow_enable digit{1}
                               penumbra_width digit{5}
                               umbra_color RGBA{0 0 0 255}
-                              image_path string{"image/gt5/icon/star_on.dds"}
+                              image_path string{"image/gt5/icon/nothing.dds"}
                             }
                           }
                         }
