@@ -68304,14 +68304,14 @@ Project {
               color[4] {
                 RGBA{0 0 0 0}
                 RGBA{0 0 0 0}
-                RGBA{0 0 0 255}
-                RGBA{0 0 0 255}
+                RGBA{0 0 0 0}
+                RGBA{0 0 0 0}
               }
             }
             ColorFace {
               name string{"head_black"}
               geometry rectangle{0 0 1920 240}
-              opacity digit{0.8}
+              opacity digit{0}
               color_type_name string{"divide_color"}
               color_divide[1] {
                 [4] {
@@ -68492,7 +68492,7 @@ Project {
             ColorFace {
               name string{"head_black"}
               geometry rectangle{0 0 1920 240}
-              opacity digit{0.8}
+              opacity digit{0}
               color_type_name string{"divide_color"}
               color_divide[1] {
                 [4] {
@@ -68511,8 +68511,8 @@ Project {
                 [4] {
                   RGBA{0 0 0 0}
                   RGBA{0 0 0 0}
-                  RGBA{0 0 0 255}
-                  RGBA{0 0 0 255}
+                  RGBA{0 0 0 0}
+                  RGBA{0 0 0 0}
                 }
               }
             }
