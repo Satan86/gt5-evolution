@@ -68676,8 +68676,8 @@ Project {
                         TextFace {
                           name string{"prize"}
                           geometry rectangle{10 50 200 35}
-                          text_color RGBA{245 245 245 255}
-                          font string{"IwataSet_3"}
+                          text_color RGBA{192 192 192 255}
+                          font string{"IwataSet_4"}
                           align digit{3}
                           scale_x digit{1.57143}
                           scale_y digit{1.57143}
@@ -68693,7 +68693,7 @@ Project {
                 }
                 Composite {
                   name string{"RewardTotal"}
-                  geometry rectangle{120 563 683 96}
+                  geometry rectangle{870 524 683 96}
                   children[2] {
                     Composite {
                       name string{"Prize"}
@@ -68701,11 +68701,12 @@ Project {
                       children[3] {
                         TextFace {
                           name string{"label"}
-                          geometry rectangle{4 0 322 36}
-                          text_color RGBA{245 245 245 255}
+                          geometry rectangle{4 0 302 1}
+                          text_color RGBA{192 192 192 255}
+						  font string{"IwataSet_4"}
                           align digit{0}
-                          scale_x digit{1.57143}
-                          scale_y digit{1.57143}
+                          scale_x digit{1.85714}
+                          scale_y digit{1.85714}
                           outline_value digit{2}
                           outline_color RGBA{0 0 0 153}
                           key string{"LABEL_PRIZE_TOTAL"}
@@ -68714,7 +68715,7 @@ Project {
                         ColorFace {
                           name string{"lineS"}
                           geometry rectangle{0 42 330 2}
-                          opacity digit{0.5}
+                          opacity digit{0}
                           effect_list[1] {
                             EffectEdgeBlur {
                               name string{"EffectEdgeBlur"}
@@ -68727,9 +68728,9 @@ Project {
                         }
                         TextFace {
                           name string{"prize"}
-                          geometry rectangle{4 54 322 42}
-                          text_color RGBA{245 245 245 255}
-                          font string{"IwataSet_3"}
+                          geometry rectangle{4 54 322 7}
+                          text_color RGBA{192 192 192 255}
+                          font string{"IwataSet_4"}
                           align digit{3}
                           scale_x digit{1.85714}
                           scale_y digit{1.85714}
@@ -68743,23 +68744,23 @@ Project {
                     }
                     Composite {
                       name string{"Exp"}
-                      geometry rectangle{350 0 330 96}
+                      geometry rectangle{3500 0 3300 9006}
                       children[3] {
                         TextFace {
                           name string{"label"}
-                          geometry rectangle{4 0 322 36}
-                          text_color RGBA{245 245 245 255}
+                          geometry rectangle{4000 0 3022 3006}
+                          text_color RGBA{192 192 192 255}
                           align digit{0}
                           scale_x digit{1.57143}
                           scale_y digit{1.57143}
-                          outline_value digit{2}
+                          outline_value digit{0}
                           outline_color RGBA{0 0 0 153}
                           key string{"LABEL_EXP_TOTAL"}
                           adjust_scale digit{1}
                         }
                         ColorFace {
                           name string{"lineS"}
-                          geometry rectangle{0 42 330 2}
+                          geometry rectangle{8880 42 3300 2000}
                           opacity digit{0.5}
                           effect_list[1] {
                             EffectEdgeBlur {
@@ -68773,7 +68774,7 @@ Project {
                         }
                         TextFace {
                           name string{"exp"}
-                          geometry rectangle{4 54 322 42}
+                          geometry rectangle{8684 5004 3202 4002}
                           text_color RGBA{245 245 245 255}
                           font string{"IwataSet_3"}
                           align digit{3}
@@ -69450,7 +69451,7 @@ Project {
                   name string{"PP"}
                   pack_expand_y digit{1}
                   pack_shrink_x digit{1}
-                  geometry rectangle{880 522 154.51 78}
+                  geometry rectangle{1050 542 154.51 78}
                   clip digit{0}
                   children[2] {
                     TextFace {
@@ -69458,14 +69459,16 @@ Project {
                       packable digit{1}
                       pack_pad_top digit{2}
                       pack_shrink_x digit{1}
-                      geometry rectangle{0 2 100 76}
+                      geometry rectangle{0 0 100 70}
                       text_color RGBA{192 192 192 255}
                       font string{"GTfont_3"}
                       align digit{3}
-                      scale_x digit{2.14286}
-                      scale_y digit{2.14286}
+                      scale_x digit{2.44286}
+                      scale_y digit{2.44286}
                       shadow_value digit{1.5}
                       shadow_color RGBA{0 0 0 153}
+					  outline_value digit{2}
+					  outline_color RGBA{0 0 0 153}
                       TSTmode digit{0}
                       REFmode digit{0}
                       localized_text_page string{"Unit"}
@@ -69487,6 +69490,8 @@ Project {
                       scale_y digit{1.85714}
                       shadow_value digit{1.5}
                       shadow_color RGBA{0 0 0 153}
+					  outline_value digit{2}
+					  outline_color RGBA{0 0 0 153}
                       TSTmode digit{0}
                       REFmode digit{0}
                       text string{"256"}
@@ -69650,7 +69655,7 @@ Project {
             }
             TextFace {
               name string{"event_title"}
-              geometry rectangle{60 104 768 50}
+              geometry rectangle{60 2004 768 50}
               text_color RGBA{200 200 200 255}
               font string{"IwataSet_3"}
               align digit{3}
@@ -69666,7 +69671,7 @@ Project {
             }
             TextFace {
               name string{"start_end_time"}
-              geometry rectangle{60 152 768 34}
+              geometry rectangle{60 2004 768 34}
               text_color RGBA{200 200 200 255}
               font string{"IwataSet_3"}
               align digit{3}
