@@ -69648,7 +69648,7 @@ Project {
             }
             ImageFace {
               name string{"logo"}
-              geometry rectangle{100 220 384 216}
+              geometry rectangle{100 2020 384 216}
               image_path string{"image/gt5/special/logo_L_kart.dds"}
               block digit{0}
               from_disk digit{1}
@@ -69690,7 +69690,7 @@ Project {
               pack_pad_left digit{40}
               pack_expand_x digit{1}
               pack_alignment_x digit{0}
-              geometry rectangle{40 15 640 112}
+              geometry rectangle{40 15 640 10012}
               opacity digit{0.7}
               text_color RGBA{245 245 245 255}
               font string{"IwataSet_5"}
