@@ -1,0 +1,302 @@
+module PROJECT::ROOT
+{
+	#include "../share/image_util.ad"
+	
+	static result = nil;
+	static current_type = 0;
+	static cancel_disable = nil;
+	static original_y = Dialog.y;
+	
+	// setVibration() is unique to TT. This creates the shake effect seen on error dialogs
+	function setVibration(widget)
+	{
+		var actor = widget["RotateActor"];
+		actor.repeat = 0;
+	
+		var ratate = 0.8;
+		var time = 0.04;
+	
+		actor.event = [
+			[-ratate, time],
+			[ ratate, time],
+			[-ratate, time],
+			[ ratate, time],
+			[-ratate, time],
+			[ ratate, time],
+			[-ratate, time],
+			[ ratate, time],
+			[-ratate, time],
+			[ ratate, time],
+			[-ratate, time],
+			[ ratate, time],
+			[-ratate, time],
+			[ ratate, time],
+			[-ratate, time],
+			[ ratate, time],
+			[0.0, time]
+		];
+	}
+
+    function onLoad(context)
+    {
+        setFadeActor(Dialog::Buttons::YesNo::Yes::bgf);
+        setFadeActor(Dialog::Buttons::YesNo::No::bgf);
+        setFadeActor(Dialog::Buttons::OK::bgf);
+        setFadeActorRoot(ROOT);
+		setVibration(Dialog);
+		AdjustScaleImage(Dialog::Message::caution::bg, GetWideAdjustScale(), 1.0); // UI element, width modifier, height modifier. Dynamically corrects the ! symbol's aspect ratio during error dialogs
+    }
+
+    function open_motion(context, type)
+    {
+		context.pushPage(ConfirmDialog);
+        var ratio = context.cursor_speed_ratio;
+		if (type != 2)
+		{
+			Dialog::MoveActor.ratio = 0.2 * ratio;
+			Dialog::MoveActor.destinationY = PS2_SCREEN_H_F;
+			Dialog::MoveActor.out = true;
+			Dialog::MoveActor.warp();
+			Dialog::MoveActor.out = false;
+		
+			Dialog::Buttons::YesNo::Yes::bgf.actor.period = 0.25 / ratio;
+			Dialog::Buttons::YesNo::No::bgf.actor.period = 0.25 / ratio;
+			Dialog::Buttons::OK::bgf.actor.period = 0.25 / ratio;
+
+			ROOT.actor.period = 0.5 / ratio;
+			ROOT.actor.out = true;
+		
+			ROOT.actor.warp();
+			ROOT.actor.out = false;
+		}
+		
+		Dialog::MoveActor.out = false;
+		Dialog::MoveActor.warp();
+		
+		Dialog::Buttons::YesNo::Yes::bgf.actor.period = 0.25 / ratio;
+		Dialog::Buttons::YesNo::No::bgf.actor.period = 0.25 / ratio;
+		Dialog::Buttons::OK::bgf.actor.period = 0.25 / ratio;
+		ROOT.actor.period = 0.3 / ratio;
+		ROOT.actor.out = true;
+		ROOT.actor.warp();
+		ROOT.actor.out = false;
+		Dialog::RotateActor.source = 0.0;
+		Dialog::RotateActor.out = false;
+		Dialog::RotateActor.warp();
+		
+		if (current_type.value == 2)
+			Dialog::RotateActor.out = true;
+
+        context.sync(0.1);
+        Dialog::Message::caution.x = Dialog::Message.w - Dialog::Message::caution.w - 3;
+        context.sync(0.4);
+    }
+
+    function close_motion(context)
+    {
+        if (result)
+        {
+            Dialog::MoveActor.destinationY = -Dialog.h;
+        }
+        else
+        {
+            Dialog::MoveActor.destinationY = PS2_SCREEN_H_F;
+        }
+
+        Dialog::MoveActor.out = true;
+		Dialog::RotateActor.warp();
+        ROOT.actor.out = true;
+        context.sync(0.5);
+        context.closePage(ROOT);
+    }
+
+    function open(context, type, message, title, root, yes_text, no_text)
+    {
+        if (title != nil)
+        {
+            if (root != nil)
+                Dialog::Title::title.text = context.translate(root, title);
+            else
+                Dialog::Title::title.text = title;
+        }
+
+        if (yes_text == nil)
+        {
+            if (type != DIALOG_YESNO)
+                yes_text = context.translate(ROOT, "OK");
+            else
+                yes_text = context.translate(ROOT, "Yes");
+        }
+        else
+        {
+            if (root != nil)
+                yes_text = context.translate(root, yes_text);
+
+            cancel_disable = true;
+        }
+
+        if (no_text == nil)
+        {
+            if (type != DIALOG_YESNO)
+                no_text = context.translate(ROOT, "Cancel");
+            else
+                no_text = context.translate(ROOT, "No");
+        }
+        else
+        {
+            if (root != nil)
+                no_text = context.translate(root, no_text);
+
+            cancel_disable = true;
+        }
+
+        Dialog::Buttons::YesNo::Yes::label.text = yes_text;
+        Dialog::Buttons::YesNo::Yes::label.adjustScale();
+        Dialog::Buttons::YesNo::No::label.text = no_text;
+        Dialog::Buttons::YesNo::No::label.adjustScale();
+        Dialog::Buttons::OK::label.text = yes_text;
+        Dialog::Buttons::OK::label.adjustScale();
+
+        current_type.value = type;
+        switch (type)
+        {
+            case DIALOG_OK:
+                Dialog::Buttons::YesNo.visible = false;
+                Dialog::Buttons::OK.visible = true;
+
+                if (title == nil)
+                    Dialog::Title::title.text = context.translate(ROOT, "Confirm");
+
+                Dialog::Title::title.visible = true;
+                Dialog::Title::titleE.visible = false;
+                Dialog::Title::bg.visible = true;
+                Dialog::Title::bgE.visible = false;
+                Dialog::Message::caution.visible = false;
+                break;
+
+            case DIALOG_QUERY:
+            case DIALOG_DEFAULT_NO:
+            case DIALOG_YESNO:
+                Dialog::Buttons::YesNo.visible = true;
+                Dialog::Buttons::OK.visible = false;
+
+                if (title == nil)
+                    Dialog::Title::title.text = context.translate(ROOT, "Dialog");
+
+                Dialog::Title::title.visible = true;
+                Dialog::Title::titleE.visible = false;
+                Dialog::Title::bg.visible = true;
+                Dialog::Title::bgE.visible = false;
+                Dialog::Message::caution.visible = false;
+                break;
+
+            case DIALOG_ERROR:
+                Dialog::Buttons::YesNo.visible = false;
+                Dialog::Buttons::OK.visible = true;
+
+                if (title == nil)
+                    Dialog::Title::titleE.text = context.translate(ROOT, "Incomplete");
+
+                Dialog::Title::title.visible = false;
+                Dialog::Title::titleE.visible = true;
+                Dialog::Title::bg.visible = false;
+                Dialog::Title::bgE.visible = true;
+                Dialog::Message::caution.visible = true;
+                break;
+        }
+
+        Dialog::Message::message.text = message;
+
+        switch (type)
+        {
+            case DIALOG_OK:
+                ROOT.setFocus(Dialog::Buttons::OK);
+                break;
+
+            case DIALOG_QUERY:
+            case DIALOG_YESNO:
+                ROOT.setFocus(Dialog::Buttons::YesNo::Yes);
+                break;
+
+            case DIALOG_DEFAULT_NO:
+                ROOT.setFocus(Dialog::Buttons::YesNo::No);
+                break;
+
+            case DIALOG_ERROR:
+                ROOT.setFocus(Dialog::Buttons::OK);
+                break;
+        }
+
+        open_motion(context, type);
+        result = nil;
+        context.getUpdateContext().enterEventLoop();
+
+        var r = result;
+		result = nil;
+
+        return r;
+    }
+
+    function close(context)
+    {
+        ROOT.setFocus(nil);
+        close_motion(context);
+        Dialog::Message::message.text = nil;
+        cancel_disable = nil;
+        context.getUpdateContext().leaveEventLoop();
+    }
+
+    function forceCancel(context)
+    {
+        if (result == nil)
+        {
+            result = false;
+            close(context);
+        }
+    }
+
+    function onCancel(context)
+    {
+        if (cancel_disable != nil && cancel_disable)
+            return EVENTRESULT_FILTER;
+
+        main::sound.play("cancel");
+        result = false;
+        close(context, 0);
+        return EVENTRESULT_FILTER;
+    }
+}
+
+module PROJECT::ROOT::Dialog::Buttons::OK
+{
+    function onActivate(context, event, item)
+    {
+        main::sound.play("ok");
+        result = true;
+        close(context);
+        return EVENTRESULT_FILTER;
+    }
+}
+
+module PROJECT::ROOT::Dialog::Buttons::YesNo::No
+{
+    function onActivate(context, event, item)
+    {
+        main::sound.play("ok");
+        result = false;
+        close(context);
+        return EVENTRESULT_FILTER;
+    }
+} 
+
+module PROJECT::ROOT::Dialog::Buttons::YesNo::Yes
+{
+    function onActivate(context, event, item)
+    {
+        main::sound.play("ok");
+        result = true;
+        close(context);
+        return EVENTRESULT_FILTER;
+    }
+
+}

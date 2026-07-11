@@ -1,0 +1,300 @@
+//TTCursorProject::NumberInputDialog
+module PROJECT::ROOT
+{
+	
+	static result = nil;
+	static current_type = 0;
+	static cancel_disable = nil;
+	static original_y = Dialog.y;
+	
+	function onLoad(context)
+	{
+		setMoveActor(NumberInputDialog);
+	}
+	
+	function onCancel(context)
+	{
+		if (cancel_disable != nil && cancel_disable)
+		{
+			return EVENTRESULT_FILTER;
+		}
+	
+		main::sound.play("cancel");
+	
+		result = false;
+	
+		close(context, false);
+	
+		return EVENTRESULT_FILTER;
+	}
+	
+	function open_motion(context)
+	{
+		context.pushPage(NumberInputDialog);
+	
+		Dialog::NumberInput::edit::number::input.active = true;
+	
+		var ratio = context.cursor_speed_ratio;
+	
+		var a = NumberInputDialog.actor;
+		a.ratio = 0.2 * ratio;
+		a.destinationY = PS2_SCREEN_H_F - Dialog.y;
+		a.out = true;
+		a.warp();
+		a.out = false;
+	
+		a = Dialog::FadeActor;
+		a.period = 0.5 / ratio;
+		a.out = true;
+		a.warp();
+		a.out = false;
+	
+		context.sync(0.5);
+	}
+
+	function close_motion(context)
+	{
+		var a = NumberInputDialog.actor;
+	
+		if (result)
+		{
+			a.destinationY = -(Dialog.y + Dialog.h);
+		}
+		else
+		{
+			a.destinationY = PS2_SCREEN_H_F - Dialog.y;
+		}
+	
+		a.out = true;
+	
+		a = Dialog::FadeActor;
+		a.out = true;
+	
+		context.sync(0.5);
+	
+		context.closePage(NumberInputDialog);
+	}
+
+	function open(context, type, message, title, root, yes_text, no_text, disable_cancel)
+	{
+		if (title != nil)
+		{
+			if (root != nil)
+			{
+				Dialog::Title::title.text = context.translate(root, title);
+			}
+			else
+			{
+				Dialog::Title::title.text = title;
+			}
+		}
+
+		if (yes_text == nil)
+		{
+			yes_text = context.translate(ConfirmDialog, "OK");
+		}
+		else if (root != nil)
+		{
+			yes_text = context.translate(root, yes_text);
+		}
+	
+		if (no_text == nil)
+		{
+			no_text = context.translate(ConfirmDialog, "Cancel");
+		}
+		else if (root != nil)
+		{
+			no_text = context.translate(root, no_text);
+		}
+	
+		if (disable_cancel != nil)
+		{
+			cancel_disable = disable_cancel;
+		}
+	
+		Dialog::Buttons::Yes::label.text = yes_text;
+		Dialog::Buttons::Yes::label.adjustScale();
+	
+		Dialog::Buttons::No::label.text = no_text;
+		Dialog::Buttons::No::label.adjustScale();
+	
+		Dialog::Buttons::OK::label.text = yes_text;
+		Dialog::Buttons::OK::label.adjustScale();
+	
+		current_type.value = type;
+	
+		switch (type)
+		{
+			case 0:
+				Dialog::Buttons::Yes.visible = false;
+				Dialog::Buttons::No.visible = false;
+				Dialog::Buttons::OK.visible = true;
+	
+				if (title == nil)
+				{
+					Dialog::Title::title.text = context.translate(ConfirmDialog, "Confirm");
+				}
+	
+				Dialog::Title::title.visible = true;
+				Dialog::Title::bg.visible = true;
+				break;
+	
+			case 1:
+			case 3:
+			case 4:
+				Dialog::Buttons::Yes.visible = true;
+				Dialog::Buttons::No.visible = true;
+				Dialog::Buttons::OK.visible = false;
+	
+				if (title == nil)
+				{
+					Dialog::Title::title.text = context.translate(ConfirmDialog, "Dialog");
+				}
+	
+				Dialog::Title::title.visible = true;
+				Dialog::Title::bg.visible = true;
+				break;
+	
+			default:
+				;
+		}
+	
+		Dialog::NumberInput::message.text = message;
+	
+		NumberInputDialog.setFocus(Dialog::NumberInput::edit::number::input);
+	
+		open_motion(context);
+	
+		result = nil;
+	
+		context.getUpdateContext().enterEventLoop();
+	
+		var r = result;
+		result = nil;
+	
+		return r;
+	}
+
+	function close(context)
+	{
+		NumberInputDialog.setFocus(nil);
+	
+		close_motion(context);
+	
+		Dialog::NumberInput::message.text = nil;
+	
+		cancel_disable = nil;
+	
+		context.getUpdateContext().leaveEventLoop();
+	}
+	
+	function forceCancel(context)
+	{
+		if (result == nil)
+		{
+			result = 0;
+			close(context);
+		}
+	}
+	
+	function setRange(min, max)
+	{
+		Dialog::NumberInput::edit::number::input.min = min;
+		Dialog::NumberInput::edit::number::input.max = max;
+	}
+
+
+	function setValue(value)
+	{
+		Dialog::NumberInput::edit::number::input.value = value;
+	}
+	
+	function getValue()
+	{
+		return Dialog::NumberInput::edit::number::input.value;
+	}
+}
+
+module PROJECT::ROOT::Dialog::NumberInput::edit::number::input
+{
+	function onModeToggled(context, open)
+	{
+		if (!open)
+		{
+			if (Buttons::Yes.visible)
+			{
+				NumberInputDialog.setFocus(Buttons::Yes);
+			}
+			else if (Buttons::OK.visible)
+			{
+				NumberInputDialog.setFocus(Buttons::OK);
+			}
+		}
+	}
+	
+	function onKeyPress(context, event)
+	{
+		var self = input;
+	
+		if (input.active)
+		{
+			switch(event.keysym)
+			{
+				case 65361:
+				{
+					self.value -= 10;
+					return EVENTRESULT_FILTER;
+				}
+				case 65363:
+				{
+					self.value += 10;
+					return EVENTRESULT_FILTER;
+				}
+			}
+		}
+	
+		return EVENTRESULT_CONTINUE;
+	}
+}
+
+module PROJECT::ROOT::Dialog::Buttons::No
+{
+	function onActivate(context, event, item)
+	{
+		main::sound.play("ok");
+	
+		result = 0;
+	
+		close(context);
+	
+		return EVENTRESULT_FILTER;
+	}
+}
+
+module PROJECT::ROOT::Dialog::Buttons::Yes
+{
+    function onActivate(context, event, item)
+    {
+        main::sound.play("ok");
+
+        result = 1;
+
+        close(context);
+
+        return EVENTRESULT_FILTER;
+    }
+}
+
+module PROJECT::ROOT::Dialog::Buttons::OK
+{
+    function onActivate(context, event, item)
+    {
+        main::sound.play("ok");
+
+        result = 1;
+
+        close(context);
+
+        return EVENTRESULT_FILTER;
+    }
+}

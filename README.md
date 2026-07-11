@@ -1,5 +1,11 @@
 
 # OpenAdhoc
+
+> **Minimum required GTAdhocToolchain version: [1.4.0](https://github.com/Nenkai/GTAdhocToolchain/releases/tag/1.4.0)**
+
+> [!WARNING]
+> **NOTE: AS OF 1.4.0**, please rebase your work on the latest OpenAdhoc. Major compiler accuracy fixes have been made that required the current source to be altered.
+
 OpenAdhoc is an open-source re-implementation of the proprietary "Adhoc" scripting language used in Gran Turismo games. OpenAdhoc allows logic-based modding as seen on the [GT6 Spec II Mod](https://www.gtplanet.net/forum/threads/beta6-gt6-spec-ii-mod.399796/) and [GT4 Randomizer/Spec II](https://twitter.com/TheAdmiester/status/1658179881186779144), among other fan projects currently in development.
 
 This repository contains compilable game scripts re-created from originally compiled ones. This allows source-code level editing for scripts that have been successfully reverse-engineered in Adhoc-based GT games.<br>
@@ -661,7 +667,6 @@ No progress.
 ### GT4 Prologue
 Adhoc Version: 5<br>
 5 of 11 projects are completed and can be compiled.<br>
-No progress has been made currently.
   
 |          Name          | Completed |                                     Purpose                                      | 
 |------------------------|-----------|----------------------------------------------------------------------------------|
@@ -734,38 +739,37 @@ There are 10 leftover projects from GT4P and retail GT4 that are not relevant.
 </details>
 
 <details>
-  <summary>[❌️] Tourist Trophy</summary>
+  <summary>[🚧] Tourist Trophy (>=5%)</summary>
 
 ### Tourist Trophy
 Adhoc Version: 7<br>
-  There are 22 projects.<br>
+  2 of 22 projects are completed and can be compiled.<br>
   There are 2 collections of shared scripts (share and quick-share) that multiple projects use.<br>
-  No progress has been made currently.
 
 |          Name          | Completed |                                     Purpose                                      | 
 |------------------------|-----------|----------------------------------------------------------------------------------|
 | arcade                 |    ❌️    | Arcade mode and all of its sub-menus                                             |
-| bestshot               |    ❌️    |                                                                                  |
+| bestshot               |    ❌️    | "Best Shot" photoshoot menu, accessed from pre-race menu during Photo Ride       |
 | boot                   |    ❌️    | Bootup, new game setup, initial intro movie                                      |
-| cursor                 |    ❌️    | Sets up cursor and dialog boxes                                                  |
+| cursor                 |    ✔️    | Sets up cursor and dialog boxes                                                  |
 | demo_movie             |    ❌️    | Intro when idle at main menu, and any movie that plays after completing event    |
 | labomode               |    ❌️    | Photo lab, Replay Theater, Load & Save Replay, Delete Replay/Film/Photo          |
 | option                 |    ❌️    | Game Options                                                                     |
 | photo_save             |    ❌️    | Photo mode                                                                       |
-| print                  |    ❌️    |                                                                                  |
-| quick-arcade           |    ❌️    |                                                                                  |
-| quick-challenge        |    ❌️    |                                                                                  |
-| quick-championship     |    ❌️    |                                                                                  |
-| quick-event            |    ❌️    |                                                                                  |
-| quick-freerun          |    ❌️    |                                                                                  |
-| quick-license          |    ❌️    |                                                                                  |
-| quick-photo            |    ❌️    |                                                                                  |
-| quick-practice         |    ❌️    |                                                                                  |
-| quick-tt               |    ❌️    |                                                                                  |
+| print                  |    ❌️    | Print menu, accessed from Photo Lab                                              |
+| quick-arcade           |    ❌️    | Arcade mode 1-on-1 and Race Pre-Race menu                                        |
+| quick-challenge        |    ❌️    | Challenge mode pre-race menu                                                     |
+| quick-championship     |    ❌️    | TT Mode Championship Pre-Race menu                                               |
+| quick-event            |    ❌️    | TT Mode Single Race Pre-Race menu                                                |
+| quick-freerun          |    ❌️    | TT Mode Time Trial Pre-Race menu                                                 |
+| quick-license          |    ❌️    | TT Mode License test Pre-Race menu                                               |
+| quick-photo            |    ❌️    | TT Mode Photo Ride Pre-Race menu                                                 |
+| quick-practice         |    ❌️    | TT Mode Free Battle Pre-Race menu                                                |
+| quick-tt               |    ❌️    | Arcade Mode Time Trial Pre-Race menu                                             |
 | setting                |    ❌️    | Bike Setting menu and all of its sub-menus (Change parts and tuning sliders)     |
 | slide                  |    ❌️    | Slideshow mode                                                                   |
 | ttmode                 |    ❌️    | Tourist Trophy mode and all of its sub-menus                                     |
-| GT4Application         |    ❌️    | Initializer and Config Script loader / re-loader                                 |
+| GT4Application         |    ✔️    | Initializer and Config Script loader / re-loader                                 |
 </details>
 
 <details>
@@ -840,8 +844,8 @@ GT5 2.11 is prefered over 2.17 due to 2.12<->2.17 having no extra content, and m
 | option                 |    ❌    | N/A                                                                              |
 | photo                  |    ❌    | N/A                                                                              |
 | play_movie             |    ❌    | N/A                                                                              |
-| race                   |    ❌    | N/A                                                                              |
-| race_*                 |    ❌    | N/A                                                                              |
+| race                   |    ✔️    | Main race logic                                                                  |
+| race_*                 |    ❌    | Plugins for each game mode (sits on top of `race`)                               |
 | ranking                |    ❌    | N/A                                                                              |
 | rcvtst                 |    ❌    | N/A                                                                              |
 | setting                |    ❌    | N/A                                                                              |
@@ -935,7 +939,7 @@ Out of scope. GT7 no longer uses Adhoc language and instead uses Swift (custom p
 
 ## ⚙️ Compilation
 
-[Adhoc Toolchain](https://github.com/Nenkai/GTAdhocToolchain) **version 1.3.5** is required to compile game scripts. 
+[Adhoc Toolchain](https://github.com/Nenkai/GTAdhocToolchain) **version 1.4.0** is required to compile game scripts. 
 The tool itself is command line-based without a native GUI, however it does have a VS Code Extension, and a Python GUI wrapper for streamlined usage / workflow.
 > [!TIP]
 Adhoc Toolchain (i.e `adhoc.exe`) can be added to your **PATH** (Optional)
@@ -964,8 +968,7 @@ For more details refer to the [Adhoc Page](https://nenkai.github.io/gt-modding-h
 * Play around with adhoc first. [Learn the basics](https://nenkai.github.io/gt-modding-hub/concepts/adhoc/adhoc), [the language](https://nenkai.github.io/gt-modding-hub/concepts/adhoc/language/), [and more](https://github.com/Nenkai/GTAdhocToolchain/wiki). Compile basic code, investigate the disassembly, [optionally have GT6 run your code using TinyWeb, through RPCS3](https://nenkai.github.io/gt-modding-hub/concepts/adhoc/tinyweb/)
 * Refer to the repository for examples of matching code.
 * Translating by hand is a time-consuming and a somewhat steep process, but it is still far easier than decompiling matching assembly language.
-* **Once you understand Adhoc well to the point where you know the bytecode, can reverse projects manually yourself and know general compilation process inside-out**, you may train an AI model to translate the disassembly for you by having it help you edit code that's already translated,
-and attempt to have it decompile disassembly every so often. The key to training it is providing a lot of adhoc source code, and over many separate chats over time. It needs to learn the format of adhoc much moreso than the disassembly. This can take a very long time before it gets any good, but if it does it can make short work of even the largest scripts.<br>
+<br>
 <details>
   <summary> 📝 Translation example (Expand to view)</summary>
 

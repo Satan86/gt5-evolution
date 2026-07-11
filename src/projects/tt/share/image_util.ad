@@ -1,0 +1,210 @@
+function AdjustScaleImageToCompositeCenter(imgface, composite, scale, widecorrect)
+{
+    var cx = composite.w / 2;
+    var cy = composite.h / 2;
+
+    AdjustScaleImageToCenter(imgface, cx, cy, scale, widecorrect);
+}
+
+function AdjustScaleImageToCenter(imgface, cx, cy, scale, widecorrect)
+{
+    if (scale == nil)
+    {
+        scale = 1.0;
+    }
+
+    imgface.adjustSize();
+
+    var w = imgface.w * scale;
+    var h = imgface.h * scale;
+
+    if (widecorrect == nil || widecorrect)
+    {
+        w *= GetWideAdjustScale();
+    }
+
+    imgface.x = cx - (w * 0.5);
+    imgface.y = cy - (h * 0.5);
+    imgface.w = w;
+    imgface.h = h;
+}
+
+function AdjustScaleImage(imgface, ix, iy, scale, widecorrect)
+{
+    if (scale == nil)
+    {
+        scale = 1.0;
+    }
+
+    if (ix == nil)
+    {
+        ix = 0.5;
+    }
+
+    if (iy == nil)
+    {
+        iy = 0.5;
+    }
+
+    imgface.adjustSize();
+
+    var w = imgface.w * scale;
+    var h = imgface.h * scale;
+
+    if (widecorrect == nil || widecorrect)
+    {
+        w *= GetWideAdjustScale();
+    }
+
+    imgface.x += (imgface.w - w) * ix;
+    imgface.y += (imgface.h - h) * iy;
+    imgface.w = w;
+    imgface.h = h;
+}
+
+function GetWideAdjustScale()
+{
+	return main::game.option.wide_mode ? 0.75 : 1.0; // 0.75 if true, 1.0 if false
+}
+
+function InscribeImageToComposite(imgface, composite, scale, widecorrect)
+{
+    var cx = composite.w / 2;
+    var cy = composite.h / 2;
+
+    if (scale == nil)
+    {
+        scale = 1.0;
+    }
+
+    var widescale = 1.0;
+    if (widecorrect == nil || widecorrect)
+    {
+        widescale = GetWideAdjustScale();
+    }
+
+    imgface.adjustSize();
+
+    var w = imgface.w * scale * widescale;
+    var h = imgface.h * scale;
+
+    if (w > composite.w)
+    {
+        var wscale = composite.w / w;
+        if (scale > wscale)
+        {
+            scale = wscale;
+        }
+    }
+
+    if (h > composite.h)
+    {
+        var hscale = composite.h / h;
+        if (scale > hscale)
+        {
+            scale = hscale;
+        }
+    }
+
+    // recompute after clamping scale
+    w = imgface.w * scale * widescale;
+    h = imgface.h * scale;
+
+    imgface.x = cx - (w * 0.5);
+    imgface.y = cy - (h * 0.5);
+    imgface.w = w;
+    imgface.h = h;
+}
+
+function ScaleComposite(composite, x, y)
+{
+    composite.x *= x;
+    composite.y *= y;
+    composite.w *= x;
+    composite.h *= y;
+
+    var w = composite.first;
+    while (true)
+    {
+        if (w == nil)
+        {
+            return;
+        }
+
+        if (w.is_composite)
+        {
+            ScaleComposite(w, x, y);
+        }
+
+        w = w.next;
+    }
+}
+
+function ScaleCompositeChildren(composite, x, y)
+{
+    var w = composite.first;
+    while (true)
+    {
+        if (w == nil)
+        {
+            return;
+        }
+
+        if (w.is_composite)
+        {
+            ScaleComposite(w, x, y);
+        }
+
+        w = w.next;
+    }
+}
+
+function ScaleCompositePosition(base_area, composite, sx, sy, tx, ty)
+{
+    if (tx == nil)
+    {
+        tx = 0.5;
+    }
+
+    if (ty == nil)
+    {
+        ty = 0.5;
+    }
+
+    var tmp_w = base_area.w * sx;
+    var tmp_h = base_area.h * sy;
+
+    var add_x = (base_area.w - tmp_w) * tx;
+    var add_y = (base_area.h - tmp_h) * ty;
+
+    composite.w *= sx;
+    composite.h *= sy;
+
+    var diff_x = composite.x - base_area.x;
+    var diff_y = composite.y - base_area.y;
+
+    var ratio_x = diff_x * sx;
+    var ratio_y = diff_y * sy;
+
+    composite.x -= (diff_x - ratio_x);
+    composite.y -= (diff_y - ratio_y);
+
+    composite.x += add_x;
+    composite.y += add_y;
+
+    var w = composite.first;
+    while (true)
+    {
+        if (w == nil)
+        {
+            return;
+        }
+
+        if (w.is_composite)
+        {
+            ScaleComposite(w, sx, sy);
+        }
+
+        w = w.next;
+    }
+}

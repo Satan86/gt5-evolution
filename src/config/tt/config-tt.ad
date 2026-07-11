@@ -1,0 +1,205 @@
+static MpegRoot = "tt";
+if (main::menu::MSystem::GetRegionCode() == "uk")
+{
+    MpegRoot = "tt_pal";
+}
+
+static StartProject = "boot";
+
+static RaceDisplayVersion = "tt";
+
+static DemoDirectory = "replayTT";
+
+static MenuForceCategory = "arcade";
+
+static DisableFavorite = true;
+
+static RidingForm = true;
+
+static BestShotFocusIndex = 0;
+
+main::game.major_menu_project = "";
+
+static DEMO_DISABLE_LANBATTLE = true;
+
+::MemoryDebug_address = 2147483647;
+::MemoryDebug_size    = 2147483647;
+::MemoryDebug_count   = -1;
+
+#include "language.h"
+
+static UsingLanguages = [];
+
+switch (main::menu::MSystem::GetRegionCode())
+{
+    case "jp":
+        UsingLanguages.push("JP");
+        break;
+
+    case "uk":
+        UsingLanguages.push("GB");
+        UsingLanguages.push("FR");
+        UsingLanguages.push("DE");
+        UsingLanguages.push("IT");
+        UsingLanguages.push("ES");
+        break;
+
+    case "us":
+        UsingLanguages.push("US");
+        break;
+
+    case "tw":
+        UsingLanguages.push("TW");
+        break;
+
+    case "kr":
+        UsingLanguages.push("KR");
+        break;
+
+    case "cn":
+        UsingLanguages.push("CN");
+        break;
+}
+
+static UsingLanguageNum = UsingLanguages.size;
+
+static DemonstrationSlideNum = 66;
+static DemonstrationSlideDir = "photoTT";
+
+#include "demo.h"
+
+static DemoList = nil;
+static DemonstrationFiles = nil;
+
+switch (main::menu::MSystem::GetRegionCode())
+{
+	case "jp":
+		DemoList = [];
+		break;
+	
+	case "us":
+		DemonstrationFiles = [
+			"Rdemo000", "Rdemo001", "Rdemo002", "Rdemo003", "Rdemo004",
+			"Rdemo005", "Rdemo006", "Rdemo007", "Rdemo008", "Rdemo009",
+			"Rdemo010", "Rdemo011", "Rdemo012", "Rdemo013", "Rdemo014"
+		];
+		DemoList = [
+			Demo(2, DemonstrationFiles[0]),
+			Demo(2, DemonstrationFiles[1]),
+			Demo(2, DemonstrationFiles[2]),
+			Demo(2, DemonstrationFiles[3]),
+			Demo(2, DemonstrationFiles[4]),
+			Demo(2, DemonstrationFiles[5]),
+			Demo(2, DemonstrationFiles[6]),
+			Demo(2, DemonstrationFiles[7]),
+			Demo(2, DemonstrationFiles[8]),
+			Demo(2, DemonstrationFiles[9]),
+			Demo(2, DemonstrationFiles[10]),
+			Demo(2, DemonstrationFiles[11]),
+			Demo(2, DemonstrationFiles[12]),
+			Demo(2, DemonstrationFiles[13]),
+			Demo(2, DemonstrationFiles[14])
+		];
+		break;
+
+	case "uk":
+		DemoDirectory = "replayTT/uk";
+	
+		DemonstrationFiles = [
+			"Rdemo001", "Rdemo002", "Rdemo003", "Rdemo004", "Rdemo005",
+			"Rdemo006", "Rdemo007", "Rdemo008", "Rdemo009", "Rdemo010"
+		];
+	
+		DemoList = [
+			Demo(2, DemonstrationFiles[0]),
+			Demo(2, DemonstrationFiles[1]),
+			Demo(2, DemonstrationFiles[2]),
+			Demo(2, DemonstrationFiles[3]),
+			Demo(2, DemonstrationFiles[4]),
+			Demo(2, DemonstrationFiles[5]),
+			Demo(2, DemonstrationFiles[6]),
+			Demo(2, DemonstrationFiles[7]),
+			Demo(2, DemonstrationFiles[8]),
+			Demo(2, DemonstrationFiles[9])
+		];
+		break;
+	
+	default:
+		break;
+}
+
+main::game.demonstration.initialize(DemoList.size, 150, 3);
+
+#include "bgmplaylist_tt.h"
+
+function last_strap()
+{
+    main::game.option.setGameZoneDefault();
+    main::game.money = 10000;
+    init_bgmplaylist();
+}
+
+
+static HugeAllocatorDebug =
+[
+    9968, 8667, 5495, 2052, 46455,
+    49215, 8888, 16361, 1353, 20130,
+    1025, 3774, 188, 30, 393,
+    261, 30, 1191, 30, 929
+];
+
+static HugeAllocatorRelease =
+[
+    9965, 15090, 39630, 9441, 11666,
+    12323, 20895, 11057, 1253, 30,
+    54, 3368, 330, 30, 1133,
+    426, 30, 30, 30, 849
+];
+
+static LargeAllocatorDebug =
+[
+    14584, 4342, 1301, 770, 17713,
+    26882, 6465, 11113, 5409, 14768,
+    608, 4090, 462, 50, 52,
+    50, 50, 50, 947, 1375
+];
+
+static LargeAllocatorRelease =
+[
+    8598, 6012, 17786, 3873, 4713,
+    11766, 9822, 4179, 477, 50,
+    50, 1482, 44, 50, 639,
+    95, 50, 50, 50, 696
+];
+
+static SmallAllocatorDebug =
+[
+    3036, 1850, 2046, 1092, 10835,
+    14514, 1340, 3105, 285, 4950,
+    390, 1928, 30, 30, 68,
+    38, 30, 411, 30, 396
+];
+
+static SmallAllocatorRelease =
+[
+    2936, 2952, 8817, 3512, 2523,
+    5066, 4769, 2504, 563, 30,
+    30, 1593, 48, 30, 387,
+    42, 30, 30, 30, 396
+];
+
+static TinyAllocatorDebug =
+[
+    2757, 779, 169, 158, 3062,
+    5481, 1461, 1989, 1076, 2500,
+    330, 600, 94, 50, 50,
+    50, 50, 50, 215, 192
+];
+
+static TinyAllocatorRelease =
+[
+    2736, 1633, 2918, 1178, 1776,
+    2893, 3115, 1213, 293, 50,
+    55, 486, 150, 50, 50,
+    206, 50, 50, 50, 250
+];

@@ -1,4 +1,4 @@
-module PROEJCT::ROOT
+module PROJECT::ROOT
 {
     static watcher = nil;
     static count = 10 * 60;

@@ -1,0 +1,24 @@
+project_name: TTCursorProject
+project_folder: ..
+
+base_include_folder: ../../../../
+
+output_name: cursor
+
+version: 7
+
+files_to_compile: 
+  - name: cursor.ad
+    is_main: true
+  - name: CursorRoot.ad
+    is_main: true
+  - name: ConfirmDialog.ad
+    is_main: true
+  - name: ProcessDialog.ad
+    is_main: true
+  - name: ProgressDialog.ad
+    is_main: true
+  - name: NumberInputDialog.ad
+    is_main: true
+  - name: SelectDialog.ad
+    is_main: true

@@ -1,0 +1,225 @@
+//PROJECT::ROOT
+module PROJECT::ROOT
+{
+    static result = nil;
+    static ignore_cancel = nil;
+    static cancel_button_name = nil;
+
+    function onLoad(context)
+    {
+        setMoveActor(SelectDialog);
+    }
+
+    function open(context, message, title, left_text, center_text, right_text, default_focus, cancel_disable, disable_list, cancel_button)
+    {
+        if (title != nil)
+        {
+            Dialog::Title::title.text = title;
+        }
+
+        Dialog::Bottom::Buttons::Left.visible = false;
+        Dialog::Bottom::Buttons::Center.visible = false;
+        Dialog::Bottom::Buttons::Right.visible = false;
+
+        Dialog::Bottom::Buttons::Left.insensitive = false;
+        Dialog::Bottom::Buttons::Center.insensitive = false;
+        Dialog::Bottom::Buttons::Right.insensitive = false;
+
+        if (left_text != nil)
+        {
+            Dialog::Bottom::Buttons::Left::label.text = left_text;
+            Dialog::Bottom::Buttons::Left.visible = true;
+        }
+
+        if (center_text != nil)
+        {
+            Dialog::Bottom::Buttons::Center::label.text = center_text;
+            Dialog::Bottom::Buttons::Center.visible = true;
+        }
+
+        if (right_text != nil)
+        {
+            Dialog::Bottom::Buttons::Right::label.text = right_text;
+            Dialog::Bottom::Buttons::Right.visible = true;
+        }
+
+        Dialog::Message::message.text = message;
+
+        ignore_cancel = cancel_disable;
+
+        if (default_focus == nil)
+        {
+            default_focus = "Left";
+        }
+
+        if (disable_list != nil)
+        {
+            
+            for (var i = 0; i < disable_list.size; i++)
+            {
+                if (Dialog::Bottom::Buttons.defined(disable_list[i]))
+                {
+                    Dialog::Bottom::Buttons[disable_list[i]].insensitive = true;
+                }
+            }
+        }
+
+        cancel_button_name = cancel_button;
+
+        SelectDialog.setFocus(Dialog::Bottom::Buttons[default_focus]);
+
+        open_motion(context);
+
+        result = nil;
+
+        context.getUpdateContext().enterEventLoop();
+
+        var r = result;
+
+        result = nil;
+        cancel_button_name = nil;
+
+        return r;
+    }
+
+    function forceCancel(context)
+    {
+        if (result == nil)
+        {
+            result = -2;
+            close(context);
+        }
+    }
+
+    function close(context)
+    {
+        SelectDialog.setFocus(nil);
+
+        close_motion(context);
+
+        Dialog::Message::message.text = nil;
+        ignore_cancel = nil;
+
+        context.getUpdateContext().leaveEventLoop();
+    }
+
+    function open_motion(context)
+    {
+        context.pushPage(SelectDialog);
+
+        var ratio = context.cursor_speed_ratio;
+
+        var a = SelectDialog.actor;
+        a.ratio = (0.2 * ratio);
+        a.destinationY = (PS2_SCREEN_H_F - Dialog.y);
+        a.out = 1;
+        a.warp();
+        a.out = 0;
+
+        a = Dialog::FadeActor;
+        a.period = (0.5 / ratio);
+        a.out = 1;
+        a.warp();
+        a.out = 0;
+
+        context.sync(0.4);
+    }
+
+    function close_motion(context)
+    {
+        var a = SelectDialog.actor;
+
+        if (result >= 0)
+        {
+            a.destinationY = -((Dialog.y + Dialog.h));
+        }
+        else
+        {
+            a.destinationY = (PS2_SCREEN_H_F - Dialog.y);
+        }
+
+        a.out = 1;
+
+        a = Dialog::FadeActor;
+        a.out = 1;
+
+        context.sync(0.5);
+
+        context.closePage(SelectDialog);
+    }
+
+    function onCancel(context)
+    {
+        if (ignore_cancel != nil && ignore_cancel)
+        {
+            return EVENTRESULT_FILTER;
+        }
+
+        main::sound.play("cancel");
+
+        result = -1;
+        close(context);
+
+        return EVENTRESULT_FILTER;
+    }
+}
+
+module PROJECT::ROOT::Dialog::Bottom::Buttons::Left
+{
+    function onActivate(context, event, item)
+    {
+        if (cancel_button_name == item.name)
+        {
+            main::sound.play("cancel");
+            result = -1;
+        }
+        else
+        {
+            main::sound.play("ok");
+            result = 1;
+        }
+
+        close(context);
+        return EVENTRESULT_FILTER;
+    }
+}
+
+module PROJECT::ROOT::Dialog::Bottom::Buttons::Center
+{
+    function onActivate(context, event, item)
+    {
+        if (cancel_button_name == item.name)
+        {
+            main::sound.play("cancel");
+            result = -1;
+        }
+        else
+        {
+            main::sound.play("ok");
+            result = 2;
+        }
+
+        close(context);
+        return EVENTRESULT_FILTER;
+    }
+}
+
+module PROJECT::ROOT::Dialog::Bottom::Buttons::Right
+{
+    function onActivate(context, event, item)
+    {
+        if (cancel_button_name == item.name)
+        {
+            main::sound.play("cancel");
+            result = -1;
+        }
+        else
+        {
+            main::sound.play("ok");
+            result = 3;
+        }
+
+        close(context);
+        return EVENTRESULT_FILTER;
+    }
+}

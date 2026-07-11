@@ -1,0 +1,59 @@
+module TTCursorProject::ProcessDialog
+{
+    static last_error_code = "";
+    static original_y = Dialog.y;
+
+    function open_motion(context)
+    {
+        Dialog.y = PS2_SCREEN_H_F;
+        Dialog.opacity = 0.0;
+
+        context.pushPage(ProcessDialog);
+
+        while (!Dialog.interpolateY(original_y, 0.2))
+        {
+            var diff = 1.0 - Dialog.opacity;
+            Dialog.opacity = Dialog.opacity + (diff * 0.1);
+            context.sync();
+        }
+
+        Dialog.opacity = 1.0;
+    }
+
+    function close_motion(context)
+    {
+        var target = -Dialog.h;
+        Dialog.opacity = 1.0;
+
+        while (!Dialog.interpolateY(target, 0.2))
+        {
+            var diff = 0.0 - Dialog.opacity;
+            Dialog.opacity = Dialog.opacity + (diff * 0.3);
+            context.sync();
+        }
+
+        Dialog.opacity = 0.0;
+        context.closePage(ProcessDialog);
+    }
+
+    function open(context, message, func, args)
+    {
+        Dialog::Title::title.text = context.translate(ProcessDialog, "Wait");
+        Dialog::Message::message.text = message;
+
+        var prev_visible = context.cursor_visible;
+        context.cursor_visible = 0;
+
+        open_motion(context);
+
+        var res = func(context, args);
+
+        last_error_code = main::network.getLastErrorCode();
+
+        close_motion(context);
+
+        context.cursor_visible = prev_visible;
+
+        return res;
+    }
+}
