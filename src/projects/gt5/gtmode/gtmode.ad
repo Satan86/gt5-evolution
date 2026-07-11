@@ -29,6 +29,14 @@ module GTModeProject
 
     method onLoad(context)
     {
+		module ::pdiext
+		{
+		    function isQABuild()
+			{
+				return true;
+			}
+		}
+
         context.createRenderContext(1);
         var render_context = context.getRenderContext(0);
         

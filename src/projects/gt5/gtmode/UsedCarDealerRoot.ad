@@ -250,7 +250,7 @@ module ROOT
     method getUsedCarDataOffline(context, sort_order)
     {
         var list = [];
-        var REQUIRED_NUM = 30;
+        var REQUIRED_NUM = 50;
 
         var seed = getSeedPS3();
         var min_seed = 0;
