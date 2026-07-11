@@ -232,7 +232,7 @@ module ABspecUtil
 
     function clearedGranTurismoWorldChampionship()
     {
-        var gt_world_championship_id = 309;
+        var gt_world_championship_id = 409;
         var res_a = GLOBAL_STATUS.user_profile.record.aspec_race.getGameResult(gt_world_championship_id);
         var res_b = GLOBAL_STATUS.user_profile.record.bspec_race.getGameResult(gt_world_championship_id);
 
