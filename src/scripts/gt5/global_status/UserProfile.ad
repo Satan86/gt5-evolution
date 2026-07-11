@@ -135,7 +135,7 @@ module UserProfile
 
     function Initialize(instance)
     {
-        instance.cash = 2000000 / 100; // Starting money
+        instance.cash = 1000000 / 100; // Starting money
         instance.gameday = 1;
         instance.can_watch_ending = false;
         instance.quicktune_available = false;
