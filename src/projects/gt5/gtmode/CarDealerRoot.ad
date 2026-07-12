@@ -84,6 +84,55 @@ module ROOT
         if (if_debug == nil)
             if_debug = false;
 
+        var dlc_type = DLCUtil::Car::getType(car_label);
+        if (dlc_type != "")
+        {
+            var dlc_name = context.translate(ROOT, "DLC", "ENTITLEMENT_TITLE_%s".format(dlc_type));
+
+            if (DLCUtil::Car::isInstalled(car_label))
+            {
+                if (DLCUtil::Car::isBought(car_label))
+                {
+
+                }
+                else
+                {
+                    DialogUtil::openInformationDialog(context, 
+                        context.translate(ROOT, "DIALOG_DLC_ISNOT_AVAILABLE").build(dlc_name),
+                        nil, 
+                        "piece/itemcategory/info_dlc.img"
+                    );
+                    
+                    return false;
+                }
+            }
+
+            else
+            {
+                if (DLCUtil::Car::isBought(car_label))
+                {
+                    DialogUtil::openInformationDialog(context, 
+                        context.translate(ROOT, "DIALOG_YOU_NEED_INSTALL_DLC").build(dlc_name),
+                        nil, 
+                        "piece/itemcategory/info_dlc.img"
+                    );
+
+                    return false;
+                }
+
+                else
+                {
+                    DialogUtil::openInformationDialog(context, 
+                        context.translate(ROOT, "DIALOG_DIALOG_YOU_DONOT_HAVE_DLC").build(dlc_name), 
+                        nil, 
+                        "piece/itemcategory/info_dlc.img"
+                    );  
+                    
+                    return false;
+                }
+            }
+        }
+
         var purchase_level = gtengine::MSpecDB::getCarPurchaseLevel(car_code);
 
         if (GAME_STATUS.user_profile.getAspecLevel() < purchase_level && 
