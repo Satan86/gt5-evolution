@@ -57,6 +57,8 @@ module GTTopProject
         );
 
         loadProjects();
+		
+		mm_setEntitlements();
 
         GLOBAL_STATUS.user_profile.context.last_saved_project = "";
         
@@ -199,5 +201,35 @@ module GTTopProject
             Grim2Util::startUpdater();
 
         return res;
+    }
+	
+	function mm_setEntitlements()
+    {
+        // add DLC entitlements
+        var dlc_list = [
+            DLCUtil::TYPE::CAR_001,
+            DLCUtil::TYPE::COURSE_001,
+            DLCUtil::TYPE::WEAR_001,
+            DLCUtil::TYPE::PAINT_001,
+            DLCUtil::TYPE::CAR_002,
+            DLCUtil::TYPE::CAR_003,
+            DLCUtil::TYPE::COURSE_002,
+            DLCUtil::TYPE::CAR_004,
+            DLCUtil::TYPE::COURSE_003,
+            DLCUtil::TYPE::CAR_005,
+            DLCUtil::TYPE::CAR_006,
+            DLCUtil::TYPE::CAR_007,
+            DLCUtil::TYPE::CAR_008,
+            DLCUtil::TYPE::CAR_009
+        ];
+
+        foreach (var dlc in dlc_list)
+        {
+            if (!GAME_STATUS.entitlement.has(gtengine::EntitlementType::DLC, dlc))
+            {
+                DLCUtil::install(dlc);
+                GAME_STATUS.entitlement.add(gtengine::EntitlementType::DLC, dlc);
+            }
+        }
     }
 }
