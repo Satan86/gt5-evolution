@@ -614,35 +614,26 @@ module ROOT
             {
                 var icon_image = event["icon_image"];
 
-            self.start_end_time.text = "%s: %s - %s".format(context.translate(ROOT, "PERIOD_OF_TIME"), begin_time_str, end_time_str);
-
-            var icon_image = event["icon_image"];
-
             if (pdistd::Exist(icon_image))
-                self.logo.image_path = icon_image;
-            else if (pdistd::Exist("/APP_DATA_RAW/event/gt5/%{icon_image}"))
+					self.logo.image_path = icon_image;
+				else if (pdistd::Exist("/APP_DATA_RAW/event/gt5/%{icon_image}"))
                 self.logo.image_path = "/APP_DATA_RAW/event/gt5/%{icon_image}";
-            else
-            {
-                var path = EventRace2.getEventIconImagePath(icon_image);
-                if (pdistd::Exist(path))
-                    self.logo.image_path = path;
-                else
-                {
-                    var path = EventRace2.getEventIconImagePath(icon_image);
-                    if (pdistd::Exist(path))
-                        self.logo.image_path = path;
-                    else
-                    {
-                        var me = self;
-                        EventRace2.requestEventIconImage(icon_image, function (args) 
-                        {
-                            |var context, var request| = args;
+				else
+				{
+					var path = EventRace2.getEventIconImagePath(icon_image);
+					if (pdistd::Exist(path))
+						self.logo.image_path = path;
+					else
+					{
+						var me = self;
+						EventRace2.requestEventIconImage(icon_image, function (args) 
+						{
+							|var context, var request| = args;
 
-                            if (request.isDone())
-                                me.logo.image_path = path;
-                        });
-                    }
+							if (request.isDone())
+								me.logo.image_path = path;
+						});
+					}
                 }
             }
 

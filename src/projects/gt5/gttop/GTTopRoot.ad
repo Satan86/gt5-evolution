@@ -110,6 +110,23 @@ module GTTopRoot
         ROOT.setFocus(Menus::MainMenu::ListBox);
         
         LeaveDetectUtil::resume(context);
+		
+		context.sync(0.8);
+		var grim_url = main::pdiext::MProductInformation::GetGrimURL();
+		if (!main.defined("has_checked_for_server") && (!grim_url.endsWith(".gran-turismo.com") ||
+			!grim_url.beginsWith("https")))
+		{
+			DialogUtil::openInformationDialog(context, "The server URL appears to have been changed.
+		If you are trying to use an online server mod, refer to:
+			tinyurl.com/gtgrimoire\n",
+			nil, 
+			"piece/itemcategory/info_instruction.img");
+
+			module ::main
+			{
+				static has_checked_for_server = true;
+			}
+		}
     }
 
     method onPageInEnd(context)
