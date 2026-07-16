@@ -26233,13 +26233,21 @@ Project {
             Composite {
               name string{"Composite"}
               packable digit{1}
-              geometry rectangle{84 312 1752 624}
+              geometry rectangle{84 200 1752 900}
+              clip digit{1}
+              effect_list[1] {
+                EffectEdgeBlur {
+                  name string{"EffectEdgeBlur"}
+                  top digit{100}
+                  bottom digit{100}
+                }
+              }
               children[1] {
                 IconBox {
                   name string{"IconBox"}
                   visible digit{0}
                   packable digit{1}
-                  geometry rectangle{0 0 1752 624}
+                  geometry rectangle{0 100 1752 700}
                   h_spacing digit{60}
                   v_spacing digit{54}
                   x_alignment digit{0.5}
