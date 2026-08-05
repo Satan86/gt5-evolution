@@ -1,0 +1,20 @@
+project_name: SettingProject
+project_folder: ..
+
+base_include_folder: ../../../../
+
+output_name : setting
+
+version : 12
+
+files_to_compile:
+  - name: SettingProjectComponent.ad
+    project_component: true
+  - name: setting.ad
+    is_main: true
+  - name: DrivingOptionRoot.ad
+  - name: DriverRoot.ad
+  - name: SettingPopup.ad
+  - name: TuningPopup.ad
+  - name: ItemDetailPopup.ad
+  - name: SettingSheetPopup.ad

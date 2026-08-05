@@ -1,0 +1,1299 @@
+module ROOT
+{
+    static SelectedSpecialGASIndex = 0;
+    static SelectedNOSIndex = 0;
+    static sPaneOriginalX = Pane.x;
+
+
+
+    attribute opened_detail_options;
+    attribute first_scroll_item;
+    attribute last_scroll_item;
+
+    hidden.visible = false;
+    attribute openSimply_result;
+
+    method _openSimply_activated()
+    {
+        self.openSimply_result = true;
+    }
+
+    method _openSimply_closed()
+    {
+        if (self.openSimply_result == nil)
+            self.openSimply_result = false;
+    }
+
+    class Data : System::Object
+    {
+        attribute cp;
+        attribute dp;
+        attribute rp;
+        attribute course_code;
+        attribute enemy_info;
+        attribute insensitive_drift_type;
+        attribute insensitive_simulation;
+        attribute insensitive_tcs;
+        attribute insensitive_asm;
+        attribute insensitive_abs;
+        attribute insensitive_activesteering;
+        attribute insensitive_tire_f;
+        attribute insensitive_tire_r;
+        attribute insensitive_drivingline;
+        attribute insensitive_special_gas;
+        attribute insensitive_nos;
+
+        attribute visible_drift_type;
+        attribute visible_speed_test_unit_mode;
+        attribute visible_laps;
+        attribute visible_onemake;
+        attribute visible_consumption;
+        attribute visible_low_mu_type;
+        attribute visible_behavior_damage_type;
+
+        attribute invisible_transmission;
+        attribute invisible_simulation;
+        attribute invisible_tcs;
+        attribute invisible_asm;
+        attribute invisible_abs;
+        attribute invisible_activesteering;
+        attribute invisible_tire;
+        attribute invisible_drivingline;
+        attribute invisible_special_gas;
+        attribute invisible_nos;
+        attribute invisible_pad_yaw_gain;
+
+        attribute laps_min;
+        attribute laps_max;
+        attribute limit_tire_f;
+        attribute need_tire_f;
+        attribute limit_tire_r;
+        attribute need_tire_r;
+        attribute cb_instance;
+        attribute cb_activated;
+        attribute cb_closed;
+        attribute split_battle;
+        attribute window_id;
+        attribute activate_sound;
+        attribute academy_event;
+        attribute set_target_cp;
+        attribute set_target_dp;
+        attribute modal_page;
+        attribute result;
+
+        method __init__(cp, dp, rp, constraint, regulation)
+        {
+            self.cp = cp;
+            self.dp = dp;
+            self.rp = rp;
+            self.course_code = gtengine::MSpecDB::NO_CODE64;
+            self.enemy_info = nil;
+            self.insensitive_drift_type = false;
+            self.insensitive_simulation = false;
+            self.insensitive_tcs = false;
+            self.insensitive_asm = false;
+            self.insensitive_abs = false;
+            self.insensitive_activesteering = false;
+            self.insensitive_tire_f = false;
+            self.insensitive_tire_r = false;
+            self.insensitive_drivingline = false;
+            self.insensitive_special_gas = false;
+            self.insensitive_nos = false;
+
+            self.visible_drift_type = false;
+            self.visible_speed_test_unit_mode = false;
+            self.visible_laps = false;
+            self.visible_onemake = false;
+            self.visible_consumption = false;
+            self.visible_low_mu_type = false;
+            self.visible_behavior_damage_type = false;
+            self.invisible_transmission = false;
+            self.invisible_simulation = false;
+            self.invisible_tcs = false;
+            self.invisible_asm = false;
+            self.invisible_abs = false;
+
+            self.invisible_activesteering = false;
+            self.invisible_tire = false;
+            self.invisible_drivingline = false;
+            self.invisible_special_gas = false;
+            self.invisible_nos = false;
+            self.invisible_pad_yaw_gain = false;
+
+            self.laps_min = 0;
+            self.laps_max = 99;
+            self.limit_tire_f = -1;
+            self.need_tire_f = -1;
+            self.limit_tire_r = -1;
+            self.need_tire_r = -1;
+            self.split_battle = false;
+            self.window_id = 0;
+            self.activate_sound = "ok";
+            self.academy_event = false;
+            self.set_target_cp = true;
+            self.set_target_dp = true;
+
+            if (rp != nil)
+            {
+                self.academy_event = rp.academy_event;
+                self.course_code = rp.course_code;
+            }
+
+            if (constraint != nil)
+                self.setupConstraint(constraint, cp);
+
+            if (regulation != nil)
+                self.setupRegulation(regulation);
+
+            self.setupStaticCarCondition(cp, dp);
+            self.setupForAI(cp, dp);
+        }
+    
+
+        method setupConstraint(constraint, cp)
+        {
+            |var tire_f, var tire_r| = (cp != nil) ? cp.getTireCategories() : [nil, nil];
+            var data = self;
+            var invalid = gtengine::MGameParameter::INVALID_VALUE_INT;
+
+            data.insensitive_drift_type = constraint.drift_type != invalid;
+            data.insensitive_simulation = constraint.simulation != invalid;
+            data.insensitive_tcs = constraint.tcs != invalid;
+            data.insensitive_asm = constraint.asm != invalid;
+            data.insensitive_abs = constraint.abs != invalid;
+            data.insensitive_activesteering = constraint.active_steering != invalid;
+
+            data.insensitive_tire_f = constraint.limit_tire_f != invalid && constraint.limit_tire_f == constraint.need_tire_f 
+            && constraint.limit_tire_f == tire_f;
+
+            data.insensitive_tire_r = constraint.limit_tire_r != invalid && constraint.limit_tire_r == constraint.need_tire_r 
+            && constraint.limit_tire_r == tire_r;
+
+            data.insensitive_drivingline = constraint.driving_line != invalid;
+
+            data.limit_tire_f = (constraint.limit_tire_f == invalid) ? -1 : constraint.limit_tire_f;
+            data.need_tire_f = (constraint.need_tire_f == invalid) ? -1 : constraint.need_tire_f;
+            data.limit_tire_r = (constraint.limit_tire_r == invalid) ? -1 : constraint.limit_tire_r;
+            data.need_tire_r = (constraint.need_tire_r == invalid) ? -1 : constraint.need_tire_r;
+        }
+
+        method setupRegulation(regulation)
+        {
+            var data = self;
+            var invalid = gtengine::MGameParameter::INVALID_VALUE_INT;
+
+            data.insensitive_tire_f = regulation.limit_tire_f != invalid && regulation.limit_tire_f == regulation.need_tire_f
+            data.insensitive_tire_r = regulation.limit_tire_r != invalid && regulation.limit_tire_r == regulation.need_tire_r;
+
+            data.limit_tire_f = (regulation.limit_tire_f == invalid) ? -1 : regulation.limit_tire_f;
+            data.need_tire_f = (regulation.need_tire_f == invalid) ? -1 : regulation.need_tire_f;
+            data.limit_tire_r = (regulation.limit_tire_r == invalid) ? -1 : regulation.limit_tire_r;
+            data.need_tire_r = (regulation.need_tire_r == invalid) ? -1 : regulation.need_tire_r;
+        }
+
+        method setupStaticCarCondition(cp, dp)
+        {
+            var data = self;
+
+            if (gtengine::MSpecDB::checkGenericFlag("is_racing_kart", cp.getCarCode()))
+            {
+                data.invisible_tcs = true;
+                data.invisible_asm = true;
+                data.invisible_abs = true;
+                data.invisible_activesteering = true;
+                data.invisible_tire = true;
+            }
+        }
+
+        method setupForAI(cp, dp)
+        {
+            if (dp.type == gtengine::DriverType::AI)
+            {
+                self.insensitive_simulation = true;
+                self.insensitive_tcs = true;
+                self.insensitive_asm = true;
+                self.insensitive_abs = true;
+                self.insensitive_activesteering = true;
+                self.insensitive_drivingline = true;
+                
+                self.invisible_transmission = true;
+                self.invisible_simulation = true;
+                self.invisible_tcs = true;
+                self.invisible_asm = true;
+                self.invisible_abs = true;
+                self.invisible_activesteering = true;
+                self.invisible_drivingline = true;
+                self.invisible_pad_yaw_gain = true;
+            }
+        }
+
+        method open(context, root)
+        {
+            self.result = false;
+            self.modal_page = SequenceUtil::ModalPage(context, root);
+            self.modal_page.open();
+            return self.result;
+        }
+
+        method close(context)
+        {
+            if (self.cb_closed != nil)
+            {
+                (self.cb_instance.*self.cb_closed)(context, self.result);
+            }
+
+            if (self.modal_page != nil)
+            {
+                self.modal_page.close();
+                self.modal_page = nil;
+            }
+        }
+    }
+
+    attribute sData;
+
+    function OpenDialog(context, data)
+    {
+        var dialog = ROOT.doCopy();
+        dialog.context_number = context.context_number;
+        return dialog.open(context, data);
+    }
+
+    method open(context, data)
+    {
+        self.sData = data;
+
+        if (self.sData.split_battle)
+        {
+            var player_no = self.sData.window_id + 1;
+            var prefix = context.translate(ROOT, "Driving Option");
+            var suffix = context.translate(ROOT, "player").build(player_no);
+
+            Pane::TitleRow::label.text = "%{prefix} : %{suffix}";
+            HDToolTip.visible = false;
+            Pane.pack_alignment_x = 0.5;
+        }
+
+        else
+        {
+            Pane::TitleRow::label.text = context.translate(ROOT, "Driving Option");
+            Pane.pack_alignment_x = 0.5;
+            HDToolTip.visible = true;
+        }
+
+        self.sData.cp.beginSetting();
+
+        {
+            var car_code = self.sData.cp.getCarCode();
+            var simulation_professional = false;
+
+            if (gtengine::MSpecDB::checkGenericFlag("simulation_professional", car_code))
+                simulation_professional = true;
+            if (gtengine::MSpecDB::checkGenericFlag("is_racing_kart", car_code))
+                simulation_professional = true;
+
+            if (simulation_professional)
+            {
+                if (self.sData.dp != nil)
+                    self.sData.dp.physics_pro = true;
+
+                self.sData.insensitive_simulation = true;
+            }
+        }
+
+        Pane.y = (ROOT.h - Pane.h) * 0.5;
+        self.FadeActor.out = true;
+        self.FadeActor.warp();
+        self.setFocus(Pane::Button::OK::OK);
+
+        var result = self.sData.open(context, self);
+        self.sData = nil;
+        self.sTireListFront = nil;
+        self.sTireListRear = nil;
+        self.sSpecialGasList = nil;
+        self.sNosList = nil;
+
+        return result;
+    }
+
+    method close(context)
+    {
+        context.target_widget = nil;
+
+        if (self.sData != nil)
+        {
+            self.setFocus(nil);
+            self.FadeActor.out = true;
+            context.sync(0.25);
+
+            self.sData.close(context);
+            self.sData.cp.endSetting();
+            self.sData = nil;
+        }
+    }
+
+    method abort(context)
+    {
+        self.close(context);
+    }
+
+    method isOpening()
+    {
+        return self.sData != nil;
+    }
+
+    method get_tire_insensitives(is_front, tire_options)
+    {
+        var limit = (is_front) ? self.sData.limit_tire_f : self.sData.limit_tire_r;
+        var need = (is_front) ? self.sData.need_tire_f : self.sData.need_tire_r;
+
+        if (limit < 0 && need < 0)
+            return nil;
+
+        var tire_insensitives = Array(tire_options.size);
+
+        for (var i = 0; i < tire_insensitives.size; i++)
+        {
+            var tire_no_abc = gtengine::MSpecDB::convToTireNoABC(tire_options[i]);
+            tire_insensitives[i] = tire_no_abc < need || !gtengine::MRegulationUtility::checkLimitTire(tire_no_abc, limit);
+        }
+
+        return tire_insensitives;
+    }
+
+    method get_course_condition(course_code, cp)
+    {
+        if (course_code != gtengine::MSpecDB::NO_CODE64)
+            return gtengine::MSpecDB::getCourseCondition(course_code);
+        
+        else
+        {
+            if (cp != nil)
+            {
+                |var f_tire, var r_tire| = cp.getTireCategories();
+                return gtengine::MSpecDB::getCourseConditionFromTire(f_tire);
+            }
+
+            else
+                return gtengine::CourseCondition::DRY;
+        }
+    }
+
+    attribute sTireListFront;
+    attribute sTireListRear;
+    attribute sSpecialGasList;
+    attribute sNosList;
+
+    method get_tire_list(is_front)
+    {
+        var cond = get_course_condition(sData.course_code, sData.cp);
+        var list = sData.cp.getHavingTireList(cond);
+
+        if (GetVersionBranch() == "demo")
+        {
+            var list0 = [];
+
+            foreach (var tire in list)
+            {
+                if (tire != gtengine::PARTS_TIRE::SPORTS_SUPER_SOFT_A 
+                && tire != gtengine::PARTS_TIRE::RACING_SUPER_SOFT_A 
+                && tire != gtengine::PARTS_TIRE::SPORTS_SUPER_SOFT_B 
+                && tire != gtengine::PARTS_TIRE::RACING_SUPER_SOFT_B
+                && tire != gtengine::PARTS_TIRE::SPORTS_SUPER_SOFT_C 
+                && tire != gtengine::PARTS_TIRE::RACING_SUPER_SOFT_C
+                && tire != gtengine::PARTS_TIRE::RAIN_INTERMEDIATE_A 
+                && tire != gtengine::PARTS_TIRE::RAIN_HEAVY_WET_A 
+                && tire != gtengine::PARTS_TIRE::RAIN_INTERMEDIATE_B 
+                && tire != gtengine::PARTS_TIRE::RAIN_HEAVY_WET_B 
+                && tire != gtengine::PARTS_TIRE::RAIN_INTERMEDIATE_C 
+                && tire != gtengine::PARTS_TIRE::RAIN_HEAVY_WET_C && 1)
+                {
+                    list0.push(tire);
+                }
+            }
+
+            list = list0;
+        }
+
+        return list;
+    }
+
+    method get_tire_key_list(tire_list)
+    {
+        var list = Array(tire_list.size);
+
+        for (var i = 0; i < tire_list.size; ++i)
+        {
+            list[i] = "name_%03d".format(tire_list[i]);
+        }
+
+        return list;
+    }
+
+    method get_tire_index(is_front, tire)
+    {
+        var list = (is_front) ? self.sTireListFront : self.sTireListRear;
+
+        for (var i = 0; i < list.size; ++i)
+        {
+            if (tire == list[i])
+                return i;
+        }
+
+        return EVENTRESULT_CONTINUE;
+    }
+
+    method onInitialize(context)
+    {
+        var Pane_S = self.Pane::ScrolledWindow::ScrollClip::space;
+        self.navigate_insensitive = true;
+        Pane.minimum_height = 0;
+
+        if (self.sData.dp != nil)
+        {
+            OptionMenuUtil::initialize(context, self, Pane_S.Mission::OptionMenu, 
+            hidden::Item, ["AUTOMATIC", "MANUAL"], "TrialSetting");
+
+            OptionMenuUtil::initialize(context, self, Pane_S.ActiveSteering::OptionMenu, 
+            hidden::Item, ["OFF", "ACTIVE_STEERING_WEAK", "ACTIVE_STEERING_STRONG"], "TrialSetting");
+
+            OptionMenuUtil::initialize(context, self, Pane_S.SkidRecoveryForce::OptionMenu, 
+            hidden::Item, ["OFF", "ON"], "TrialSetting");
+
+            OptionMenuUtil::initialize(context, self, Pane_S.ASM::OptionMenu, 
+            hidden::Item, ["OFF", "ON"], "TrialSetting");
+
+            OptionMenuUtil::initialize(context, self, Pane_S.DrivingLine::OptionMenu, 
+            hidden::Item, ["OFF", "ON"], "TrialSetting");
+
+            OptionMenuUtil::initialize(context, self, Pane_S.LowMuType::OptionMenu, 
+            hidden::Item, ["LOW_MU_TYPE_MODERATE", "LOW_MU_TYPE_REAL"], "TrialSetting");
+
+            OptionMenuUtil::initialize(context, self, Pane_S.BehaviorDamageType::OptionMenu, 
+            hidden::Item, ["BEHAVIOR_DAMAGE_TYPE_WEAK", "BEHAVIOR_DAMAGE_TYPE_MIDDLE", "BEHAVIOR_DAMAGE_TYPE_STRONG"], 
+            "TrialSetting");
+
+            OptionMenuUtil::initialize(context, self, Pane_S.Consumption::OptionMenu, 
+            hidden::Item, ["OFF", "ON"], "TrialSetting");
+        }
+
+        {
+            self.sTireListFront = get_tire_list(true);
+
+            OptionMenuUtil::initialize(context, self, Pane_S.TireF::OptionMenu, 
+            hidden::Item, get_tire_key_list(self.sTireListFront), "TireName");
+            var tire_insensitives = get_tire_insensitives(true, self.sTireListFront);
+
+            if (tire_insensitives != nil)
+                Pane_S.TireF::OptionMenu.setInsensitive(context, tire_insensitives);
+        }
+
+        {
+            self.sTireListRear = get_tire_list(false);
+
+            OptionMenuUtil::initialize(context, self, Pane_S.TireR::OptionMenu, 
+            hidden::Item, get_tire_key_list(self.sTireListRear), "TireName");
+            var tire_insensitives = get_tire_insensitives(false, self.sTireListRear);
+
+            if (tire_insensitives != nil)
+                Pane_S.TireR::OptionMenu.setInsensitive(context, tire_insensitives);
+        }
+
+        if (!self.sData.invisible_special_gas)
+        {
+            self.sSpecialGasList = GameItemUtil::ItemBox::getSpecialGasCandidates();
+
+            if (self.sSpecialGasList.size > 1)
+            {
+                OptionMenuUtil::initialize(context, self, Pane_S.SpecialGAS::OptionMenu, 
+                hidden::ItemN, GameItemUtil::ItemBox::getKeys(self.sSpecialGasList), "GameItem");
+
+                var list = Pane_S.SpecialGAS::OptionMenu::popup::vbox.getChildList();
+
+                for (var i = 0; i < list.size; ++i)
+                {
+                    var item = list[i];
+                    var cnt = self.sSpecialGasList[i]["count"];
+
+                    if (cnt >= 0)
+                        item.N.text = "%d".format(cnt);
+                }
+
+                Pane_S.SpecialGAS.visible = true;
+            }
+
+            else
+            {
+                Pane_S.SpecialGAS.visible = false;
+            }
+        }
+
+        else
+        {
+            Pane_S.SpecialGAS.visible = false;
+        }
+
+        if (!self.sData.invisible_nos)
+        {
+            self.sNosList = GameItemUtil::ItemBox::getNOSCandidates();
+
+            if (self.sNosList.size > 1)
+            {
+                OptionMenuUtil::initialize(context, self, Pane_S.NOS::OptionMenu, hidden::ItemN, 
+                GameItemUtil::ItemBox::getKeys(self.sNosList), "GameItem");
+
+                var list = Pane_S.NOS::OptionMenu::popup::vbox.getChildList();
+
+                for (var i = 0; i < list.size; ++i)
+                {
+                    var item = list[i];
+                    var cnt = self.sNosList[i]["count"];
+
+                    if (cnt >= 0)
+                    {
+                        item.N.text = "%d".format(cnt);
+                    }
+                }
+
+                Pane_S.NOS.visible = true;
+            }
+
+            else
+            {
+                Pane_S.NOS.visible = false;
+            }
+        }
+
+        else
+        {
+            Pane_S.NOS.visible = false;
+        }
+
+        self.opened_detail_options = true;
+        Pane_S.OpenDetailButton.visible = !self.opened_detail_options;
+        self.reflect(context);
+
+        Pane::ScrolledWindow::ScrollClip.scroll_mode = 0;
+        Pane::ScrolledWindow::ScrollClip.space.y = 0.0;
+        Pane::ScrolledWindow::ScrollClip.updateGeometry();
+
+        var child_cnt = Pane_S.countChild();
+        var get_item_total_hight = 0;
+
+        {
+            for (var i = 0; i < child_cnt; i++)
+            {
+                var w = Pane_S.getChild(i);
+
+                if (w.visible)
+                {
+                    get_item_total_hight += w.h;
+                    var s = nil;
+
+                    if (w.defined('slider'))
+                        s = w['slider'];
+
+                    if (w.defined('OptionMenu'))
+                        s = w['OptionMenu'];
+
+                    if (self.first_scroll_item == nil)
+                        self.first_scroll_item = s;
+
+                    if (s != nil)
+                        self.last_scroll_item = s;
+                }
+            }
+        }
+
+        var base_target_h = 640;
+        var target_h = base_target_h;
+
+        if (get_item_total_hight < base_target_h)
+            target_h = get_item_total_hight;
+
+        Pane::ScrolledWindow::ScrollClip.minimum_height = target_h;
+        Pane::ScrolledWindow::ScrollClip.space.minimum_height = target_h;
+        Pane::ScrolledWindow::ScrollClip.y = base_target_h - target_h;
+        Pane::ScrolledWindow::ScrollClip.h = target_h;
+        Pane::ScrolledWindow::ScrollClip.space.h = target_h;
+    }
+
+    method onFinalize(context)
+    {
+        var Pane_S = self.Pane::ScrolledWindow::ScrollClip::space;
+
+        OptionMenuUtil::finalize(context, Pane_S.Mission::OptionMenu);
+        OptionMenuUtil::finalize(context, Pane_S.ActiveSteering::OptionMenu);
+        OptionMenuUtil::finalize(context, Pane_S.SkidRecoveryForce::OptionMenu);
+        OptionMenuUtil::finalize(context, Pane_S.ASM::OptionMenu);
+        OptionMenuUtil::finalize(context, Pane_S.TireF::OptionMenu);
+        OptionMenuUtil::finalize(context, Pane_S.TireR::OptionMenu);
+        OptionMenuUtil::finalize(context, Pane_S.DrivingLine::OptionMenu);
+        OptionMenuUtil::finalize(context, Pane_S.LowMuType::OptionMenu);
+        OptionMenuUtil::finalize(context, Pane_S.BehaviorDamageType::OptionMenu);
+        OptionMenuUtil::finalize(context, Pane_S.Consumption::OptionMenu);
+        OptionMenuUtil::finalize(context, Pane_S.SpecialGAS::OptionMenu);
+        OptionMenuUtil::finalize(context, Pane_S.NOS::OptionMenu);
+
+        self.first_scroll_item = nil;
+        self.first_scroll_item = nil;  //BUG: First scroll item set Twice?
+    }
+
+    method getPPIndex(pp, enemy_info)
+    {
+        var enemy_list = enemy_info[0];
+        var pp_list = enemy_info[1];
+        var position = enemy_list.size;
+
+        for (var i = 0; i < enemy_list.size; i++)
+        {
+            if (pp < pp_list[i].toFloat())
+            {
+                position = i;
+                break;
+            }
+        }
+
+        var ratio = position.toFloat() / enemy_list.size.toFloat();
+        return (ratio * 100).toInt();
+    }
+
+    method getEnemySet(index, cp, enemy_list, num)
+    {
+        var enemyset = nil;
+
+        if (index > 100)
+        {
+            var race_spec = main::gtengine::MSpecDB::getRaceSpec(cp.getCarCode(), 0, 0);
+            enemyset = race_spec.cars;
+
+            if (enemyset != nil && enemyset.size <= 0)
+                enemyset = nil;
+        }
+
+        if (enemyset == nil)
+        {
+            var ratio = index.toFloat() / (100).toFloat();
+            var position = (enemy_list.size.toFloat() * ratio).toInt();
+            var first = position - (num / 2);
+
+            if (first < 0)
+                first = 0;
+
+            var last = first + num;
+
+            if (last >= enemy_list.size)
+            {
+                var diff = last - enemy_list.size;
+                last -= diff;
+                first -= diff;
+
+                if (first < 0)
+                    first = 0;
+            }
+
+            var num0 = last - first;
+            enemyset = Array(num0);
+
+            for (var i = 0; i < num0; i++)
+            {
+                enemyset[i] = main::gtengine::MSpecDB::getCarCode(enemy_list[first + i]);
+            }
+        }
+
+        return enemyset;
+    }
+
+    method reflect(context)
+    {
+        var Pane_S = self.Pane::ScrolledWindow::ScrollClip::space;
+        var cp = self.sData.cp;
+        var dp = self.sData.dp;
+
+        if (self.sData.enemy_info != nil)
+        {
+            var can_use_preset_enemies = false;
+
+            {
+                var generic_car_info = cp.getSettingInfoGenericCar();
+                can_use_preset_enemies = main::gtengine::MSpecDB::checkGenericFlag(
+                "can_use_preset_enemies_for_singlerace", generic_car_info.GeneralFlags);
+
+                generic_car_info = nil;
+            }
+
+            var pp;
+
+            {
+                var tsurushi_cp = main::gtengine::MCarParameter(cp.getCarCode());
+                tsurushi_cp.beginInfo();
+                pp = tsurushi_cp.getGTPerformanceIndex();
+                tsurushi_cp.endInfo();
+            }
+
+            var max = 100;
+            var initial_index = getPPIndex(pp, self.sData.enemy_info);
+
+            if (can_use_preset_enemies)
+            {
+                max = 100 + 1;
+                initial_index = max;
+            }
+
+            var slider = Pane_S.EnemySet::slider;
+            slider.range = [1, max];
+            slider.index = initial_index;
+            slider.step_thr = 5;
+            slider.setup(context);
+            Pane_S.EnemySet.visible = true;
+        }
+
+        else
+            Pane_S.EnemySet.visible = false;
+
+        if (self.sData.visible_laps)
+        {
+            var slider = Pane_S.Laps::slider;
+            slider.range = [self.sData.laps_min, self.sData.laps_max];
+            slider.index = self.sData.rp.race_limit_laps;
+            slider.unit_text = context.translate(ROOT, "TrialSetting", "Syuu");
+            slider.zero_text = context.translate(ROOT, "TrialSetting", "Infinite");
+
+            slider.step_thr = 5;
+            slider.setup(context);
+            Pane_S.Laps.visible = true;
+        }
+
+        else
+            Pane_S.Laps.visible = false;
+
+        if (self.sData.visible_drift_type)
+        {
+            Pane_S.DriftType::OptionMenu.setIndex(context, (self.sData.rp.endless) ? 1 : 0);
+            Pane_S.DriftType.visible = true;
+            Pane_S.DriftType::OptionMenu.insensitive = self.sData.insensitive_drift_type;
+        }
+
+        else
+            Pane_S.DriftType.visible = false;
+
+        if (self.sData.visible_speed_test_unit_mode)
+        {
+            Pane_S.SpeedTestUnitMode::OptionMenu.setIndex(context, (main
+                ::GAME_STATUS.user_profile.option.unit_velocity) ? 1 : 0);
+
+            Pane_S.SpeedTestUnitMode.visible = true;
+        }
+
+        else
+            Pane_S.SpeedTestUnitMode.visible = false;
+
+        if (self.sData.visible_onemake)
+        {
+            Pane_S.OneMakeRace::CheckBox.active = main::GAME_STATUS.user_profile.context.arcade_onemake_race;
+            Pane_S.EnemySet::slider.insensitive = Pane_S.OneMakeRace::CheckBox.active;
+            Pane_S.OneMakeRace.visible = true;
+        }
+
+        else
+            Pane_S.OneMakeRace.visible = false;
+
+        if (self.sData.visible_consumption)
+        {
+            Pane_S.Consumption::OptionMenu.setIndex(context, self.sData.rp.accumulation ? 0 : 1);
+            Pane_S.Consumption.visible = true;
+        }
+
+        else
+            Pane_S.Consumption.visible = false;
+
+        Pane_S.TitleModeOptions.visible = false;
+
+        if (dp != nil)
+        {
+            Pane_S.Mission.visible = true;
+
+            if (!self.sData.invisible_transmission)
+            {
+                if (cp.isATOnly())
+                {
+                    Pane_S.Mission::OptionMenu.setIndex(context, 0);
+                    Pane_S.Mission::OptionMenu.insensitive = true;
+                }
+
+                else
+                {
+                    Pane_S.Mission::OptionMenu.setIndex(context, dp.manual ? 1 : 0);
+                    Pane_S.Mission::OptionMenu.insensitive = false;
+                }
+            }
+
+            else
+                Pane_S.Mission.visible = false;
+
+            if (!self.sData.invisible_activesteering)
+            {
+                Pane_S.ActiveSteering.visible = true;
+                Pane_S.ActiveSteering::OptionMenu.setIndex(context, dp.active_steering);
+                Pane_S.ActiveSteering::OptionMenu.insensitive = self.sData.insensitive_activesteering;
+                Pane_S.ActiveSteering.visible = self.opened_detail_options;
+            }
+
+            else
+                Pane_S.ActiveSteering.visible = false;
+
+            Pane_S.SkidRecoveryForce.visible = true;
+
+            if (!self.sData.invisible_simulation)
+            {
+                Pane_S.SkidRecoveryForce::OptionMenu.setIndex(context, dp.physics_pro ? 0 : 1);
+                Pane_S.SkidRecoveryForce::OptionMenu.insensitive = self.sData.insensitive_simulation;
+            }
+
+            else
+                Pane_S.SkidRecoveryForce.visible = false;
+
+            Pane_S.ASM.visible = true;
+
+            if (!self.sData.invisible_asm)
+            {
+                Pane_S.ASM::OptionMenu.setIndex(context, dp.assist_asm ? 1 : 0);
+                Pane_S.ASM::OptionMenu.insensitive = self.sData.insensitive_asm;
+                Pane_S.ASM.visible = self.opened_detail_options;
+            }
+
+            else
+                Pane_S.ASM.visible = false;
+
+            Pane_S.DrivingLine.visible = true;
+
+            if (!self.sData.invisible_drivingline)
+            {
+                Pane_S.DrivingLine::OptionMenu.setIndex(context, dp.display_driving_line);
+                Pane_S.DrivingLine::OptionMenu.insensitive = self.sData.insensitive_drivingline;
+                Pane_S.DrivingLine.visible = true;
+            }
+
+            else
+                Pane_S.DrivingLine.visible = false;
+        }
+
+        else
+        {
+            Pane_S.Mission.visible = false;
+            Pane_S.ActiveSteering.visible = false;
+            Pane_S.SkidRecoveryForce.visible = false;
+            Pane_S.ASM.visible = false;
+            Pane_S.DrivingLine.visible = false;
+        }
+
+        if (!self.sData.invisible_tcs)
+        {
+            var slider = Pane_S.TCS::slider;
+            slider.range = [0, 10];
+            slider.index = cp.quicktune_tcs;
+            slider.zero_text = context.translate(ROOT, "TrialSetting", "OFF");
+            slider.setup(context);
+            slider.insensitive = self.sData.insensitive_tcs;
+            Pane_S.TCS.visible = self.opened_detail_options;
+        }
+
+        else
+            Pane_S.TCS.visible = false;
+
+        if (!self.sData.invisible_abs)
+        {
+            var slider = Pane_S.ABS::slider;
+            slider.range = (self.sData.insensitive_asm && dp.assist_asm) ? [1, 10] : [0, 10];
+            slider.index = cp.ABSCorneringControlLevel;
+            slider.zero_text = context.translate(ROOT, "TrialSetting", "OFF");
+            slider.setup(context);
+            Pane_S.ABS::slider.insensitive = self.sData.insensitive_abs;
+            Pane_S.ABS.visible = self.opened_detail_options;
+        }
+
+        else
+            Pane_S.ABS.visible = false;
+
+        if (!self.sData.invisible_tire)
+        {
+            |var tire_f, var tire_r| = cp.getTireCategories();
+            var index_f = get_tire_index(true, tire_f);
+            Pane_S.TireF::OptionMenu.setIndex(context, index_f);
+            Pane_S.TireF::OptionMenu.insensitive = self.sData.insensitive_tire_f;
+            Pane_S.TireF.visible = self.opened_detail_options;
+
+            var index_r = get_tire_index(false, tire_r);
+            Pane_S.TireR::OptionMenu.setIndex(context, index_r);
+            Pane_S.TireR::OptionMenu.insensitive = self.sData.insensitive_tire_r;
+            Pane_S.TireR.visible = self.opened_detail_options;
+        }
+
+        else
+        {
+            Pane_S.TireF.visible = false;
+            Pane_S.TireR.visible = false;
+        }
+
+        if (!self.sData.invisible_special_gas && Pane_S.SpecialGAS::OptionMenu.Count() > 1)
+        {
+            Pane_S.SpecialGAS::OptionMenu.setIndex(context, SelectedSpecialGASIndex);
+            Pane_S.SpecialGAS::OptionMenu.insensitive = self.sData.insensitive_special_gas;
+            Pane_S.SpecialGAS.visible = true;
+        }
+
+        else
+            Pane_S.SpecialGAS.visible = false;
+
+        if (!self.sData.invisible_nos && Pane_S.NOS::OptionMenu.Count() > 1)
+        {
+            Pane_S.NOS::OptionMenu.setIndex(context, SelectedNOSIndex);
+            Pane_S.NOS::OptionMenu.insensitive = self.sData.insensitive_nos;
+            Pane_S.NOS.visible = true;
+        }
+
+        else
+            Pane_S.NOS.visible = false;
+
+        if (self.sData.visible_low_mu_type && self.sData.rp != nil)
+        {
+            Pane_S.LowMuType::OptionMenu.setIndex(context, (self.sData.rp.low_mu_type == gtengine::LowMuType::MODERATE) ? 0 : 1);
+            Pane_S.LowMuType.visible = true;
+        }
+
+        else
+            Pane_S.LowMuType.visible = false;
+
+        if (self.sData.visible_behavior_damage_type && self.sData.rp != nil)
+        {
+            var type_list = [
+                gtengine::BehaviorDamageType::WEAK, 
+                gtengine::BehaviorDamageType::MIDDLE, 
+                gtengine::BehaviorDamageType::STRONG
+            ];
+
+            Pane_S.BehaviorDamageType::OptionMenu.setIndex(context, type_list.indexOf(self.sData.rp.behavior_damage_type));
+            Pane_S.BehaviorDamageType.visible = true;
+        }
+
+        else
+            Pane_S.BehaviorDamageType.visible = false;
+
+        if (!self.sData.invisible_pad_yaw_gain)
+        {
+            var slider = Pane_S.PadYawGain::slider;
+            slider.range = [-2, 7];
+            slider.index = dp.pad_yaw_gain;
+            slider.setup(context);
+            Pane_S.PadYawGain.visible = self.opened_detail_options;
+        }
+
+        else
+            Pane_S.PadYawGain.visible = false;
+    }
+
+    method apply(context)
+    {
+        var Pane_S = self.Pane::ScrolledWindow::ScrollClip::space;
+
+        if (self.sData.visible_laps && self.sData.rp != nil)
+            self.sData.rp.race_limit_laps = Pane_S.Laps::slider.index;
+
+        if (self.sData.visible_consumption && self.sData.rp != nil)
+        {
+            var index = Pane_S.Consumption::OptionMenu.index;
+            var consumption = index != 0;
+            self.sData.rp.enable_pit = true;
+            self.sData.rp.consume_tire = consumption;
+            self.sData.rp.consume_fuel = consumption;
+        }
+
+        if (self.sData.visible_low_mu_type && self.sData.rp != nil)
+        {
+            self.sData.rp.low_mu_type = (Pane_S.LowMuType::OptionMenu.index == 0) ? gtengine::LowMuType::MODERATE : gtengine::LowMuType::REAL;
+        }
+
+        if (self.sData.visible_drift_type)
+            self.sData.rp.endless = Pane_S.DriftType::OptionMenu.index;
+
+        if (self.sData.visible_speed_test_unit_mode)
+            main::GAME_STATUS.user_profile.option.unit_velocity = Pane_S.SpeedTestUnitMode::OptionMenu.index;
+
+        if (self.sData.visible_onemake)
+            GAME_STATUS.user_profile.context.arcade_onemake_race = Pane_S.OneMakeRace::CheckBox.active;
+
+        if (self.sData.visible_consumption)
+            GAME_STATUS.user_profile.context.arcade_consumption = Pane_S.Consumption::OptionMenu.index == 0;
+
+        var cp = self.sData.cp;
+        var dp = self.sData.dp;
+
+        if (dp != nil)
+        {
+            dp.manual = Pane_S.Mission::OptionMenu.index != 0;
+
+            if (!self.sData.invisible_activesteering)
+                dp.active_steering = Pane_S.ActiveSteering::OptionMenu.index;
+            if (!self.sData.insensitive_simulation)
+                dp.physics_pro = 1 - Pane_S.SkidRecoveryForce::OptionMenu.index;
+            if (!self.sData.insensitive_asm)
+                dp.assist_asm = Pane_S.ASM::OptionMenu.index != 0;
+            if (!self.sData.invisible_drivingline)
+                dp.display_driving_line = Pane_S.DrivingLine::OptionMenu.index != 0;
+        }
+
+        if (!self.sData.invisible_tcs)
+        {
+            if (dp != nil)
+                dp.assist_tcs = Pane_S.TCS::slider.index != 0;
+
+            cp.quicktune_tcs = Pane_S.TCS::slider.index;
+        }
+
+        if (!self.sData.invisible_abs)
+            cp.ABSCorneringControlLevel = Pane_S.ABS::slider.index;
+
+        if (!self.sData.invisible_tire)
+        {
+            cp.beginPartsChange();
+
+            if (!self.sData.insensitive_tire_f)
+                cp.setFrontTireCategory(self.sTireListFront[Pane_S.TireF::OptionMenu.index]);
+
+            if (!self.sData.insensitive_tire_r)
+                cp.setRearTireCategory(self.sTireListRear[Pane_S.TireR::OptionMenu.index]);
+
+            cp.endPartsChange();
+        }
+
+        if (!self.sData.invisible_special_gas)
+            SelectedSpecialGASIndex = Pane_S.SpecialGAS::OptionMenu.index;
+
+        if (!self.sData.invisible_nos)
+            SelectedNOSIndex = Pane_S.NOS::OptionMenu.index;
+
+        if (!self.sData.invisible_pad_yaw_gain)
+        {
+            if (dp != nil)
+                dp.pad_yaw_gain = Pane_S.PadYawGain::slider.index;
+        }
+
+        if (self.sData.window_id == 0)
+        {
+            var ref_dp_gt = GAME_STATUS.user_profile.residence.referPlayer();
+            var ref_dp_1p = GAME_STATUS.user_profile.residence.referArcadePlayer(0);
+
+            if (!cp.isATOnly())
+            {
+                ref_dp_gt.manual = dp.manual;
+                ref_dp_1p.manual = dp.manual;
+            }
+
+            if (!self.sData.insensitive_activesteering && !self.sData.invisible_activesteering)
+            {
+                ref_dp_gt.active_steering = dp.active_steering;
+                ref_dp_1p.active_steering = dp.active_steering;
+            }
+
+            if (!self.sData.insensitive_simulation)
+            {
+                ref_dp_gt.physics_pro = dp.physics_pro;
+                ref_dp_1p.physics_pro = dp.physics_pro;
+            }
+
+            if (!self.sData.insensitive_asm && !self.sData.invisible_asm)
+            {
+                ref_dp_gt.assist_asm = dp.assist_asm;
+                ref_dp_1p.assist_asm = dp.assist_asm;
+            }
+
+            if (!self.sData.insensitive_drivingline && !self.sData.invisible_drivingline)
+            {
+                ref_dp_gt.display_driving_line = dp.display_driving_line;
+                ref_dp_1p.display_driving_line = dp.display_driving_line;
+            }
+
+            if (!self.sData.invisible_pad_yaw_gain)
+            {
+                ref_dp_gt.pad_yaw_gain = dp.pad_yaw_gain;
+                ref_dp_1p.pad_yaw_gain = dp.pad_yaw_gain;
+            }
+        }
+
+        else if (self.sData.window_id == 1)
+        {
+            var ref_dp_2p = GAME_STATUS.user_profile.residence.referArcadePlayer(1);
+
+            if (!cp.isATOnly())
+                ref_dp_2p.manual = dp.manual;
+
+            if (!self.sData.insensitive_activesteering)
+                ref_dp_2p.active_steering = dp.active_steering;
+
+            if (!self.sData.insensitive_simulation)
+                ref_dp_2p.physics_pro = dp.physics_pro;
+
+            if (!self.sData.insensitive_asm && !self.sData.invisible_asm)
+                ref_dp_2p.assist_asm = dp.assist_asm;
+
+            if (!self.sData.insensitive_drivingline && !self.sData.invisible_drivingline)
+                ref_dp_2p.display_driving_line = dp.display_driving_line;
+
+            if (!self.sData.invisible_pad_yaw_gain)
+                ref_dp_2p.pad_yaw_gain = dp.pad_yaw_gain;
+        }
+
+        if (self.sData.visible_behavior_damage_type && self.sData.rp != nil)
+        {
+            var type_list = [
+                gtengine::BehaviorDamageType::WEAK, 
+                gtengine::BehaviorDamageType::MIDDLE, 
+                gtengine::BehaviorDamageType::STRONG
+            ];
+
+            self.sData.rp.behavior_damage_type = type_list[Pane_S.BehaviorDamageType::OptionMenu.index];
+        }
+    }
+
+    method onCancel(context)
+    {
+        main::sound.play("cancel");
+        ROOT.setFocus(ROOT::Pane::Button::OK::Cancel);
+        return EVENTRESULT_FILTER;
+    }
+}
+
+module ROOT::Pane::Button
+{
+    attribute is_first_time = true;
+
+    method onKeyPress(context, event)
+    {
+        var status = 0;
+
+        if (event.keysym == CELL_PAD_CTRL_L3_UP)
+        {
+            var root = self.root_window;
+            main::sound.play("cursor");
+
+            if (self.is_first_time)
+            {
+                root.setFocus(root.first_scroll_item);
+                self.is_first_time = false;
+            }
+
+            else
+                root.setFocus(root.last_scroll_item);
+
+            status = 1;
+        }
+
+        if (event.keysym == CELL_PAD_CTRL_L3_DOWN)
+            status = 1;
+
+        return status;
+    }
+}
+
+module ROOT::Pane::Button::OK::OK
+{
+    method onActivate(context)
+    {
+        var Pane_S = self.Pane::ScrolledWindow::ScrollClip::space;
+        var root = self.root_window;
+        main::sound.play(root.sData.activate_sound);
+
+        root.sData.result = true;
+        root.apply(context);
+
+        {
+            if (root.sData.cb_activated != nil)
+            {
+                var enemy_set = nil;
+
+                if (root.sData.enemy_info != nil)
+                    enemy_set = root.getEnemySet(Pane_S.EnemySet::slider.index, root.sData.cp, root.sData.enemy_info[0], 16);
+
+                (root.sData.cb_instance.*root.sData.cb_activated)(context, root.sData.cp, root.sData.dp, enemy_set);
+            }
+
+            if (root.sData.set_target_cp)
+                RaceOperator.setTargetCarParameter(root.sData.window_id, root.sData.cp);
+
+            if (root.sData.set_target_dp && root.sData.dp != nil)
+                RaceOperator.setTargetDriverParameter(root.sData.window_id, 0, root.sData.dp);
+        }
+
+        root.close(context);
+        return EVENTRESULT_STOP;
+    }
+}
+
+module ROOT::Pane::Button::OK::Cancel
+{
+    method onActivate(context)
+    {
+        main::sound.play("cancel");
+        self.root_window.close(context);
+        return EVENTRESULT_STOP;
+    }
+
+    method onCancel(context)
+    {
+        return onActivate(context);
+    }
+}
+
+module ROOT::Pane::ScrolledWindow::ScrollClip::space::OpenDetailButton
+{
+    method onActivate(context)
+    {
+        var Pane_S = self.Pane::ScrolledWindow::ScrollClip::space;
+        var root = self.root_window;
+
+        root.opened_detail_options = true;
+        Pane_S.OpenDetailButton.visible = !root.opened_detail_options;
+        Pane_S.ActiveSteering.visible = root.opened_detail_options;
+
+        if (root.sData.invisible_asm)
+            Pane_S.ASM.visible = root.opened_detail_options;
+
+        if (!root.sData.invisible_tcs)
+            Pane_S.TCS.visible = root.opened_detail_options;
+
+        if (!root.sData.invisible_abs)
+            Pane_S.ABS.visible = root.opened_detail_options;
+
+        if (!root.sData.invisible_tire)
+        {
+            Pane_S.TireF.visible = root.opened_detail_options;
+            Pane_S.TireR.visible = root.opened_detail_options;
+        }
+
+        var focus_w;
+        for (var it = root.last_scroll_item.parent.next_widget; it != nil; it = it.next_widget)
+        {
+            if (it.visible)
+            {
+                var s = nil;
+
+                if (it.defined('slider'))
+                    s = it['slider'];
+
+                if (it.defined('OptionMenu'))
+                    s = it['OptionMenu'];
+
+                if (s != nil)
+                {
+                    if (focus_w == nil)
+                        focus_w = s;
+
+                    root.last_scroll_item = s;
+                }
+            }
+        }
+
+        root.setFocus(focus_w);
+        return EVENTRESULT_FILTER;
+    }
+}
