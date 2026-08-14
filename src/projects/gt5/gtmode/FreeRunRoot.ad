@@ -333,7 +333,7 @@ module ROOT
         else
             course_pathway_bin = course_pathway;
 
-        var entry_limit = 8;
+        var entry_limit = 16;
         var gp;
         if (mode == MODE::ASPEC_ONE_MAKE)
         {
