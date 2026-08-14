@@ -225,93 +225,84 @@ module ROOT
         ]
     ];
 
-    static PARTS_TYPE_LIST = [
-        (
-            ["name" : "BODY_CHASSIS", "image" : "", 
-
+    static PARTS_TYPE_LIST = 
+    [
+        [
+            "name" : "BODY_CHASSIS", 
+            "image" : "", 
             "parts_type" : [
                 gtengine::CarPartsType::LIGHT_WEIGHT, 
                 gtengine::CarPartsType::LIGHT_WEIGHT_WINDOW, 
                 gtengine::CarPartsType::BONNET, 
                 gtengine::CarPartsType::STIFFNESS, 
                 local::CarPartsType::AERO, 
-                local::CarPartsType::BALLAST
-            ]]
-        ), 
-
-        (
-            ["name" : "ENGINE", "image" : "",
-
+                local::CarPartsType::BALLAST]
+        ], 
+        [
+            "name" : "ENGINE", 
+            "image" : "",
             "parts_type" : [
                 gtengine::CarPartsType::COMPUTER, 
                 gtengine::CarPartsType::NATUNE, 
                 local::CarPartsType::AIR_RESTRICTOR
-            ]]
-        ),
-
-        (
-            ["name" : "ADMISSION", "image" : "", 
-
+            ]
+        ],
+        [
+            "name" : "ADMISSION", 
+            "image" : "", 
             "parts_type" : [
                 gtengine::CarPartsType::INTAKE_MANIFOLD, 
                 gtengine::CarPartsType::AIR_CLEANER
-            ]]
-        ),
-
-        (
-            ["name" : "EMISSION", "image" : "", 
-
+            ]
+        ],
+        [
+            "name" : "EMISSION", 
+            "image" : "", 
             "parts_type" : [
                 gtengine::CarPartsType::EXHAUST_MANIFOLD, 
                 gtengine::CarPartsType::CATALYST, 
                 gtengine::CarPartsType::MUFFLER
-            ]]
-        ), 
-
-        (
-            ["name" : "BOOSTER", "image" : "", 
-
+            ]
+        ], 
+        [
+            "name" : "BOOSTER", 
+            "image" : "", 
             "parts_type" : [
                 gtengine::CarPartsType::SUPERCHARGER, 
                 gtengine::CarPartsType::TURBINEKIT
-            ]]
-        ), 
-
-        (
-            ["name" : "TRANSMISSION", "image" : "", 
-
-            "parts_type" : [gtengine::CarPartsType::GEAR]]
-        ), 
-
-        (
-            ["name" : "DRIVETRAIN", "image" : "", 
-
+            ]
+        ], 
+        [
+            "name" : "TRANSMISSION", 
+            "image" : "", 
+            "parts_type" : [gtengine::CarPartsType::GEAR]
+        ], 
+        [
+            "name" : "DRIVETRAIN", 
+            "image" : "", 
             "parts_type" : [
                 gtengine::CarPartsType::CLUTCH, 
                 gtengine::CarPartsType::FLYWHEEL, 
                 gtengine::CarPartsType::LSD, 
                 gtengine::CarPartsType::DRIVETRAIN, 
                 gtengine::CarPartsType::PROPELLERSHAFT
-            ]]
-        ), 
-
-        (
-            ["name" : "SUSPENSION", "image" : "", 
-
-            "parts_type" : [gtengine::CarPartsType::SUSPENSION]]
-        ), 
-
-        (
-            ["name" : "BRAKE", "image" : "", 
-
-            "parts_type" : [gtengine::CarPartsType::BRAKE_CONTROLLER]]
-        ), 
-
-        (
-            ["name" : "TIRE", "image" : "", 
-
-            "parts_type" : []]
-        )
+            ]
+        ], 
+        [
+            "name" : "SUSPENSION", 
+            "image" : "", 
+            "parts_type" : [gtengine::CarPartsType::SUSPENSION]
+        ], 
+        [
+            "name" : "BRAKE", 
+            "image" : "", 
+            "parts_type" : [gtengine::CarPartsType::BRAKE_CONTROLLER]
+        ], 
+        [
+            "name" : "TIRE", 
+            "image" : "", 
+            "parts_type" : []
+        ]
     ];
 
     attribute popup;
@@ -397,7 +388,6 @@ module ROOT
                 for (var n = gtengine::PARTS_TURBINEKIT::LEVEL1; n <= gtengine::PARTS_TURBINEKIT::LEVEL3; ++n)
                 {
                     res = SettingUtil::setParts(cp, parts_type, category + n)
-
                     if (res)
                         break;
                 }
@@ -445,10 +435,10 @@ module ROOT
     {
         var category_name = ROOT.category["name"];
 
-        if (nil == item_w["parts_type"])
+        if (item_w["parts_type"] == nil)
             return;
 
-        if (gtengine::CarPartsType::TURBINEKIT == item_w.parts_type && 0 == item_w.category)
+        if (item_w.parts_type == gtengine::CarPartsType::TURBINEKIT && item_w.category == 0)
             return;
 
         if (ItemDetailPopup.open(context, category_name, item_w.parts_type, item_w.category, item_w.image, ROOT.cp, item_w.image_id))
@@ -512,7 +502,7 @@ module ROOT
                 break;
         }
 
-        if (0 != mode)
+        if (mode != 0)
         {
             if (!TuningPopup.open(context, ROOT.cp, ROOT.regulation, mode))
                 refresh = false;
@@ -528,19 +518,16 @@ module ROOT
     function get_course_condition(course_code, cp)
     {
         if (course_code != gtengine::MSpecDB::NO_CODE64)
-            return gtengine::MSpecDB::getCourseCondition(course_code);
-
-        else
         {
-            if (cp != nil)
-            {
-                |var f_tire, var r_tire| = cp.getTireCategories();
-                return gtengine::MSpecDB::getCourseConditionFromTire(f_tire);
-            }
-
-            else
-                return gtengine::CourseCondition::DRY;
+            return gtengine::MSpecDB::getCourseCondition(course_code);
         }
+        else if (cp != nil)
+        {
+            |var f_tire, var r_tire| = cp.getTireCategories();
+            return gtengine::MSpecDB::getCourseConditionFromTire(f_tire);
+        }
+        else
+            return gtengine::CourseCondition::DRY;
     }
 
     function isHaveSomething(parts_type, data)
@@ -613,16 +600,18 @@ module ROOT
 
         self.closed = true;
 
-        if (nil != ROOT.return_page)
+        if (ROOT.return_page != nil)
+        {
             SequenceUtil::startPage(context, ROOT.return_page);
-
+        }
         else
         {
             ContextMain.event_mask = 5;
             ContextMain.disableInput();
 
-            FadeActor.on_effect_end = function (context) {
-                if (nil != ROOT.popup)
+            FadeActor.on_effect_end = function (context) 
+            {
+                if (ROOT.popup != nil)
                 {
                     ROOT.popup.close();
                     ROOT.popup = nil;
@@ -648,11 +637,12 @@ module ROOT
     {
         self.org_frame_interval = menu::FrameInterval;
         menu::FrameInterval = 1;
+
         var adj = main::menu::MAdjustment();
         Body::Item::SBox::Scrollbar::VScrollbar.adjustment = adj;
         Body::Item::SBox::ScrolledWindow::ScrollClip.v_adjustment = adj;
 
-        if (nil != self.rp)
+        if (self.rp != nil)
             self.course_condition = get_course_condition(self.rp.course_code, self.cp);
 
         Info.initialize(context);
@@ -668,14 +658,16 @@ module ROOT
     method postInitialize(context)
     {
         self.invisible_pages = [];
-        var page_list = context.getPageList();
 
-        foreach (var page in page_list)
         {
-            if (self != page && page.visible)
+            var page_list = context.getPageList();
+            foreach (var page in page_list)
             {
-                page.visible = false;
-                self.invisible_pages.push(page);
+                if (page != self && page.visible)
+                {
+                    page.visible = false;
+                    self.invisible_pages.push(page);
+                }
             }
         }
     }
@@ -731,14 +723,13 @@ module ROOT
                 Body::Item.initializeAsTire(context, ROOT::PARTS_TYPE_LIST[ROOT::PARTS_TYPE_LIST.size - 1]["parts_type"]);
 
                 var item_old = ListBox.getItemWidget(ListBox.active_index);
-
-                if (nil != item_old)
+                if (item_old != nil)
                     item_old.ImageFaceA.visible = false;
 
                 ListBox.active_index = ROOT::PARTS_TYPE_LIST.size - 1;
-                var item_new = ListBox.getItemWidget(ListBox.active_index);
 
-                if (nil != item_new)
+                var item_new = ListBox.getItemWidget(ListBox.active_index);
+                if (item_new != nil)
                     item_new.ImageFaceA.visible = true;
 
                 if (ListBox.active_index >= 0)
@@ -756,7 +747,6 @@ module ROOT
                         if (self.getItemVisible(i))
                         {
                             var item = self.getItemWidget(i);
-
                             if (item == nil)
                             {
                                 item = self.getItemWidget(i, context);
@@ -775,8 +765,7 @@ module ROOT
                     for (var i = 0; i < self.getItemCount(); ++i)
                     {
                         var item = self.getItemWidget(i);
-
-                        if (nil != item)
+                        if (item != nil)
                         {
                             if (item.sy <= cy && cy < item.sy + item.h)
                                 self.focus_index = i;
@@ -784,8 +773,7 @@ module ROOT
                     }
 
                     var item = self.getItemWidget(self.focus_index);
-
-                    if (nil != item)
+                    if (item != nil)
                         item.FrameImageFaceF.visible = true;
 
                     return EVENTRESULT_FILTER;
@@ -794,8 +782,7 @@ module ROOT
                 method onFocusLeave(context, event)
                 {
                     var item = self.getItemWidget(self.focus_index);
-
-                    if (nil != item)
+                    if (item != nil)
                         item.FrameImageFaceF.visible = false;
 
                     return EVENTRESULT_FILTER;
@@ -804,13 +791,11 @@ module ROOT
                 method onFocusNotify(context, new_index, old_index)
                 {
                     var item_old = self.getItemWidget(old_index);
-
-                    if (nil != item_old)
+                    if (item_old != nil)
                         item_old.FrameImageFaceF.visible = false;
 
                     var item_new = self.getItemWidget(new_index);
-
-                    if (nil != item_new)
+                    if (item_new != nil)
                         item_new.FrameImageFaceF.visible = true;
 
                     return EVENTRESULT_FILTER;
@@ -825,21 +810,19 @@ module ROOT
                     {
                         var item = self.getItemWidget(i);
 
-                        if (nil != item)
+                        if (item != nil)
                             item.ImageFaceA.visible = i == self.focus_index;
                     }
 
                     var item_w = self.getItemWidget(self.focus_index);
-
-                    if (nil != item_w)
+                    if (item_w != nil)
                     {
                         var category = item_w.category;
                         ROOT.category = category;
                         var parts_type_list = category["parts_type"];
 
-                        if ("TIRE" == category["name"])
+                        if (category["name"] == "TIRE")
                             Body::Item.initializeAsTire(context, parts_type_list);
-
                         else
                             Body::Item.initialize(context, parts_type_list);
                     }
@@ -850,15 +833,12 @@ module ROOT
                 method refreshItem(context)
                 {
                     var item_w = self.getItemWidget(self.focus_index);
-                    var parts_type_list;
-
-                    if (nil != item_w && nil != ROOT.category)
+                    if (item_w != nil && ROOT.category != nil)
                     {
-                        parts_type_list = ROOT.category["parts_type"];
+                        var parts_type_list = ROOT.category["parts_type"];
 
-                        if ("TIRE" == ROOT.category["name"])
+                        if (ROOT.category["name"] == "TIRE")
                             Body::Item.initializeAsTire(context, parts_type_list);
-
                         else
                             Body::Item.initialize(context, parts_type_list);
                     }
@@ -893,8 +873,8 @@ module ROOT
             {
                 var result = false;
                 ROOT.cp.beginSetting();
+                
                 var chassis_info = ROOT.cp.getSettingInfoChassis();
-
                 if (chassis_info.clMINF != chassis_info.clMAXF || chassis_info.clMINR != chassis_info.clMAXR)
                     result = true;
 
@@ -902,7 +882,7 @@ module ROOT
                 {
                     var wing_info = ROOT.cp.getSettingInfoWing();
 
-                    if (nil != wing_info)
+                    if (wing_info != nil)
                     {
                         if (wing_info.clMINR_plus != wing_info.clMAXR_plus)
                             result = true;
@@ -932,7 +912,7 @@ module ROOT
                         var image = data["image"];
                         var item_parent = hidden::ItemListCategory.doCopy();
 
-                        if (local::CarPartsType::AERO == parts_type)
+                        if (parts_type == local::CarPartsType::AERO)
                         {
                             if (isShowAero())
                             {
@@ -940,28 +920,23 @@ module ROOT
                                 initializeItem(context, item_parent, parts_type, category, data, true, true);
                             }
                         }
-
-                        else if (local::CarPartsType::AIR_RESTRICTOR == parts_type || local::CarPartsType::BALLAST == parts_type)
+                        else if (parts_type == local::CarPartsType::AIR_RESTRICTOR || parts_type == local::CarPartsType::BALLAST)
                         {
                             var category = 0;
                             initializeItem(context, item_parent, parts_type, category, data, true, true);
                         }
-
-                        else if (gtengine::CarPartsType::BRAKE_CONTROLLER == parts_type)
+                        else if (parts_type == gtengine::CarPartsType::BRAKE_CONTROLLER)
                         {
                             var is_kart = gtengine::MSpecDB::checkGenericFlag("is_racing_kart", ROOT.cp.getCarCode());
-
                             if (!is_kart)
                             {
                                 var category = 1;
                                 initializeItem(context, item_parent, parts_type, category, data, true, true);
                             }
                         }
-
-                        else if (gtengine::CarPartsType::LIGHT_WEIGHT == parts_type || gtengine::CarPartsType::NATUNE == parts_type)
+                        else if (parts_type == gtengine::CarPartsType::LIGHT_WEIGHT || parts_type == gtengine::CarPartsType::NATUNE)
                         {
                             var max_category = 0;
-
                             for (var category = data["begin"]; category <= data["end"]; ++category)
                             {
                                 if (ROOT.cp.isHavingParts(parts_type, category))
@@ -971,11 +946,9 @@ module ROOT
                             if (max_category > 0)
                                 initializeItem(context, item_parent, parts_type, max_category, data, true, true);
                         }
-
-                        else if (gtengine::CarPartsType::LSD == parts_type)
+                        else if (parts_type == gtengine::CarPartsType::LSD)
                         {
                             var has_aycc = ROOT.cp.isHavingParts(parts_type, gtengine::PARTS_LSD::AYCC);
-
                             if (has_aycc)
                             {
                                 ROOT.cp.beginPartsInfo();
@@ -992,7 +965,6 @@ module ROOT
 
                                 ROOT.cp.endPartsInfo();
                             }
-
                             else
                             {
                                 var has_parts = false;
@@ -1036,8 +1008,7 @@ module ROOT
                                 }
                             }
                         }
-
-                        else if (gtengine::CarPartsType::DRIVETRAIN == parts_type)
+                        else if (parts_type == gtengine::CarPartsType::DRIVETRAIN)
                         {
                             var has_parts = false;
                             ROOT.cp.beginPartsInfo();
@@ -1052,10 +1023,9 @@ module ROOT
                             }
 
                             ROOT.cp.endPartsInfo();
-
                             if (has_parts)
                             {
-                                var equipped = 0 == current_category;
+                                var equipped = current_category == 0;
                                 initializeItem(context, item_parent, parts_type, 0, data, true, equipped);
 
                                 for (var category = data["begin"]; category <= data["end"]; ++category)
@@ -1065,10 +1035,9 @@ module ROOT
                                     initializeItem(context, item_parent, parts_type, category, data, having, equipped);
                                 }
                             }
-
                             else
                             {
-                                if (gtengine::PARTS_DRIVETRAIN::NORAML == current_category)
+                                if (current_category == gtengine::PARTS_DRIVETRAIN::NORAML)
                                 {
                                     ROOT.cp.beginSetting();
                                     var drivetrain_info = ROOT.cp.getSettingInfoDriveTrain();
@@ -1084,8 +1053,7 @@ module ROOT
                                 }
                             }
                         }
-
-                        else if (gtengine::CarPartsType::TURBINEKIT == parts_type)
+                        else if (parts_type == gtengine::CarPartsType::TURBINEKIT)
                         {
                             var isTurbo = isHaveSomething(parts_type, data);
                             var supercharger_parts_type = gtengine::CarPartsType::SUPERCHARGER;
@@ -1098,7 +1066,7 @@ module ROOT
                                 var equipped = false;
                                 var supercharger_category = ROOT.cp.getParts(supercharger_parts_type);
 
-                                if (0 == current_category && -1 == supercharger_category)
+                                if (current_category == 0 && supercharger_category == -1)
                                     equipped = true;
 
                                 initializeItem(context, item_parent, parts_type, category, data, true, equipped);
@@ -1117,7 +1085,6 @@ module ROOT
                             }
 
                             var supercharger_current_category = ROOT.cp.getParts(supercharger_parts_type);
-
                             for (var category = supercharger_data["begin"]; category <= supercharger_data["end"]; ++category)
                             {
                                 if (!ROOT.cp.isExistParts(supercharger_parts_type, category))
@@ -1131,18 +1098,17 @@ module ROOT
 
                             ROOT.cp.endPartsInfo();
                         }
-
-                        else if (gtengine::CarPartsType::SUPERCHARGER == parts_type)
+                        else if (parts_type == gtengine::CarPartsType::SUPERCHARGER)
                         {
 
                         }
-
-                        else if (gtengine::CarPartsType::LIGHT_WEIGHT_WINDOW == parts_type || gtengine::CarPartsType::BONNET == parts_type || gtengine::CarPartsType::STIFFNESS == parts_type)
+                        else if (parts_type == gtengine::CarPartsType::LIGHT_WEIGHT_WINDOW || 
+                                parts_type == gtengine::CarPartsType::BONNET || 
+                                parts_type == gtengine::CarPartsType::STIFFNESS)
                         {
-                            if (-1 != current_category)
+                            if (current_category != -1)
                                 initializeItem(context, item_parent, parts_type, current_category, data, true, true);
                         }
-
                         else
                         {
                             var has_parts = false;
@@ -1189,7 +1155,7 @@ module ROOT
                             SBox::ScrolledWindow::ScrollClip::space::VBox.appendChild(context, item_parent);
                     }
 
-                    if (0 == SBox::ScrolledWindow::ScrollClip::space::VBox.countChild())
+                    if (SBox::ScrolledWindow::ScrollClip::space::VBox.countChild() == 0)
                         SBox::ImageFaceD.visible = true;
 
                     SBox::ScrolledWindow::ScrollClip.space.y = 0.0;
@@ -1221,7 +1187,6 @@ module ROOT
                     ];
 
                     var kind = ["", "C", "V"];
-
                     var data_list = [
                         [gtengine::PARTS_TIRE::COMFORT_HARD_A, gtengine::PARTS_TIRE::COMFORT_SOFT_A, "COMFORTTIRE"], 
                         [gtengine::PARTS_TIRE::SPORTS_HARD_A, gtengine::PARTS_TIRE::SPORTS_SOFT_A, "SPORTTIRE"], 
@@ -1237,50 +1202,51 @@ module ROOT
                     foreach (var data in data_list)
                     {
                         var i = 0;
-                        var item_parent = hidden::ItemTireCategory.doCopy();
 
-                        item_parent.initialize(context, data[0] + (i * TIRE_COUNT));
-                        var invalid = true;
-
-                        for (var category = data[0]; category <= data[1]; ++category)
                         {
-                            var categoryA = category + (i * TIRE_COUNT);
-                            var is_exist = !gtengine::MSpecDB::checkGenericFlag("is_racing_kart", ROOT.cp.getCarCode());
+                            var item_parent = hidden::ItemTireCategory.doCopy();
+                            item_parent.initialize(context, data[0] + (i * TIRE_COUNT));
 
-                            if (is_exist)
+                            var invalid = true;
+                            for (var category = data[0]; category <= data[1]; ++category)
                             {
-                                ROOT.cp.beginPartsInfo();
-                                is_exist = ROOT.cp.isExistParts(parts_type, categoryA);
-                                ROOT.cp.endPartsInfo();
+                                var categoryA = category + (i * TIRE_COUNT);
+                                var is_exist = !gtengine::MSpecDB::checkGenericFlag("is_racing_kart", ROOT.cp.getCarCode());
+
+                                if (is_exist)
+                                {
+                                    ROOT.cp.beginPartsInfo();
+                                    is_exist = ROOT.cp.isExistParts(parts_type, categoryA);
+                                    ROOT.cp.endPartsInfo();
+                                }
+
+                                if (is_exist)
+                                {
+                                    var item = hidden::ItemTire.doCopy();
+                                    item.initialize(context, name[category], categoryA, 
+                                    categoryA == current_front_tire, categoryA == current_rear_tire);
+
+                                    item_parent.HBox::VBox.appendChild(context, item);
+                                    invalid = false;
+                                }
                             }
 
-                            if (is_exist)
-                            {
-                                var item = hidden::ItemTire.doCopy();
-                                item.initialize(context, name[category], categoryA, 
-                                categoryA == current_front_tire, categoryA == current_rear_tire);
+                            var count = item_parent.HBox::VBox.countChild();
 
-                                item_parent.HBox::VBox.appendChild(context, item);
-                                invalid = false;
-                            }
+                            if (!invalid && count > 0)
+                                SBox::ScrolledWindow::ScrollClip::space::VBox.appendChild(context, item_parent);
+
+                            item_parent.HBox::VBox0::TextFace.text = "%s %s".format(kind[i], 
+                            context.translate(ROOT, "GameItemCategory", data[2]));
+
+                            var tire_id = data[0] + 1;
+                            if (tire_id < 12)
+                                item_parent.HBox::VBox0::ImageFace.image_path = "piece/tuningitem_M/tire_a_%02d.img".format(tire_id);
+                            else
+                                item_parent.HBox::VBox0::ImageFace.image_path = "piece/tuningitem_M/tire___%02d.img".format(tire_id);
+
+                            item_parent.doInitialize(context);
                         }
-
-                        var count = item_parent.HBox::VBox.countChild();
-
-                        if (!invalid && count > 0)
-                            SBox::ScrolledWindow::ScrollClip::space::VBox.appendChild(context, item_parent);
-
-                        item_parent.HBox::VBox0::TextFace.text = "%s %s".format(kind[i], 
-                        context.translate(ROOT, "GameItemCategory", data[2]));
-
-                        var tire_id = data[0] + 1;
-
-                        if (tire_id < 12)
-                            item_parent.HBox::VBox0::ImageFace.image_path = "piece/tuningitem_M/tire_a_%02d.img".format(tire_id);
-                        else
-                            item_parent.HBox::VBox0::ImageFace.image_path = "piece/tuningitem_M/tire___%02d.img".format(tire_id);
-
-                        item_parent.doInitialize(context);
                     }
 
                     SBox::ScrolledWindow::ScrollClip.space.y = 0.0;
@@ -1293,8 +1259,8 @@ module ROOT
             method onActivate(context, event)
             {
                 main::sound.play("ok");
-                var item = event.widget;
 
+                var item = event.widget;
                 while (!item.name.beginWith("Item"))
                 {
                     item = item.parent;
@@ -1335,8 +1301,8 @@ module ROOT
                 ROOT::bg::paper::chr.image_path = "image/gt5/setting/chr_%{chr}.dds";
                 VBox::Composite::setting_title.text = getComment(context, cp.garage_id, slot_id);
                 var image_size = "L";
-                var path = GarageUtil::getThumbnailPath(cp.garage_id, image_size);
 
+                var path = GarageUtil::getThumbnailPath(cp.garage_id, image_size);
                 if (!pdistd::Exist(path))
                     path = "car/thumbnail_%s/%s_%02d".format(image_size, cp.getCarLabel(), cp.color);
 
@@ -1410,7 +1376,6 @@ module ROOT
                                 ];
 
                                 var i = 0;
-
                                 foreach (var gf in gf_list)
                                 {
                                     gf.type = "line";
@@ -1444,8 +1409,8 @@ module ROOT
                             var cp = ROOT.cp;
                             cp.permanentlyBeginInfo();
 
-                            |var power_data, var torque_data, var maxPS, var maxTorque, var curveRPM, var revLimitRPM, var powerMaxX, var torqueMaxX| = cp.buildEngineData(
-                            true, 0.0, 0.0, 0.95, 0.85);
+                            |var power_data, var torque_data, var maxPS, var maxTorque, var curveRPM, var revLimitRPM, var powerMaxX, var torqueMaxX| = 
+                                cp.buildEngineData(true, 0.0, 0.0, 0.95, 0.85);
 
                             var trMaxPS = pdiext::MUnit::GetPowerForDisplay(maxPS);
                             var trMaxTorque = pdiext::MUnit::GetTorqueForDisplayF(maxTorque);
@@ -1487,8 +1452,9 @@ module ROOT
                                     gf.points = (i < 2) ? power_data : torque_data;
 
                                     if (false)
+                                    {
                                         gf.action_enabled = false;
-
+                                    }
                                     else
                                     {
                                         gf.action_enabled = true;
@@ -1579,13 +1545,13 @@ module ROOT
                                 ROOT.slot_id = result[1];
                                 ROOT.cp.permanentlyBeginInfo();
 
-                                |var violate_power, var violate_weight, var violate_aspiration, var violate_pp, var violate_tire_f, var violate_tire_r| = isViolateRegulation(
-                                context, ROOT.cp, ROOT.regulation, ROOT.course_condition);
-                                var list;
+                                |var violate_power, var violate_weight, var violate_aspiration, var violate_pp, var violate_tire_f, var violate_tire_r| = 
+                                    isViolateRegulation(context, ROOT.cp, ROOT.regulation, ROOT.course_condition);
 
                                 if (violate_tire_f || violate_tire_r)
                                 {
-                                    if (nil != ROOT.course_condition)
+                                    var list;
+                                    if (ROOT.course_condition != nil)
                                         list = ROOT.cp.getHavingTireList(ROOT.course_condition);
                                     else
                                         list = ROOT.cp.getHavingTireList();
@@ -1612,19 +1578,17 @@ module ROOT
                     {
                         method close0(context, sound)
                         {
-                            if (nil != ROOT.regulation && ROOT.no_update_mode != nil && !ROOT.no_update_mode)
+                            if (ROOT.regulation != nil && ROOT.no_update_mode != nil && !ROOT.no_update_mode)
                             {
                                 ROOT.cp.permanentlyBeginInfo();
 
                                 |var violate_power, var violate_weight, var violate_aspiration, var violate_pp, var violate_tire_f, var violate_tire_r| = isViolateRegulation(
                                 context, ROOT.cp, ROOT.regulation, ROOT.course_condition);
 
-                                if (violate_power || violate_weight || violate_aspiration 
-                                || violate_pp || violate_tire_f || violate_tire_r)
+                                if (violate_power || violate_weight || violate_aspiration || violate_pp || violate_tire_f || violate_tire_r)
                                 {
                                     main::sound.play("disable");
-                                    DialogUtil::openConfirmDialog(context, DialogUtil::ERROR, 
-                                    context.translate(ROOT, "RaceTimeAttackProject::QuickRoot", "REGULATION_DISQUALIFIED"));
+                                    DialogUtil::openConfirmDialog(context, DialogUtil::ERROR, context.translate(ROOT, "RaceTimeAttackProject::QuickRoot", "REGULATION_DISQUALIFIED"));
 
                                     if (DialogUtil::openConfirmDialog(context, DialogUtil::DEFAULT_NO, context.translate(ROOT, "DO_YOU_REVERT_AND_CLOSE")))
                                     {
@@ -1638,7 +1602,6 @@ module ROOT
                                         ROOT.cp.copyForRevertingSetting(ROOT.org_cp);
                                         updateInfo(context);
                                     }
-
                                     else
                                         return EVENTRESULT_FILTER;
                                 }
@@ -1742,7 +1705,7 @@ module ROOT
                 else if (air_restrictor)
                     _title = "air_restrictor";
 
-                if ("center_diff_00" == _title)
+                if (_title == "center_diff_00")
                 {
                     var is_dctrl_impreza = gtengine::MSpecDB::checkGenericFlag("is_dctrl_impreza", ROOT.cp.getCarCode());
                     var car_label = ROOT.cp.getCarLabel();
@@ -1751,32 +1714,27 @@ module ROOT
                         _title = "center_diff_00a";
                 }
 
-                if (gtengine::CarPartsType::TURBINEKIT == self.parts_type && 0 == self.category)
+                if (self.parts_type == gtengine::CarPartsType::TURBINEKIT && self.category == 0)
                     self.title.text = context.translate(ROOT, "SettingProject::SettingRoot", "Default");
-
                 else
                     self.title.text = context.translate(ROOT, "GameItem", _title);
 
                 self.titleL.text = self.title.text;
                 self.body.text = "";
                 self.ImageFace.from_disk = true;
-                var _image_id = category;
 
-                if (nil != data["image_id"])
+                var _image_id = category;
+                if (data["image_id"] != nil)
                     _image_id = data["image_id"];
 
                 if (ayc_controller)
                     self.ImageFace.image_path = "piece/tuningitem_M/ayc_controller_01.img";
-
                 else if (suspension_04)
                     self.ImageFace.image_path = "piece/tuningitem_M/suspension_03.img";
-
                 else if (lightweight_bonnet_01)
                     self.ImageFace.image_path = "piece/tuningitem_M/lightweight_bonnet_02.img";
-
                 else if (lightweight_bonnet_02)
                     self.ImageFace.image_path = "piece/tuningitem_M/lightweight_bonnet_01.img";
-
                 else
                     self.ImageFace.image_path = "piece/tuningitem_M/%{image}_%02d.img".format(_image_id);
 
@@ -1786,13 +1744,12 @@ module ROOT
             method refresh(context, having, equipped)
             {
                 |var tune_level, var tune_func| = self.data["tune"];
-                var tune = false;
 
-                if (TuneLevel::ENABLE == tune_level)
+                var tune = false;
+                if (tune_level == TuneLevel::ENABLE)
                     tune = true;
 
                 self.CheckBox.visible = having && !gtengine::MSpecDB::isOverwriteType(self.parts_type) && !gtengine::MSpecDB::isOrderedType(self.parts_type);
-
                 if (self.CheckBox.visible)
                 {
                     self.CheckBox.active = equipped;
@@ -1816,17 +1773,16 @@ module ROOT
             function onCallback(context, args)
             {
                 |var item_w, var func_name| = args;
-
-                if ("showDetail" == func_name)
+                if (func_name == "showDetail")
+                {
                     showDetail(context, item_w);
-
-                else if ("tuning" == func_name)
+                }
+                else if (func_name == "tuning")
                 {
                     tuning(context, item_w.parts_type, item_w.category);
                     item_w.updateStatus(context);
                 }
-
-                else if ("setParts" == func_name)
+                else if (func_name == "setParts")
                 {
                     setParts(context, item_w.parts_type, item_w.category);
                     item_w.updateStatus(context);
@@ -1835,44 +1791,39 @@ module ROOT
 
             method showContextMenu(context)
             {
-                var data_list = [UIKitProject::ContextMenuPopup::Data(
-                    context.translate(ROOT, "MyHome", "BUTTON_HELP_SHOW"), true, onCallback, 
-                    [self, "showDetail"])];
+                var data_list = 
+                [
+                    UIKitProject::ContextMenuPopup::Data(context.translate(ROOT, "MyHome", "BUTTON_HELP_SHOW"), true, onCallback, [self, "showDetail"])
+                ];
 
                 var tune_mode = !self.Tuning.insensitive;
-
                 if (tune_mode)
                 {
-                    data_list.push(UIKitProject::ContextMenuPopup::Data(context.translate(ROOT, "MyHome", "TUNING"), 
-                    true, onCallback, [self, "tuning"]));
+                    data_list.push(UIKitProject::ContextMenuPopup::Data(context.translate(ROOT, "MyHome", "TUNING"), true, onCallback, [self, "tuning"]));
                 }
-
                 else
                 {
-                    data_list.push(UIKitProject::ContextMenuPopup::Data(context.translate(ROOT, "MyHome", "USE"), 
-                    true, onCallback, [self, "setParts"]));
+                    data_list.push(UIKitProject::ContextMenuPopup::Data(context.translate(ROOT, "MyHome", "USE"), true, onCallback, [self, "setParts"]));
                 }
 
-                data_list += [nil, 
-                UIKitProject::ContextMenuPopup::Data(context.translate(ROOT, "MyHome", "CANCEL"), true, 
-                function () {}, nil)];
+                data_list += [
+                    nil, 
+                    UIKitProject::ContextMenuPopup::Data(context.translate(ROOT, "MyHome", "CANCEL"), true, function () {}, nil)
+                ];
 
                 var item_w = self;
                 var title = nil;
                 var x = item_w.sx + (item_w.w * item_w.cursor_align_x);
                 var y = item_w.sy + (item_w.h * item_w.cursor_align_y);
-
                 UIKitProject::ContextMenuPopup.open(context, x, y, title, data_list);
             }
 
             method updateStatus(context)
             {
                 var category_name = ROOT.category["name"];
-
-                if ("BOOSTER" == category_name)
+                if (category_name == "BOOSTER")
                 {
                     var list = self.parent.parent.parent;
-
                     for (var it = list.first; it != nil; it = it.next_widget)
                     {
                         for (var it2 = it.VBox.first; it2 != nil; it2 = it2.next_widget)
@@ -1882,7 +1833,6 @@ module ROOT
                                 it2.CheckBox.active = false;
                                 it2.Tuning.insensitive = true;
                             }
-
                             else
                                 it2.CheckBox.active = true;
                         }
@@ -1890,19 +1840,16 @@ module ROOT
 
                     self.Tuning.insensitive = false;
 
-                    if (gtengine::CarPartsType::SUPERCHARGER == self.parts_type)
+                    if (self.parts_type == gtengine::CarPartsType::SUPERCHARGER)
                         setParts(context, gtengine::CarPartsType::TURBINEKIT, 0);
-
-                    else if (gtengine::CarPartsType::TURBINEKIT == self.parts_type)
+                    else if (self.parts_type == gtengine::CarPartsType::TURBINEKIT)
                         setParts(context, gtengine::CarPartsType::SUPERCHARGER, 0);
 
                     setParts(context, self.parts_type, self.category);
                 }
-
                 else
                 {
                     var list = self.parent;
-
                     for (var it = list.first; it != nil; it = it.next_widget)
                     {
                         if (it != self)
@@ -1910,7 +1857,6 @@ module ROOT
                             it.CheckBox.active = false;
                             it.Tuning.insensitive = true;
                         }
-
                         else
                             it.CheckBox.active = true;
                     }
@@ -1929,7 +1875,6 @@ module ROOT
                         __prototype__::onActivate(context);
                         self.parent.updateStatus(context);
                     }
-
                     else
                         main::sound.play("disable");
 
@@ -1979,19 +1924,17 @@ module ROOT
 
                 method getGameItemId(parts_type, category)
                 {
-                    if (gtengine::CarPartsType::COMPUTER == parts_type)
+                    if (parts_type == gtengine::CarPartsType::COMPUTER)
                     {
-                        if (gtengine::PARTS_COMPUTER::LEVEL1 == category)
+                        if (category == gtengine::PARTS_COMPUTER::LEVEL1)
                             return 10;
                     }
-
-                    else if (gtengine::CarPartsType::INTAKE_MANIFOLD == parts_type)
+                    else if (parts_type == gtengine::CarPartsType::INTAKE_MANIFOLD)
                     {
-                        if (gtengine::PARTS_INTAKE_MANIFOLD::ONE == category)
+                        if (category == gtengine::PARTS_INTAKE_MANIFOLD::ONE)
                             return 16;
                     }
-
-                    else if (gtengine::CarPartsType::AIR_CLEANER == parts_type)
+                    else if (parts_type == gtengine::CarPartsType::AIR_CLEANER)
                     {
                         switch (category)
                         {
@@ -1999,24 +1942,19 @@ module ROOT
                                 return 17;
                             case gtengine::PARTS_AIR_CLEANER::RACING:
                                 return 18;
-                            default:
-                                ;
                         }
                     }
-
-                    else if (gtengine::CarPartsType::EXHAUST_MANIFOLD == parts_type)
+                    else if (parts_type == gtengine::CarPartsType::EXHAUST_MANIFOLD)
                     {
-                        if (gtengine::PARTS_EXHAUST_MANIFOLD::ONE == category)
+                        if (category == gtengine::PARTS_EXHAUST_MANIFOLD::ONE)
                             return 20;
                     }
-
-                    else if (gtengine::CarPartsType::CATALYST == parts_type)
+                    else if (parts_type == gtengine::CarPartsType::CATALYST)
                     {
-                        if (gtengine::PARTS_CATALYST::SPORTS == category)
+                        if (category == gtengine::PARTS_CATALYST::SPORTS)
                             return 21;
                     }
-
-                    else if (gtengine::CarPartsType::MUFFLER == parts_type)
+                    else if (parts_type == gtengine::CarPartsType::MUFFLER)
                     {
                         switch (category)
                         {
@@ -2026,18 +1964,14 @@ module ROOT
                                 return 24;
                             case gtengine::PARTS_MUFFLER::RACING:
                                 return 25;
-                            default:
-                                ;
                         }
                     }
-
-                    else if (gtengine::CarPartsType::SUPERCHARGER == parts_type)
+                    else if (parts_type == gtengine::CarPartsType::SUPERCHARGER)
                     {
-                        if (gtengine::PARTS_SUPERCHARGER::ONE == category)
+                        if (category == gtengine::PARTS_SUPERCHARGER::ONE)
                             return 26;
                     }
-
-                    else if (gtengine::CarPartsType::TURBINEKIT == parts_type)
+                    else if (parts_type == gtengine::CarPartsType::TURBINEKIT)
                     {
                         switch (category)
                         {
@@ -2047,12 +1981,10 @@ module ROOT
                                 return 28;
                             case gtengine::PARTS_TURBINEKIT::LEVEL3:
                                 return 29;
-                            default:
-                                ;
                         }
                     }
 
-                    else if (gtengine::CarPartsType::GEAR == parts_type)
+                    else if (parts_type == gtengine::CarPartsType::GEAR)
                     {
                         switch (category)
                         {
@@ -2062,12 +1994,9 @@ module ROOT
                                 return 33;
                             case gtengine::PARTS_GEAR::VARIABLE:
                                 return 34;
-                            default:
-                                ;
                         }
                     }
-
-                    else if (gtengine::CarPartsType::CLUTCH == parts_type)
+                    else if (parts_type == gtengine::CarPartsType::CLUTCH)
                     {
                         switch (category)
                         {
@@ -2075,12 +2004,10 @@ module ROOT
                                 return 35;
                             case gtengine::PARTS_CLUTCH::TWIN:
                                 return 36;
-                            default:
-                                ;
                         }
                     }
 
-                    else if (gtengine::CarPartsType::FLYWHEEL == parts_type)
+                    else if (parts_type == gtengine::CarPartsType::FLYWHEEL)
                     {
                         switch (category)
                         {
@@ -2088,30 +2015,24 @@ module ROOT
                                 return 38;
                             case gtengine::PARTS_FLYWHEEL::Cr_Mo:
                                 return 39;
-                            default:
-                                ;
                         }
                     }
-
-                    else if (gtengine::CarPartsType::LSD == parts_type)
+                    else if (parts_type == gtengine::CarPartsType::LSD)
                     {
-                        if (gtengine::PARTS_LSD::VARIABLE == category)
+                        if (category == gtengine::PARTS_LSD::VARIABLE)
                             return 41;
                     }
-
-                    else if (gtengine::CarPartsType::DRIVETRAIN == parts_type)
+                    else if (parts_type == gtengine::CarPartsType::DRIVETRAIN)
                     {
-                        if (gtengine::PARTS_DRIVETRAIN::VARIABLE_CENTER_DIFF == category)
+                        if (category == gtengine::PARTS_DRIVETRAIN::VARIABLE_CENTER_DIFF)
                             return 42;
                     }
-
-                    else if (gtengine::CarPartsType::PROPELLERSHAFT == parts_type)
+                    else if (parts_type == gtengine::CarPartsType::PROPELLERSHAFT)
                     {
-                        if (gtengine::PARTS_PROPELLERSHAFT::ONE == category)
+                        if (category == gtengine::PARTS_PROPELLERSHAFT::ONE)
                             return 44;
                     }
-
-                    else if (gtengine::CarPartsType::SUSPENSION == parts_type)
+                    else if (parts_type == gtengine::CarPartsType::SUSPENSION)
                     {
                         switch (category)
                         {
@@ -2121,8 +2042,6 @@ module ROOT
                                 return 46;
                             case gtengine::PARTS_SUSPENSION::RACING:
                                 return 47;
-                            default:
-                                ;
                         }
                     }
 
@@ -2132,9 +2051,9 @@ module ROOT
                 method onActivate(context)
                 {
                     main::sound.play("ok");
-                    var need_refresh = false;
 
-                    if (gtengine::CarPartsType::TURBINEKIT == self.parent.parts_type || gtengine::CarPartsType::SUPERCHARGER == self.parent.parts_type)
+                    var need_refresh = false;
+                    if (self.parent.parts_type == gtengine::CarPartsType::TURBINEKIT || self.parent.parts_type == gtengine::CarPartsType::SUPERCHARGER)
                     {
                         var turbo_data = CATEGORY_LIST[gtengine::CarPartsType::TURBINEKIT];
                         var supercharger_data = CATEGORY_LIST[gtengine::CarPartsType::SUPERCHARGER];
@@ -2147,8 +2066,8 @@ module ROOT
                     var gameitem = GameItemUtil::getItemByID(gameitem_id);
 
                     ItemDetailPopup.openByItem(context, gameitem, ROOT.cp, true);
-                    var buy = GameItemUtil::isHavingParts(ROOT.cp, gameitem);
 
+                    var buy = GameItemUtil::isHavingParts(ROOT.cp, gameitem);
                     if (buy)
                     {
                         updateInfo(context);
@@ -2159,7 +2078,6 @@ module ROOT
                             ROOT.focus_on_equipped = true;
                             Body::Category.ListBox.refreshItem(context);
                         }
-
                         else
                         {
                             self.parent.refresh(context, true, true);
@@ -2232,10 +2150,9 @@ module ROOT
                 self.CheckBoxRear.visible = is_having;
                 self.Buy.visible = !is_having && can_buy;
 
-                if (nil != ROOT.regulation)
+                if (ROOT.regulation != nil)
                 {
                     var invalid = gtengine::MGameParameter::INVALID_VALUE_INT;
-
                     if (ROOT.regulation.need_tire_f != invalid && category < ROOT.regulation.need_tire_f)
                         self.CheckBoxFront.insensitive = true;
 
@@ -2252,25 +2169,22 @@ module ROOT
                         self.Buy.insensitive = true;
                 }
 
-                if (nil != ROOT.course_condition)
+                if (ROOT.course_condition != nil)
                 {
                     var invalid = false;
-
-                    if (gtengine::CourseCondition::DRY == ROOT.course_condition)
+                    if (ROOT.course_condition == gtengine::CourseCondition::DRY)
                     {
-                        if (gtengine::PARTS_TIRE::DIRT_A <= self.category)
+                        if (self.category >= gtengine::PARTS_TIRE::DIRT_A)
                             invalid = true;
                     }
-
-                    else if (gtengine::CourseCondition::DIRT == ROOT.course_condition)
+                    else if (ROOT.course_condition == gtengine::CourseCondition::DIRT)
                     {
-                        if (gtengine::PARTS_TIRE::DIRT_A != self.category)
+                        if (self.category != gtengine::PARTS_TIRE::DIRT_A)
                             invalid = true;
                     }
-
-                    else if (gtengine::CourseCondition::SNOW == ROOT.course_condition)
+                    else if (ROOT.course_condition == gtengine::CourseCondition::SNOW)
                     {
-                        if (gtengine::PARTS_TIRE::SNOW_A != self.category)
+                        if (self.category != gtengine::PARTS_TIRE::SNOW_A)
                             invalid = true;
                     }
 
@@ -2286,7 +2200,6 @@ module ROOT
             method clearCheckes(context, type)
             {
                 var list = self.parent.parent.parent.parent;
-
                 for (var it = list.first; it != nil; it = it.next_widget)
                 {
                     for (var it2 = it.HBox::VBox.first; it2 != nil; it2 = it2.next_widget)
@@ -2321,7 +2234,6 @@ module ROOT
                         ROOT.cp.endPartsInfo();
                         Body::Detail.initializeTire(context);
                     }
-
                     else
                         main::sound.play("disable");
 
@@ -2350,7 +2262,6 @@ module ROOT
                         ROOT.cp.endPartsInfo();
                         Body::Detail.initializeTire(context);
                     }
-
                     else
                         main::sound.play("disable");
 
@@ -2402,8 +2313,8 @@ module ROOT
                         ROOT.setFocus(self.parent.CheckBoxFront);
                         var current_front_tire = ROOT.cp.getParts(gtengine::CarPartsType::FRONT_TIRE);
                         var current_rear_tire = ROOT.cp.getParts(gtengine::CarPartsType::REAR_TIRE);
+                        
                         var list = self.parent.parent.parent.parent.parent;
-
                         for (var it = list.first; it != nil; it = it.next_widget)
                             it.refresh(context, current_front_tire, current_rear_tire);
                     }

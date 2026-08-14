@@ -67,7 +67,7 @@ module ROOT
 
         DetailPopup2::FadeActor.on_effect_end = function (context) 
         {
-            if (nil != ROOT.popup)
+            if (ROOT.popup != nil)
             {
                 ROOT.popup.close();
                 ROOT.popup = nil;
@@ -97,7 +97,6 @@ module ROOT
             header_id = id;
             description_id = id;
         }
-
         else
         {
             if (gtengine::CarPartsType::FRONT_TIRE == self.parts_type)
@@ -108,21 +107,18 @@ module ROOT
                     header_id = "COMFORTTIRE";
                     description_id = "tire_a_confort";
                 }
-
                 else if (gtengine::PARTS_TIRE::SPORTS_HARD_A <= self.category && self.category <= gtengine::PARTS_TIRE::SPORTS_SUPER_SOFT_A)
                 {
                     id = "%{self.image}_%02d".format(self.category + 1);
                     header_id = "SPORTTIRE";
                     description_id = "tire_a_sports";
                 }
-
                 else if (gtengine::PARTS_TIRE::RACING_HARD_A <= self.category && self.category <= gtengine::PARTS_TIRE::RACING_SUPER_SOFT_A)
                 {
                     id = "%{self.image}_%02d".format(self.category + 1);
                     header_id = "RACINGTIRE";
                     description_id = "tire_a_racing";
                 }
-
                 else
                 {
                     id = "tire___%02d".format(self.category + 1);
@@ -145,42 +141,36 @@ module ROOT
                     }
                 }
             }
-
             else
             {
                 id = "%{self.image}_%02d".format((nil != self.image_id) ? self.image_id : self.category);
                 header_id = "%{self.image}_%02d".format(self.category);
 
-                if ("lsd_02" == header_id)
+                if (header_id == "lsd_02")
                 {
                     id = "ayc_controller_01";
                     header_id = "aycc_01";
                 }
-
-                else if ("suspension_04" == header_id)
+                else if (header_id == "suspension_04")
                 {
                     id = "suspension_03";
                     header_id = "suspension_03";
                 }
-
-                else if ("lightweight_bonnet_01" == header_id)
+                else if (header_id == "lightweight_bonnet_01")
                 {
                     id = "lightweight_bonnet_02";
                     header_id = id;
                 }
-
-                else if ("lightweight_bonnet_02" == header_id)
+                else if (header_id == "lightweight_bonnet_02")
                 {
                     id = "lightweight_bonnet_01";
                     header_id = id;
                 }
-
-                else if ("air_restrictor_00" == header_id)
+                else if (header_id == "air_restrictor_00")
                 {
                     header_id = "air_restrictor";
                 }
-
-                else if ("center_diff_00" == header_id)
+                else if (header_id == "center_diff_00")
                 {
                     self.cp.beginSetting();
                     var drivetrain_info = ROOT.cp.getSettingInfoDriveTrain();
@@ -199,11 +189,10 @@ module ROOT
         var space = DetailPopup2::Pane::Body::ScrolledWindow::clip::space;
         space.Title::TextFace.text = context.translate(ROOT, "GameItemCategory", self.category_name);
 
-        if (id != header_id && gtengine::CarPartsType::FRONT_TIRE == self.parts_type)
+        if (id != header_id && self.parts_type == gtengine::CarPartsType::FRONT_TIRE)
             space.Header::TextFace.text = context.translate(ROOT, "GameItemCategory", header_id);
         else
             space.Header::TextFace.text = context.translate(ROOT, "GameItem", header_id);
-
         space.TextFace.text = context.translate(ROOT, "GameItemDescription", description_id);
 
         DetailPopup2::Pane::Body::Image::ImageFace.image_path = "piece/tuningitem_L/%{id}.img";
@@ -211,15 +200,15 @@ module ROOT
         ROOT.setFocus(DetailPopup2::Pane::Footer::CommandB::Close);
 
         DetailPopup2::Pane::Body::ScrolledWindow::clip.scroll_mode = SCROLL_MODE_MANUAL;
+        
         var adj = main::menu::MAdjustment();
         DetailPopup2::Pane::Body::ScrolledWindow::clip.v_adjustment = adj;
         DetailPopup2::Pane::Body::Scrollbar::VScrollbar.adjustment = adj;
         DetailPopup2::Pane::Body::ScrolledWindow::clip.space.y = 0.0;
         DetailPopup2::Pane::Body::ScrolledWindow::clip.manual_target_y = 0.0;
 
-        var result = SettingUtil::validate(self.cp, self.parts_type, self.category, Mode::BUY == self.mode);
-
-        if (Mode::LOOK == self.mode || SettingUtil::RESULT::ERROR_SUCCESS == result)
+        var result = SettingUtil::validate(self.cp, self.parts_type, self.category, self.mode == Mode::BUY);
+        if (self.mode == Mode::LOOK || result == SettingUtil::RESULT::ERROR_SUCCESS)
         {
             DetailPopup2::Pane::Body::Performance.visible = true;
             DetailPopup2::Pane::Body::Error.visible = false;
@@ -232,15 +221,14 @@ module ROOT
 
             var new_cp = gtengine::MCarParameter();
             new_cp.deepCopy(self.cp);
-            var res = SettingUtil::setParts(new_cp, self.parts_type, self.category);
 
+            var res = SettingUtil::setParts(new_cp, self.parts_type, self.category);
             if (!res)
             {
 
             }
 
             var new_value = getValue(new_cp);
-
             DetailPopup2::Pane::Body::Performance::VBox::HBoxPS::TextFace3.text = new_value[0];
             DetailPopup2::Pane::Body::Performance::VBox::HBoxPS::TextFace4.text = new_value[1];
             DetailPopup2::Pane::Body::Performance::VBox::HBoxPP::TextFace3.text = new_value[2];
@@ -249,7 +237,6 @@ module ROOT
             if (value[0] == new_value[0])
                 DetailPopup2::Pane::Body::Performance.visible = false;
         }
-
         else
         {
             DetailPopup2::Pane::Body::Performance.visible = false;
@@ -300,7 +287,7 @@ module ROOT
         if (current_category == self.category && gtengine::CarPartsType::TURBINEKIT != parts_type)
             return false;
 
-        if (1001 == parts_type)
+        if (parts_type == 1001)
             return false;
         else if (gtengine::CarPartsType::BRAKE_CONTROLLER == parts_type)
             return false;
@@ -315,12 +302,10 @@ module ROOT
 
             return current_category != self.category;
         }
-
         else if (gtengine::CarPartsType::SUPERCHARGER == parts_type)
             return true;
         else if (gtengine::CarPartsType::LIGHT_WEIGHT_WINDOW == parts_type || gtengine::CarPartsType::BONNET == parts_type || gtengine::CarPartsType::STIFFNESS == parts_type)
             return false;
-
         else
         {
             if (-1 == current_category)
@@ -395,7 +380,7 @@ module ROOT
                     var w = event.widget;
                     var text = w.name.upcase();
 
-                    if ("USE" != text && "BUY" != text)
+                    if (text != "USE" && text != "BUY")
                     {
                         var localized_text = context.translate(ROOT, "MyHome", text);
                         BalloonTip.set_value(context, w, localized_text, 0);
@@ -416,18 +401,18 @@ module ROOT
                     var space = scrollclip.space;
                     var textface = space.TextFace;
                     var line_height = textface.line_height;
-                    var status = 0;
+                    var status = EVENTRESULT_CONTINUE;
 
                     if (event.keysym == CELL_PAD_CTRL_L3_UP)
                     {
                         if (scrollclip.manualTargetIncY(line_height))
-                            status = 1;
+                            status = EVENTRESULT_STOP;
                     }
 
                     if (event.keysym == CELL_PAD_CTRL_L3_DOWN)
                     {
                         if (scrollclip.manualTargetIncY(-line_height))
-                            status = 1;
+                            status = EVENTRESULT_STOP;
                     }
 
                     return status;
@@ -450,17 +435,14 @@ module ROOT
                     {
                         main::sound.play("ok");
 
-                        if (!GAME_STATUS.user_profile.game_flags.getFlag("USER_STATUS", "GET_FIRST_CAR") 
-                        || GAME_STATUS.user_profile.garage.riding_id < 0)
+                        if (!GAME_STATUS.user_profile.game_flags.getFlag("USER_STATUS", "GET_FIRST_CAR") || GAME_STATUS.user_profile.garage.riding_id < 0)
                         {
-                            DialogUtil::openConfirmDialog(context, DialogUtil::OK, 
-                            context.translate(ROOT, "GTModeProject::SpecialEventRoot", "MESSAGE_WHEN_GARAGE_IS_EMPTY"));
+                            DialogUtil::openConfirmDialog(context, DialogUtil::OK, context.translate(ROOT, "GTModeProject::SpecialEventRoot", "MESSAGE_WHEN_GARAGE_IS_EMPTY"));
 
                             return EVENTRESULT_FILTER;
                         }
 
                         |var res, var result| = validate(context);
-
                         if (!res)
                             return EVENTRESULT_FILTER;
 
@@ -478,29 +460,28 @@ module ROOT
                     method validate(context)
                     {
                         var result = SettingUtil::validate(ROOT.cp, ROOT.parts_type, ROOT.category);
-
-                        if (SettingUtil::RESULT::ERROR_SUCCESS == result)
+                        if (result == SettingUtil::RESULT::ERROR_SUCCESS)
                             return [true, result];
 
                         var set_off_parts_name = "";
-
                         if (SettingUtil::RESULT::ALERT_UNSET == result)
                         {
                             if (gtengine::CarPartsType::SUPERCHARGER == ROOT.parts_type)
                                 set_off_parts_name = context.translate(ROOT, "GameItemCategory", "BOOSTER_CATEGORY_HEAD");
-
                             else if (gtengine::CarPartsType::TURBINEKIT == ROOT.parts_type)
                                 set_off_parts_name = context.translate(ROOT, "GameItemCategory", "SUPERCHARGER");
                         }
 
                         var table = [
-                            "", "THIS_CAR_CANNOT_ATTACH_BUT_BUY", 
-                            "THIS_PARTS_NEED_ORDERED_BUT_BUY", "THIS_PARTS_ALREADY_ATTACH_BUT_BUY", 
-                            "THIS_PARTS_PREV_ORDERED_BUT_BUY", "THIS_ALERT_UNSET_BUT_BUY"
+                            "", 
+                            "THIS_CAR_CANNOT_ATTACH_BUT_BUY", 
+                            "THIS_PARTS_NEED_ORDERED_BUT_BUY", 
+                            "THIS_PARTS_ALREADY_ATTACH_BUT_BUY", 
+                            "THIS_PARTS_PREV_ORDERED_BUT_BUY", 
+                            "THIS_ALERT_UNSET_BUT_BUY"
                         ];
 
                         var res = DialogUtil::openConfirmDialog(context, DialogUtil::YESNO, context.translate(ROOT, "MyHome", table[result]).build(set_off_parts_name));
-
                         return [res, result];
                     }
 
@@ -508,14 +489,13 @@ module ROOT
                     {
                         var cp = ROOT.cp;
                         var mycash = &main::GAME_STATUS.user_profile.cash;
-                        var price = ROOT.item.price;
 
+                        var price = ROOT.item.price;
                         if (*mycash >= price)
                         {
                             main::sound.play("buy_shop");
                             *mycash -= price;
                         }
-
                         else
                         {
                             main::sound.play("disable");
@@ -526,22 +506,20 @@ module ROOT
                         }
 
                         var parts_set_info = false;
-
-                        if (SettingUtil::RESULT::ERROR_SUCCESS == validate_result || SettingUtil::RESULT::ALERT_UNSET == validate_result)
+                        if (validate_result == SettingUtil::RESULT::ERROR_SUCCESS || validate_result == SettingUtil::RESULT::ALERT_UNSET)
                         {
-                            if (nil != ROOT.buy_direct && ROOT.buy_direct)
+                            if (ROOT.buy_direct != nil && ROOT.buy_direct)
                             {
                                 parts_set_info = GameItemUtil::setParts(context, ROOT, cp, ROOT.item.item_code, false);
                             }
-
                             else
                             {
-                                DialogUtil::openConfirmDialog(context, DialogUtil::OK, 
-                                context.translate(ROOT, "MyHome", "BUY_PARTS_SUCCESS"));
+                                DialogUtil::openConfirmDialog(context, DialogUtil::OK, context.translate(ROOT, "MyHome", "BUY_PARTS_SUCCESS"));
 
                                 if (DialogUtil::openConfirmDialog(context, DialogUtil::YESNO, context.translate(ROOT, "MyHome", "SET_NOW")))
+                                {
                                     parts_set_info = GameItemUtil::setParts(context, ROOT, cp, ROOT.item.item_code, false);
-
+                                }
                                 else
                                 {
                                     if (!applyToItemBox(context, ROOT, mycash, price))
@@ -552,7 +530,6 @@ module ROOT
                                 }
                             }
                         }
-
                         else
                         {
                             if (!applyToItemBox(context, ROOT, mycash, price))
@@ -574,8 +551,8 @@ module ROOT
                     {
                         var gameitem_list = Array();
                         gameitem_list.push(ROOT.item);
+                        
                         var res = GameItemUtil::ItemBox::insertItemList(gameitem_list);
-
                         if (!res)
                         {
                             DialogUtil::openConfirmDialog(context, DialogUtil::ERROR, 

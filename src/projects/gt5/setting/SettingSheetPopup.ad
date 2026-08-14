@@ -65,7 +65,7 @@ module ROOT
 
         DetailPopup2::FadeActor.on_effect_end = function (context) 
         {
-            if (nil != ROOT.popup)
+            if (ROOT.popup != nil)
             {
                 ROOT.popup.close();
                 ROOT.popup = nil;
@@ -130,9 +130,9 @@ module ROOT
 
     function updateSetButtons(context)
     {
-        aSetA.active = 0 == ROOT.slot_id;
-        aSetB.active = 1 == ROOT.slot_id;
-        aSetC.active = 2 == ROOT.slot_id;
+        aSetA.active = ROOT.slot_id == 0;
+        aSetB.active = ROOT.slot_id == 1;
+        aSetC.active = ROOT.slot_id == 2;
     }
 
     function updateSettingHeader(context, src, dst, page, keyword)
@@ -144,7 +144,8 @@ module ROOT
 
     function updateSettingParametersFrontRear(context, dst, front_list, rear_list, page_list, keyword_list, active_list)
     {
-        for (var i = 0; i < front_list.size; ++i)
+        var i;
+        for (i = 0; i < front_list.size; ++i)
         {
             var item = (i & 1) ? hidden::Left::data_even.doCopy() : hidden::Left::data_odd.doCopy();
             item.title.text = context.translate(ROOT, page_list[i], keyword_list[i]);
@@ -156,7 +157,6 @@ module ROOT
                 item.fronti.visible = false;
                 item.reari.visible = false;
             }
-
             else
             {
                 item.front.visible = false;
@@ -169,7 +169,8 @@ module ROOT
 
     function updateSettingParametersFrontRearActive(context, dst, front_list, rear_list, page_list, keyword_list, active_front_list, active_rear_list)
     {
-        for (var i = 0; i < front_list.size; ++i)
+        var i;
+        for (i = 0; i < front_list.size; ++i)
         {
             var item = (i & 1) ? hidden::Left::data_even.doCopy() : hidden::Left::data_odd.doCopy();
             item.title.text = context.translate(ROOT, page_list[i], keyword_list[i]);
@@ -192,7 +193,8 @@ module ROOT
 
     function updateSettingParametersSingle(context, dst, data_list, page_list, keyword_list, active_list)
     {
-        for (var i = 0; i < data_list.size; ++i)
+        var i;
+        for (i = 0; i < data_list.size; ++i)
         {
             var item = (i & 1) ? hidden::Right::data_even.doCopy() : hidden::Right::data_odd.doCopy();
             item.title.text = context.translate(ROOT, page_list[i], keyword_list[i]);
@@ -237,64 +239,95 @@ module ROOT
 
         var head_src = hidden::Left::head;
         updateSettingHeader(context, head_src, dst, "GameItemCategory", "SUSPENSION");
-        var suspension_info = cp.getSettingInfoSuspension();
 
+        var suspension_info = cp.getSettingInfoSuspension();
         if (ROOT.equipped_parts_type[gtengine::CarPartsType::SUSPENSION] == gtengine::PARTS_SUSPENSION::RACING)
         {
-            var front_list = ["%d".format(cp.FrontRideheight - suspension_info.rideheightDFF), 
-            "%.1t".format(cp.FrontSpringRate), "%d".format(cp.FrontDamperF1B), 
-            "%d".format(cp.FrontDamperF1R), "%d".format(cp.FrontStabilizer), 
-            "%.1t".format(cp.FrontCamber), "%.2t".format(cp.FrontToe)];
+            var front_list = [
+                "%d".format(cp.FrontRideheight - suspension_info.rideheightDFF), 
+                "%.1t".format(cp.FrontSpringRate), 
+                "%d".format(cp.FrontDamperF1B), 
+                "%d".format(cp.FrontDamperF1R), 
+                "%d".format(cp.FrontStabilizer), 
+                "%.1t".format(cp.FrontCamber), 
+                "%.2t".format(cp.FrontToe)
+            ];
 
-            var rear_list = ["%d".format(cp.RearRideheight - suspension_info.rideheightDFR), 
-            "%.1t".format(cp.RearSpringRate), "%d".format(cp.RearDamperF1B), 
-            "%d".format(cp.RearDamperF1R), "%d".format(cp.RearStabilizer), 
-            "%.1t".format(cp.RearCamber), "%.2t".format(cp.RearToe)];
+            var rear_list = [
+                "%d".format(cp.RearRideheight - suspension_info.rideheightDFR), 
+                "%.1t".format(cp.RearSpringRate), 
+                "%d".format(cp.RearDamperF1B), 
+                "%d".format(cp.RearDamperF1R), 
+                "%d".format(cp.RearStabilizer), 
+                "%.1t".format(cp.RearCamber), 
+                "%.2t".format(cp.RearToe)
+            ];
 
             var page_list = ["QuickTune", "QuickTune", "QuickTune", "QuickTune", "QuickTune", "QuickTune", "QuickTune"];
             var keyword_list = ["RIDE_HEIGHT0", "SPRING_RATE", "DAMPER_BUMP", "DAMPER_REBUMP", "STABILIZER", "CAMBER", "TOE"];
 
-            var factive_list = [suspension_info.rideheightMINF != suspension_info.rideheightMAXF, 
-            suspension_info.springrateMINF != suspension_info.springrateMAXF, 
-            1 != suspension_info.damplevelBF, 1 != suspension_info.damplevelRF, 
-            1 != suspension_info.stabilizerFlevel, suspension_info.camberMINF != suspension_info.camberMAXF, 
-            suspension_info.toeMINF != suspension_info.toeMAXF];
+            var factive_list = [
+                suspension_info.rideheightMINF != suspension_info.rideheightMAXF, 
+                suspension_info.springrateMINF != suspension_info.springrateMAXF, 
+                suspension_info.damplevelBF != 1, 
+                suspension_info.damplevelRF != 1, 
+                suspension_info.stabilizerFlevel != 1, 
+                suspension_info.camberMINF != suspension_info.camberMAXF, 
+                suspension_info.toeMINF != suspension_info.toeMAXF
+            ];
 
-            var ractive_list = [suspension_info.rideheightMINR != suspension_info.rideheightMAXR, 
-            suspension_info.springrateMINR != suspension_info.springrateMAXR, 
-            1 != suspension_info.damplevelBF, 1 != suspension_info.damplevelRF, 
-            1 != suspension_info.stabilizerRlevel, suspension_info.camberMINR != suspension_info.camberMAXR, 
-            suspension_info.toeMINR != suspension_info.toeMAXR];
+            var ractive_list = [
+                suspension_info.rideheightMINR != suspension_info.rideheightMAXR, 
+                suspension_info.springrateMINR != suspension_info.springrateMAXR, 
+                suspension_info.damplevelBF != 1, 
+                suspension_info.damplevelRF != 1, 
+                suspension_info.stabilizerRlevel != 1, 
+                suspension_info.camberMINR != suspension_info.camberMAXR, 
+                suspension_info.toeMINR != suspension_info.toeMAXR
+            ];
 
             updateSettingParametersFrontRearActive(context, dst, front_list, rear_list, page_list, keyword_list, factive_list, ractive_list);
         }
-
         else
         {
-            var front_list = ["%d".format(cp.FrontRideheight - suspension_info.rideheightDFR), 
-            "%.1t".format(cp.FrontSpringRate), "%d".format(cp.FrontDamperF1B), 
-             "%d".format(cp.FrontStabilizer), 
-            "%.1t".format(cp.FrontCamber), "%.2t".format(cp.FrontToe)];
+            var front_list = [
+                "%d".format(cp.FrontRideheight - suspension_info.rideheightDFR), 
+                "%.1t".format(cp.FrontSpringRate), 
+                "%d".format(cp.FrontDamperF1B), 
+                "%d".format(cp.FrontStabilizer), 
+                "%.1t".format(cp.FrontCamber), 
+                "%.2t".format(cp.FrontToe)
+            ];
 
-            var rear_list = ["%d".format(cp.RearRideheight - suspension_info.rideheightDFR), 
-            "%.1t".format(cp.RearSpringRate), "%d".format(cp.RearDamperF1B), 
-            "%d".format(cp.RearStabilizer), 
-            "%.1t".format(cp.RearCamber), "%.2t".format(cp.RearToe)];
+            var rear_list = [
+                "%d".format(cp.RearRideheight - suspension_info.rideheightDFR), 
+                "%.1t".format(cp.RearSpringRate), 
+                "%d".format(cp.RearDamperF1B), 
+                "%d".format(cp.RearStabilizer), 
+                "%.1t".format(cp.RearCamber), 
+                "%.2t".format(cp.RearToe)
+            ];
 
             var page_list = ["QuickTune", "QuickTune", "QuickTune", "QuickTune", "QuickTune", "QuickTune"];
             var keyword_list = ["RIDE_HEIGHT0", "SPRING_RATE", "DAMPER", "STABILIZER", "CAMBER", "TOE"];
 
-            var factive_list = [suspension_info.rideheightMINF != suspension_info.rideheightMAXF, 
-            suspension_info.springrateMINF != suspension_info.springrateMAXF, 
-            1 != suspension_info.damplevelBF, 
-            1 != suspension_info.stabilizerFlevel, suspension_info.camberMINF != suspension_info.camberMAXF, 
-            suspension_info.toeMINF != suspension_info.toeMAXF];
+            var factive_list = [
+                suspension_info.rideheightMINF != suspension_info.rideheightMAXF, 
+                suspension_info.springrateMINF != suspension_info.springrateMAXF, 
+                suspension_info.damplevelBF != 1, 
+                suspension_info.stabilizerFlevel != 1,
+                suspension_info.camberMINF != suspension_info.camberMAXF, 
+                suspension_info.toeMINF != suspension_info.toeMAXF
+            ];
 
-            var ractive_list = [suspension_info.rideheightMINR != suspension_info.rideheightMAXR, 
-            suspension_info.springrateMINR != suspension_info.springrateMAXR, 
-            1 != suspension_info.damplevelBF, 
-            1 != suspension_info.stabilizerRlevel, suspension_info.camberMINR != suspension_info.camberMAXR, 
-            suspension_info.toeMINR != suspension_info.toeMAXR];
+            var ractive_list = [
+                suspension_info.rideheightMINR != suspension_info.rideheightMAXR, 
+                suspension_info.springrateMINR != suspension_info.springrateMAXR, 
+                suspension_info.damplevelBF != 1, 
+                suspension_info.stabilizerRlevel != 1, 
+                suspension_info.camberMINR != suspension_info.camberMAXR, 
+                suspension_info.toeMINR != suspension_info.toeMAXR
+            ];
 
             updateSettingParametersFrontRearActive(context, dst, front_list, rear_list, page_list, keyword_list, factive_list, ractive_list);
         }
@@ -306,20 +339,19 @@ module ROOT
     {
         var dst = aSettingLeft.LSD;
         dst.clearChild(context);
-        var parts_type = gtengine::CarPartsType::LSD;
 
+        var parts_type = gtengine::CarPartsType::LSD;
         if (ROOT.equipped_parts_type[parts_type] == gtengine::PARTS_LSD::AYCC)
             return;
 
         var is_exist_parts = isExistPartsRange(cp, parts_type, gtengine::PARTS_LSD::VARIABLE, gtengine::PARTS_LSD::AYCC);
-
         if (!is_exist_parts)
             return;
 
         var head_src = hidden::Left::head;
         updateSettingHeader(context, head_src, dst, "QuickTune", "LSD");
-        var lsd_info = cp.getSettingInfoLSD();
 
+        var lsd_info = cp.getSettingInfoLSD();
         if (1)
         {
             var front_list = [
@@ -359,17 +391,17 @@ module ROOT
     {
         var dst = aSettingLeft.Aero;
         dst.clearChild(context);
-        var result = false;
-        var chassis_info = cp.getSettingInfoChassis();
 
+        var result = false;
+
+        var chassis_info = cp.getSettingInfoChassis();
         if (chassis_info.clMINF != chassis_info.clMAXF || chassis_info.clMINR != chassis_info.clMAXR)
             result = true;
 
         var wing_info = cp.getSettingInfoWing();
-
         if (!result)
         {
-            if (nil != wing_info)
+            if (wing_info != nil)
             {
                 if (wing_info.clMINR_plus != wing_info.clMAXR_plus)
                     result = true;
@@ -391,7 +423,7 @@ module ROOT
             var minR = chassis_info.clMINR;
             var maxR = chassis_info.clMAXR;
 
-            if (nil != wing_info)
+            if (wing_info != nil)
             {
                 minR += wing_info.clMINR_plus;
                 maxR += wing_info.clMAXR_plus;
@@ -410,10 +442,11 @@ module ROOT
     function updateSettingBrake(context, cp)
     {
         var head_src = hidden::Left::head;
+
         var dst = aSettingLeft.Brake;
         dst.clearChild(context);
-        var is_kart = gtengine::MSpecDB::checkGenericFlag("is_racing_kart", cp.getCarCode());
 
+        var is_kart = gtengine::MSpecDB::checkGenericFlag("is_racing_kart", cp.getCarCode());
         if (is_kart)
             return;
 
@@ -431,8 +464,10 @@ module ROOT
     function updateSettingBallast(context, cp)
     {
         var head_src = hidden::Right::head;
+
         var dst = aSettingRight.aSettingRight.Ballast;
         dst.clearChild(context);
+
         updateSettingHeader(context, head_src, dst, "QuickTune", "BALLAST");
 
         var data_list = ["%d".format(cp.ballastWeight), "%d".format(cp.ballastPosition)];
@@ -446,6 +481,7 @@ module ROOT
     function updateSettingLimitter(context, cp)
     {
         var head_src = hidden::Right::head;
+        
         var dst = aSettingRight.Limitter;
         dst.clearChild(context);
         updateSettingHeader(context, head_src, dst, "QuickTune", "AIRRESTRICTOR");
@@ -462,12 +498,12 @@ module ROOT
     {
         var dst = aSettingRight.Diff;
         dst.clearChild(context);
+
         var parts_type = gtengine::CarPartsType::DRIVETRAIN;
         var type = ROOT.equipped_parts_type[parts_type];
         var drivetrain_info = cp.getSettingInfoDriveTrain();
 
         var active = drivetrain_info.param4WDMIN != drivetrain_info.param4WDMAX;
-
         if (type == 0 && active)
             type = 3;
 
@@ -477,7 +513,6 @@ module ROOT
             return;
 
         var head_src = hidden::Left::head;
-
         updateSettingHeader(context, head_src, dst, "GameItem", type == 3 ? "center_diff_00a" : "center_diff_01");
 
         var front_list = ["%d".format(cp.Param4WD)];
@@ -524,43 +559,40 @@ module ROOT
 
         updateSettingHeader(context, head_src, dst, "GameItemCategory", "TRANSMISSION");
 
-        var gear_list = [
-            cp.Gear1st, cp.Gear2nd, cp.Gear3rd, 
-            cp.Gear4th, cp.Gear5th, cp.Gear6th, cp.Gear7th,
-            cp.Gear8th, cp.Gear9th, cp.Gear10th, cp.Gear11th
-        ];
-
-        var gear_keywords = [
-            "GEAR1", "GEAR2", "GEAR3", 
-            "GEAR4", "GEAR5", "GEAR6", "GEAR7", 
-            "GEAR8", "GEAR9", "GEAR10", "GEAR11"
-        ];
-
-        var i;
 
         {
+            var gear_list = [
+                cp.Gear1st, cp.Gear2nd, cp.Gear3rd, 
+                cp.Gear4th, cp.Gear5th, cp.Gear6th, cp.Gear7th,
+                cp.Gear8th, cp.Gear9th, cp.Gear10th, cp.Gear11th
+            ];
+
+            var gear_keywords = [
+                "GEAR1", "GEAR2", "GEAR3", 
+                "GEAR4", "GEAR5", "GEAR6", "GEAR7", 
+                "GEAR8", "GEAR9", "GEAR10", "GEAR11"
+            ];
+
+            var i;
+
             var gear_info = cp.getSettingInfoGear();
             var disable = 0 == gear_info.gearflag || gear_info.maxspeedMIN == gear_info.maxspeedMAX;
 
             for (i = 0; i < gear_list.size; ++i)
             {
                 if (gear_info.Nshift <= i)
-                {
-                    
-                }
-                else
-                {
-                    var item = (i & 1) ? hidden::Right::data_even.doCopy() : hidden::Right::data_odd.doCopy();
-                    item.title.text = context.translate(ROOT, "QuickTune", gear_keywords[i]);
-                    item.valuei.text = item.value.text = "%.3t".format(gear_list[i]);
+                    break;
+                
+                var item = (i & 1) ? hidden::Right::data_even.doCopy() : hidden::Right::data_odd.doCopy();
+                item.title.text = context.translate(ROOT, "QuickTune", gear_keywords[i]);
+                item.valuei.text = item.value.text = "%.3t".format(gear_list[i]);
 
-                    if (disable)
-                        item.value.visible = false;
-                    else
-                        item.valuei.visible = false;
-                    
-                    aSettingRight.Transmission.appendChild(context, item);
-                }
+                if (disable)
+                    item.value.visible = false;
+                else
+                    item.valuei.visible = false;
+                
+                aSettingRight.Transmission.appendChild(context, item);
             }
 
             {
@@ -581,7 +613,7 @@ module ROOT
                 var item = (i & 1) ? hidden::Right::data_even.doCopy() : hidden::Right::data_odd.doCopy();
                 item.title.text = context.translate(ROOT, "QuickTune", "MAX_SPEED_AUTO");
                 item.valuei.text = item.value.text = "%d".format(cp.quicktune_maxspeed * 10);
-                var disable = 0 == gear_info.gearflag || gear_info.maxspeedMIN == gear_info.maxspeedMAX;
+                var disable = gear_info.gearflag == 0 || gear_info.maxspeedMIN == gear_info.maxspeedMAX;
 
                 if (disable)
                     item.value.visible = false;
@@ -635,7 +667,7 @@ module ROOT
             else if (air_restrictor)
                 _title = "air_restrictor";
 
-            if ("center_diff_00" == _title)
+            if (_title == "center_diff_00")
             {
                 var is_dctrl_impreza = gtengine::MSpecDB::checkGenericFlag("is_dctrl_impreza", cp.getCarCode());
                 var car_label = cp.getCarLabel();
@@ -647,22 +679,18 @@ module ROOT
             if (category > 0)
             {
                 var text = nil;
-
                 if (parts_type == gtengine::CarPartsType::LIGHT_WEIGHT)
                 {
                     text = (context.translate(ROOT, "GameItemCategory", "LIGHTWEIGHT") + " ") + context.translate(ROOT, "GameItem", _title);
                 }
-
                 else if (parts_type == gtengine::CarPartsType::NATUNE)
                 {
                     text = (context.translate(ROOT, "GameItemCategory", "NATUNE") + " ") + context.translate(ROOT, "GameItem", _title);
                 }
-
                 else if (parts_type == gtengine::CarPartsType::SUSPENSION && _title == "suspension_03")
                 {
                     text = (context.translate(ROOT, "GameItemCategory", "SUSPENSION") + " ") + context.translate(ROOT, "GameItem", _title);
                 }
-
                 else
                 {
                     text = context.translate(ROOT, "GameItem", _title);
@@ -767,12 +795,12 @@ module ROOT
 
         var old_cp = GAME_STATUS.user_profile.garage.getCar(ROOT.garage_id);
         GAME_STATUS.user_profile.garage.changeSlot(ROOT.garage_id, slot_id);
+
         var new_cp = GAME_STATUS.user_profile.garage.getCar(ROOT.garage_id);
         new_cp.copyForChangeSet(old_cp);
         GAME_STATUS.user_profile.garage.updateCar(new_cp);
 
         DetailPopup2::Pane::Body::HBox::Setting::FadeActor.reverse = false;
-
         DetailPopup2::Pane::Body::HBox::Setting::FadeActor.on_effect_end = function (context) 
         {
             updateSheetComment(context);
@@ -815,6 +843,7 @@ module ROOT
                         {
                             var old_cp = GAME_STATUS.user_profile.garage.getCar(ROOT.garage_id);
                             GAME_STATUS.user_profile.garage.changeSlot(ROOT.garage_id, dst_slot_id);
+                            
                             var new_cp = GAME_STATUS.user_profile.garage.getCar(ROOT.garage_id);
                             new_cp.deepCopy(old_cp);
 

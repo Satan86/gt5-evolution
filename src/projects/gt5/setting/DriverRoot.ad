@@ -56,7 +56,6 @@ module ROOT
             for (var i = 0; i < 4; ++i)
             {
                 var dp = RaceOperator.getTargetDriverParameter(0, i);
-
                 if (dp == nil || dp.isVacant())
                     continue;
 
@@ -64,10 +63,11 @@ module ROOT
                 item.pilot_id = i;
                 self.appendChild(context, item);
 
-                if (cur_pilot_id == i)
+                if (i == cur_pilot_id)
                     ROOT.setFocus(item);
 
                 item.setInfo(dp.residence_id, dp);
+                
             }
         }
 
@@ -84,6 +84,7 @@ module ROOT
         method onActivate(context)
         {
             main::sound.play("ok");
+
             var player_slot = RaceOperator.getPlayerSlot(0);
             ORG.setRidingDriverIndex(player_slot, self.pilot_id);
             ROOT.close(context, self.pilot_id);
