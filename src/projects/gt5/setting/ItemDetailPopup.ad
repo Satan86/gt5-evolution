@@ -1,0 +1,580 @@
+module ROOT
+{
+    module Mode
+    {
+        static LOOK = 1;
+        static BUY = 2;
+    }
+
+    attribute popup;
+    attribute closed = false;
+    attribute result = false;
+    attribute category_name;
+    attribute parts_type;
+    attribute category;
+    attribute image;
+    attribute price;
+    attribute cp;
+    attribute mode;
+    attribute item;
+    attribute image_id;
+    attribute buy_direct;
+
+    method open(context, category_name, parts_type, category, image, cp, image_id)
+    {
+        if (nil == self.mode)
+            self.mode = Mode::LOOK;
+
+        self.category_name = category_name;
+        self.parts_type = parts_type;
+        self.category = category;
+        self.image = image;
+        self.cp = cp;
+        self.image_id = image_id;
+        self.result = false;
+        self.closed = false;
+
+        self.popup = main::SequenceUtil::ModalPage(context, ROOT);
+        self.popup.open();
+
+        return self.result;
+    }
+
+    method openByItem(context, item, cp, buy_direct)
+    {
+        self.mode = Mode::BUY;
+        self.buy_direct = buy_direct;
+        self.price = item.price;
+        self.item = item;
+
+        var category_name = GameItemUtil::getCategoryName(item.category_id);
+        var parts_type = gtengine::CarPartsType[item.defines_type];
+        var item_code = item["item_code"];
+        var category = GameItemUtil::getCategory(item);
+        var image = item_code.substr(0, item_code.size - 3);
+
+        return open(context, category_name, parts_type, category, image, cp);
+    }
+
+    method close(context)
+    {
+        if (self.closed)
+            return;
+
+        self.closed = true;
+        ContextMain.event_mask = 5;
+        ContextMain.disableInput();
+
+        DetailPopup2::FadeActor.on_effect_end = function (context) 
+        {
+            if (ROOT.popup != nil)
+            {
+                ROOT.popup.close();
+                ROOT.popup = nil;
+            }
+
+            ContextMain.enableInput();
+        };
+
+        DetailPopup2::FadeActor.out = true;
+    }
+
+    method abort(context)
+    {
+        self.close(context);
+        ContextMain.enableInput();
+    }
+
+    method onInitialize(context)
+    {
+        var id = "";
+        var header_id = "";
+        var description_id = "";
+
+        if (Mode::BUY == self.mode)
+        {
+            id = self.item.item_code;
+            header_id = id;
+            description_id = id;
+        }
+        else
+        {
+            if (gtengine::CarPartsType::FRONT_TIRE == self.parts_type)
+            {
+                if (gtengine::PARTS_TIRE::COMFORT_HARD_A <= self.category && self.category <= gtengine::PARTS_TIRE::COMFORT_SOFT_A)
+                {
+                    id = "%{self.image}_%02d".format(self.category + 1);
+                    header_id = "COMFORTTIRE";
+                    description_id = "tire_a_confort";
+                }
+                else if (gtengine::PARTS_TIRE::SPORTS_HARD_A <= self.category && self.category <= gtengine::PARTS_TIRE::SPORTS_SUPER_SOFT_A)
+                {
+                    id = "%{self.image}_%02d".format(self.category + 1);
+                    header_id = "SPORTTIRE";
+                    description_id = "tire_a_sports";
+                }
+                else if (gtengine::PARTS_TIRE::RACING_HARD_A <= self.category && self.category <= gtengine::PARTS_TIRE::RACING_SUPER_SOFT_A)
+                {
+                    id = "%{self.image}_%02d".format(self.category + 1);
+                    header_id = "RACINGTIRE";
+                    description_id = "tire_a_racing";
+                }
+                else
+                {
+                    id = "tire___%02d".format(self.category + 1);
+                    description_id = id;
+
+                    switch (self.category)
+                    {
+                        case gtengine::PARTS_TIRE::RAIN_INTERMEDIATE_A:
+                        case gtengine::PARTS_TIRE::RAIN_HEAVY_WET_A:
+                            header_id = "RAINTIRE";
+                            break;
+                        case gtengine::PARTS_TIRE::DIRT_A:
+                            header_id = "DIRTTIRE";
+                            break;
+                        case gtengine::PARTS_TIRE::SNOW_A:
+                            header_id = "SNOWTIRE";
+                            break;
+                        default:
+                            ;
+                    }
+                }
+            }
+            else
+            {
+                id = "%{self.image}_%02d".format((nil != self.image_id) ? self.image_id : self.category);
+                header_id = "%{self.image}_%02d".format(self.category);
+
+                if (header_id == "lsd_02")
+                {
+                    id = "ayc_controller_01";
+                    header_id = "aycc_01";
+                }
+                else if (header_id == "suspension_04")
+                {
+                    id = "suspension_03";
+                    header_id = "suspension_03";
+                }
+                else if (header_id == "lightweight_bonnet_01")
+                {
+                    id = "lightweight_bonnet_02";
+                    header_id = id;
+                }
+                else if (header_id == "lightweight_bonnet_02")
+                {
+                    id = "lightweight_bonnet_01";
+                    header_id = id;
+                }
+                else if (header_id == "air_restrictor_00")
+                {
+                    header_id = "air_restrictor";
+                }
+                else if (header_id == "center_diff_00")
+                {
+                    self.cp.beginSetting();
+                    var drivetrain_info = ROOT.cp.getSettingInfoDriveTrain();
+
+                    if (drivetrain_info.param4WDMIN != drivetrain_info.param4WDMAX)
+                        header_id = "center_diff_00a";
+
+                    drivetrain_info = nil;
+                    self.cp.endSetting();
+                }
+
+                description_id = header_id;
+            }
+        }
+
+        var space = DetailPopup2::Pane::Body::ScrolledWindow::clip::space;
+        space.Title::TextFace.text = context.translate(ROOT, "GameItemCategory", self.category_name);
+
+        if (id != header_id && self.parts_type == gtengine::CarPartsType::FRONT_TIRE)
+            space.Header::TextFace.text = context.translate(ROOT, "GameItemCategory", header_id);
+        else
+            space.Header::TextFace.text = context.translate(ROOT, "GameItem", header_id);
+        space.TextFace.text = context.translate(ROOT, "GameItemDescription", description_id);
+
+        DetailPopup2::Pane::Body::Image::ImageFace.image_path = "piece/tuningitem_L/%{id}.img";
+
+        ROOT.setFocus(DetailPopup2::Pane::Footer::CommandB::Close);
+
+        DetailPopup2::Pane::Body::ScrolledWindow::clip.scroll_mode = SCROLL_MODE_MANUAL;
+        
+        var adj = main::menu::MAdjustment();
+        DetailPopup2::Pane::Body::ScrolledWindow::clip.v_adjustment = adj;
+        DetailPopup2::Pane::Body::Scrollbar::VScrollbar.adjustment = adj;
+        DetailPopup2::Pane::Body::ScrolledWindow::clip.space.y = 0.0;
+        DetailPopup2::Pane::Body::ScrolledWindow::clip.manual_target_y = 0.0;
+
+        var result = SettingUtil::validate(self.cp, self.parts_type, self.category, self.mode == Mode::BUY);
+        if (self.mode == Mode::LOOK || result == SettingUtil::RESULT::ERROR_SUCCESS)
+        {
+            DetailPopup2::Pane::Body::Performance.visible = true;
+            DetailPopup2::Pane::Body::Error.visible = false;
+
+            var value = getValue(self.cp);
+            DetailPopup2::Pane::Body::Performance::VBox::HBoxPS::TextFace1.text = value[0];
+            DetailPopup2::Pane::Body::Performance::VBox::HBoxPS::TextFace2.text = value[1];
+            DetailPopup2::Pane::Body::Performance::VBox::HBoxPP::TextFace1.text = value[2];
+            DetailPopup2::Pane::Body::Performance::VBox::HBoxPP::TextFace2.text = context.translate(ROOT, "Unit", "PERFORMANCE_POINT");
+
+            var new_cp = gtengine::MCarParameter();
+            new_cp.deepCopy(self.cp);
+
+            var res = SettingUtil::setParts(new_cp, self.parts_type, self.category);
+            if (!res)
+            {
+
+            }
+
+            var new_value = getValue(new_cp);
+            DetailPopup2::Pane::Body::Performance::VBox::HBoxPS::TextFace3.text = new_value[0];
+            DetailPopup2::Pane::Body::Performance::VBox::HBoxPS::TextFace4.text = new_value[1];
+            DetailPopup2::Pane::Body::Performance::VBox::HBoxPP::TextFace3.text = new_value[2];
+            DetailPopup2::Pane::Body::Performance::VBox::HBoxPP::TextFace4.text = context.translate(ROOT, "Unit", "PERFORMANCE_POINT");
+
+            if (value[0] == new_value[0])
+                DetailPopup2::Pane::Body::Performance.visible = false;
+        }
+        else
+        {
+            DetailPopup2::Pane::Body::Performance.visible = false;
+            DetailPopup2::Pane::Body::Error.visible = true;
+
+            var table = [
+                "", "THIS_CAR_CANNOT_ATTACH", "THIS_PARTS_NEED_ORDERED", "THIS_PARTS_ALREADY_ATTACH", 
+                "THIS_PARTS_PREV_ORDERED", "THIS_ALERT_UNSET"
+            ];
+
+            DetailPopup2::Pane::Body::Error::TextFace.text = context.translate(ROOT, "MyHome", table[result]).build(" ");
+        }
+
+        var can_price = Mode::BUY == self.mode;
+        DetailPopup2::Pane::Body::Price.visible = can_price;
+
+        if (can_price)
+            DetailPopup2::Pane::Body::Price::HBox::TextFace2.text = pdiext::MMisc::GetMoneyString(self.price);
+        else
+            DetailPopup2::Pane::Body::Price::HBox::TextFace2.text = "";
+
+        DetailPopup2::Pane::Footer::CommandB::Buy.visible = can_price;
+        var can_use = checkCanUse(context);
+
+        self.cp.beginPartsInfo();
+        var exists = self.cp.isExistParts(self.parts_type, self.category);
+        self.cp.endPartsInfo();
+        var having = false;
+
+        if (exists)
+            having = self.cp.isHavingParts(self.parts_type, self.category);
+
+        DetailPopup2::Pane::Footer::CommandB::Use.visible = can_use && having;
+
+        return EVENTRESULT_FILTER;
+    }
+
+    method checkCanUse(context)
+    {
+        if (Mode::LOOK != self.mode)
+            return false;
+
+        if (gtengine::CarPartsType::FRONT_TIRE == self.parts_type)
+            return false;
+
+        var current_category = self.cp.getParts(self.parts_type)
+
+        if (current_category == self.category && gtengine::CarPartsType::TURBINEKIT != parts_type)
+            return false;
+
+        if (parts_type == 1001)
+            return false;
+        else if (gtengine::CarPartsType::BRAKE_CONTROLLER == parts_type)
+            return false;
+        else if (gtengine::CarPartsType::LSD == parts_type)
+            return true;
+        else if (gtengine::CarPartsType::DRIVETRAIN == parts_type)
+            return true;
+        else if (gtengine::CarPartsType::TURBINEKIT == parts_type)
+        {
+            if (self.cp.getParts(gtengine::CarPartsType::SUPERCHARGER) > 0)
+                return true;
+
+            return current_category != self.category;
+        }
+        else if (gtengine::CarPartsType::SUPERCHARGER == parts_type)
+            return true;
+        else if (gtengine::CarPartsType::LIGHT_WEIGHT_WINDOW == parts_type || gtengine::CarPartsType::BONNET == parts_type || gtengine::CarPartsType::STIFFNESS == parts_type)
+            return false;
+        else
+        {
+            if (-1 == current_category)
+                return self.category > 0;
+
+            return true;
+        }
+
+        return true;
+    }
+
+    method onFinalize(context)
+    {
+        self.category_name = nil;
+        self.parts_type = nil;
+        self.category = nil;
+        self.image = nil;
+        self.price = nil;
+        self.cp = nil;
+        self.mode = nil;
+        self.item = nil;
+        self.image_id = nil;
+        self.buy_direct = nil;
+    }
+
+    method onCancel(context)
+    {
+        main::sound.play("cancel");
+        close(context);
+        return EVENTRESULT_FILTER;
+    }
+
+    method getValue(cp)
+    {
+        var result = [];
+        cp.beginInfo();
+
+        switch (self.parts_type)
+        {
+            case gtengine::CarPartsType::LIGHT_WEIGHT:
+            case gtengine::CarPartsType::LIGHT_WEIGHT_WINDOW:
+            case gtengine::CarPartsType::BONNET:
+            case gtengine::CarPartsType::AERO1:
+            case gtengine::CarPartsType::AERO2:
+            case gtengine::CarPartsType::AERO3:
+            case gtengine::CarPartsType::WING:
+            case gtengine::CarPartsType::STIFFNESS:
+                result = [cp.getWeight(), pdiext::MUnit::GetUnitOfMass()];
+                break;
+
+            default:
+                |var power_f| = cp.getPower(); //???
+                var power = pdiext::MUnit::GetPowerForDisplay(power_f.toInt());
+                result = [power, pdiext::MUnit::GetUnitOfPower()];
+                break;
+        }
+
+        result.push(cp.getPP1000());
+        cp.endInfo();
+
+        return result;
+    }
+
+    module DetailPopup2::Pane
+    {
+        module Footer
+        {
+            module CommandB
+            {
+                method onFocusEnter(context, event)
+                {
+                    var w = event.widget;
+                    var text = w.name.upcase();
+
+                    if (text != "USE" && text != "BUY")
+                    {
+                        var localized_text = context.translate(ROOT, "MyHome", text);
+                        BalloonTip.set_value(context, w, localized_text, 0);
+                    }
+
+                    return EVENTRESULT_FILTER;
+                }
+
+                method onFocusLeave(context)
+                {
+                    BalloonTip.reset_value();
+                    return EVENTRESULT_FILTER;
+                }
+
+                method onKeyPress(context, event)
+                {
+                    var scrollclip = DetailPopup2::Pane::Body::ScrolledWindow::clip;
+                    var space = scrollclip.space;
+                    var textface = space.TextFace;
+                    var line_height = textface.line_height;
+                    var status = EVENTRESULT_CONTINUE;
+
+                    if (event.keysym == CELL_PAD_CTRL_L3_UP)
+                    {
+                        if (scrollclip.manualTargetIncY(line_height))
+                            status = EVENTRESULT_STOP;
+                    }
+
+                    if (event.keysym == CELL_PAD_CTRL_L3_DOWN)
+                    {
+                        if (scrollclip.manualTargetIncY(-line_height))
+                            status = EVENTRESULT_STOP;
+                    }
+
+                    return status;
+                }
+
+                module Use
+                {
+                    method onActivate(context)
+                    {
+                        main::sound.play("ok");
+                        ROOT.result = true;
+                        ROOT.close(context);
+                        return EVENTRESULT_FILTER;
+                    }
+                }
+
+                module Buy
+                {
+                    method onActivate(context)
+                    {
+                        main::sound.play("ok");
+
+                        if (!GAME_STATUS.user_profile.game_flags.getFlag("USER_STATUS", "GET_FIRST_CAR") || GAME_STATUS.user_profile.garage.riding_id < 0)
+                        {
+                            DialogUtil::openConfirmDialog(context, DialogUtil::OK, context.translate(ROOT, "GTModeProject::SpecialEventRoot", "MESSAGE_WHEN_GARAGE_IS_EMPTY"));
+
+                            return EVENTRESULT_FILTER;
+                        }
+
+                        |var res, var result| = validate(context);
+                        if (!res)
+                            return EVENTRESULT_FILTER;
+
+                        res = buy(context, result);
+
+                        if (!res)
+                            return EVENTRESULT_FILTER;
+
+                        ROOT.result = true;
+                        ROOT.close(context);
+
+                        return EVENTRESULT_FILTER;
+                    }
+
+                    method validate(context)
+                    {
+                        var result = SettingUtil::validate(ROOT.cp, ROOT.parts_type, ROOT.category);
+                        if (result == SettingUtil::RESULT::ERROR_SUCCESS)
+                            return [true, result];
+
+                        var set_off_parts_name = "";
+                        if (SettingUtil::RESULT::ALERT_UNSET == result)
+                        {
+                            if (gtengine::CarPartsType::SUPERCHARGER == ROOT.parts_type)
+                                set_off_parts_name = context.translate(ROOT, "GameItemCategory", "BOOSTER_CATEGORY_HEAD");
+                            else if (gtengine::CarPartsType::TURBINEKIT == ROOT.parts_type)
+                                set_off_parts_name = context.translate(ROOT, "GameItemCategory", "SUPERCHARGER");
+                        }
+
+                        var table = [
+                            "", 
+                            "THIS_CAR_CANNOT_ATTACH_BUT_BUY", 
+                            "THIS_PARTS_NEED_ORDERED_BUT_BUY", 
+                            "THIS_PARTS_ALREADY_ATTACH_BUT_BUY", 
+                            "THIS_PARTS_PREV_ORDERED_BUT_BUY", 
+                            "THIS_ALERT_UNSET_BUT_BUY"
+                        ];
+
+                        var res = DialogUtil::openConfirmDialog(context, DialogUtil::YESNO, context.translate(ROOT, "MyHome", table[result]).build(set_off_parts_name));
+                        return [res, result];
+                    }
+
+                    method buy(context, validate_result)
+                    {
+                        var cp = ROOT.cp;
+                        var mycash = &main::GAME_STATUS.user_profile.cash;
+
+                        var price = ROOT.item.price;
+                        if (*mycash >= price)
+                        {
+                            main::sound.play("buy_shop");
+                            *mycash -= price;
+                        }
+                        else
+                        {
+                            main::sound.play("disable");
+                            DialogUtil::openConfirmDialog(context, DialogUtil::ERROR, 
+                            context.translate(ROOT, "MyHome", "DIALOG_NOT_ENOUGH_CREDITS"));
+
+                            return false;
+                        }
+
+                        var parts_set_info = false;
+                        if (validate_result == SettingUtil::RESULT::ERROR_SUCCESS || validate_result == SettingUtil::RESULT::ALERT_UNSET)
+                        {
+                            if (ROOT.buy_direct != nil && ROOT.buy_direct)
+                            {
+                                parts_set_info = GameItemUtil::setParts(context, ROOT, cp, ROOT.item.item_code, false);
+                            }
+                            else
+                            {
+                                DialogUtil::openConfirmDialog(context, DialogUtil::OK, context.translate(ROOT, "MyHome", "BUY_PARTS_SUCCESS"));
+
+                                if (DialogUtil::openConfirmDialog(context, DialogUtil::YESNO, context.translate(ROOT, "MyHome", "SET_NOW")))
+                                {
+                                    parts_set_info = GameItemUtil::setParts(context, ROOT, cp, ROOT.item.item_code, false);
+                                }
+                                else
+                                {
+                                    if (!applyToItemBox(context, ROOT, mycash, price))
+                                        return false;
+
+                                    DialogUtil::openConfirmDialog(context, DialogUtil::OK, 
+                                    context.translate(ROOT, "MyHome", "UNSETBUY_PARTS_SUCCESS2"));
+                                }
+                            }
+                        }
+                        else
+                        {
+                            if (!applyToItemBox(context, ROOT, mycash, price))
+                                return false;
+
+                            DialogUtil::openConfirmDialog(context, DialogUtil::OK, 
+                            context.translate(ROOT, "MyHome", "UNSETBUY_PARTS_SUCCESS"));
+                        }
+
+                        GAME_STATUS.user_profile.total_purchased_amount += price;
+
+                        if (GAME_STATUS.user_profile.total_purchased_amount >= 500000)
+                            PDINetwork.unlockTrophyAsync(gtengine::TrophyType::TUNING_MANIAC);
+
+                        return true;
+                    }
+
+                    method applyToItemBox(context, root, mycash, price)
+                    {
+                        var gameitem_list = Array();
+                        gameitem_list.push(ROOT.item);
+                        
+                        var res = GameItemUtil::ItemBox::insertItemList(gameitem_list);
+                        if (!res)
+                        {
+                            DialogUtil::openConfirmDialog(context, DialogUtil::ERROR, 
+                            context.translate(root, "MyHome", "MAX_ITEMBOX"));
+
+                            *mycash += price;
+                        }
+
+                        return res;
+                    }
+                }
+
+                module Close
+                {
+                    method onActivate(context)
+                    {
+                        main::sound.play("ok");
+                        ROOT.close(context);
+                        return EVENTRESULT_FILTER;
+                    }
+                }
+            }
+        }
+    }
+}

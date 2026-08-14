@@ -1,0 +1,90 @@
+module PROJECT
+{
+    PROJECT.load("/scripts/gt5/util/Garage2Util");
+
+    function onLoad(update_context)
+    {
+
+    }
+
+    function onUnload(update_context)
+    {
+
+    }
+
+    function isViolateRegulation(context, cp, regulation, course_condition)
+    {
+        if (regulation == nil && course_condition == nil)
+            return [false, false, false, false, false, false];
+
+        var power_list = cp.getPower();
+        var power = power_list[0].toInt();
+        var weight = cp.getWeight();
+        var aspiration = cp.getAspirationType();
+        var pp = cp.getPP1000();
+        |var tire_f, var tire_r| = cp.getTireCategories();
+        var violate_power = false;
+        var violate_weight = false;
+        var violate_aspiration = false;
+        var violate_pp = false;
+        var violate_tire_f = false;
+        var violate_tire_r = false;
+
+        if (regulation != nil)
+        {
+            if (regulation.limit_power > 0)
+                violate_power = regulation.limit_power < power;
+
+            if (regulation.limit_weight > 0)
+                violate_weight = regulation.limit_weight < weight;
+
+            if (regulation.need_weight > 0 && !violate_weight)
+                violate_weight = regulation.need_weight > weight;
+
+            if (regulation.need_aspiration > 0)
+                violate_aspiration = 0 == (aspiration & regulation.need_aspiration);
+
+            if (regulation.limit_pp > 0)
+                violate_pp = regulation.limit_pp < pp;
+
+            var invalid = gtengine::MGameParameter::INVALID_VALUE_INT;
+            if ((regulation.need_tire_f != invalid && tire_f < regulation.need_tire_f) || 
+                (regulation.limit_tire_f != invalid && !gtengine::MRegulationUtility::checkLimitTire(tire_f, regulation.limit_tire_f)))
+                violate_tire_f = true;
+
+            if ((regulation.need_tire_r != invalid && tire_r < regulation.need_tire_r) || 
+                (regulation.limit_tire_r != invalid && !gtengine::MRegulationUtility::checkLimitTire(tire_r, regulation.limit_tire_r)))
+                violate_tire_r = true;
+        }
+
+        if (course_condition != nil)
+        {
+            if (course_condition == gtengine::CourseCondition::DRY)
+            {
+                if (tire_f >= gtengine::PARTS_TIRE::DIRT_A)
+                    violate_tire_f = true;
+
+                if (tire_r >= gtengine::PARTS_TIRE::DIRT_A)
+                    violate_tire_r = true;
+            }
+            else if (course_condition == gtengine::CourseCondition::DIRT)
+            {
+                if (tire_f != gtengine::PARTS_TIRE::DIRT_A)
+                    violate_tire_f = true;
+
+                if (tire_r != gtengine::PARTS_TIRE::DIRT_A)
+                    violate_tire_r = true;
+            }
+            else if (course_condition == gtengine::CourseCondition::SNOW)
+            {
+                if (tire_f != gtengine::PARTS_TIRE::SNOW_A)
+                    violate_tire_f = true;
+
+                if (tire_r != gtengine::PARTS_TIRE::SNOW_A)
+                    violate_tire_r = true;
+            }
+        }
+
+        return [violate_power, violate_weight, violate_aspiration, violate_pp, violate_tire_f, violate_tire_r];
+    }
+}

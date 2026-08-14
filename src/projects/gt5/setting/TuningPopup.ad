@@ -1,0 +1,1661 @@
+module ROOT
+{
+    module Mode
+    {
+        static SUSPENSION = 1;
+        static VARIABLE_CENTER_DIFF = 2;
+        static LSD = 3;
+        static BALLAST = 4;
+        static AERO = 5;
+        static BRAKE_CONTROLLER = 6;
+        static AIR_RESTRICTOR = 7;
+        static AYC_CONTROLLER = 8;
+        static TURBO = 9;
+        static GEAR = 10;
+    }
+
+    hidden.visible = false;
+
+    attribute popup;
+    attribute closed = false;
+    attribute result;
+    attribute mode;
+    attribute cp;
+    attribute regulation;
+    attribute manual_project;
+
+    static SUSPENSION_AUTO = [
+        ["type" : hidden::ItemSlider, 
+        "name" : "Suspension", 
+        "key1" : "MOVEMENT", 
+        "key2" : "COMFORT"]
+    ];
+
+    static SUSPENSION_MANUAL = [
+        ["type" : hidden::ItemSliderLR, "name" : "RideHeight", "key" : "RIDE_HEIGHT0"], 
+        ["type" : hidden::ItemSliderLR, "name" : "SpringRate", "key" : "SPRING_RATE"], 
+        ["type" : hidden::ItemSliderLR, "name" : "DamperBump", "key" : "DAMPER_BUMP"], 
+        ["type" : hidden::ItemSliderLR, "name" : "DamperRebump", "key" : "DAMPER_REBUMP"], 
+        ["type" : hidden::ItemSliderLR, "name" : "Stabilizer", "key" : "STABILIZER"]
+    ];
+
+    static SUSPENSION_MANUAL0 = [
+        ["type" : hidden::ItemSliderLR, "name" : "RideHeight", "key" : "RIDE_HEIGHT0"], 
+        ["type" : hidden::ItemSliderLR, "name" : "SpringRate", "key" : "SPRING_RATE"], 
+        ["type" : hidden::ItemSliderLR, "name" : "Damper", "key" : "DAMPER"],  
+        ["type" : hidden::ItemSliderLR, "name" : "Stabilizer", "key" : "STABILIZER"]
+    ];
+
+    static ALIGNMENT_AUTO = [
+        ["type" : hidden::ItemSlider, "name" : "Alignment", "key1" : "SPEED", "key2" : "CORNERING"]
+    ];
+
+    static ALIGNMENT_MANUAL = [
+        ["type" : hidden::ItemSliderLR, "name" : "Camber", : "key" : "CAMBER"], 
+        ["type" : hidden::ItemSliderLR, "name" : "Toe", "key" : "TOE"]
+    ];
+
+    static VARIABLE_CENTER_DIFF_AUTO = [
+        ["type" : hidden::ItemSlider, "name" : "VariableCenterDiff", "key1" : "FRONT", "key2" : "REAR"]
+    ];
+
+    static VARIABLE_CENTER_DIFF_MANUAL = [
+        ["type" : hidden::ItemSliderLR, "name" : "VariableCenterDiff", "key" : "VARIABLECENTERDIFF"]
+    ];
+
+    static LSD_AUTO = [
+        ["type" : hidden::ItemSlider, "name" : "LsdAccel", "key1" : "ACCEL_STABILITY", "key2" : "TURNING"], 
+        ["type" : hidden::ItemSlider, "name" : "LsdBrake", "key1" : "BRAKE_STABILITY", "key2" : "TURNING"]
+    ];
+
+    static LSD_MANUAL = [
+        ["type" : hidden::ItemSliderLR, "name" : "InitialTorque", "key" : "LSD_INITIAL_TORQUE"], 
+        ["type" : hidden::ItemSliderLR, "name" : "Accel", "key" : "LSD_ACCEL"], 
+        ["type" : hidden::ItemSliderLR, "name" : "Brake", "key" : "LSD_BRAKE"]
+    ];
+
+    static BALLAST_MANUAL = [
+        ["type" : hidden::ItemSliderLR, "name" : "BallastWeight", "key" : "BALLAST_MOUNT", "no_front" : true], 
+        ["type" : hidden::ItemSliderLR, "name" : "BallastPosition", "key" : "BALLAST_POSITION", "no_front" : true]
+    ];
+
+    static AERO_AUTO = [];
+
+    static AERO_MANUAL = [
+        ["type" : hidden::ItemSliderLR, "name" : "DownForce", "key" : "DOWN_FORCE"]
+    ];
+
+    static BRAKE_CONTROLLER_AUTO = [];
+
+    static BRAKE_CONTROLLER_MANUAL = [
+        ["type" : hidden::ItemSliderLR, "name" : "BrakeController", "key" : "BRAKECONTROLLER"]
+    ];
+
+    static AIR_RESTRICTOR_MANUAL = [
+        ["type" : hidden::ItemSliderLR, "name" : "Air", "key" : "AIR_RESTRICTOR_LEVEL", "no_front" : true]
+    ];
+
+    static AYC_CONTROLLER_MANUAL = [
+        ["type" : hidden::ItemSliderLR, "name" : "AycController", "key" : "AYC_STRENGTH", "no_front" : true]
+    ];
+
+    static TURBO_MANUAL = [
+        ["type" : hidden::ItemSliderLR, "name" : "Turbo", "key" : "TURBO_CONTROLLER", "no_front" : true]
+    ];
+
+    static GEAR_AUTO = [
+        ["type" : hidden::ItemSlider, "name" : "Gear", "key1" : "A", "key2" : "V"]
+    ];
+
+    static GEAR_MANUAL = [
+        ["type" : hidden::ItemSliderGear, "name" : "Gear1_2",   "key1" : "GEAR1",  "key2" : "GEAR2"], 
+        ["type" : hidden::ItemSliderGear, "name" : "Gear3_4",   "key1" : "GEAR3",  "key2" : "GEAR4"], 
+        ["type" : hidden::ItemSliderGear, "name" : "Gear5_6",   "key1" : "GEAR5",  "key2" : "GEAR6"], 
+        ["type" : hidden::ItemSliderGear, "name" : "Gear7_8",   "key1" : "GEAR7",  "key2" : "GEAR8"], 
+        ["type" : hidden::ItemSliderGear, "name" : "Gear9_10",  "key1" : "GEAR9",  "key2" : "GEAR10"], 
+        ["type" : hidden::ItemSliderGear, "name" : "Gear11_12", "key1" : "GEAR11", "key2" : nil], 
+        ["type" : hidden::ItemSliderGear, "name" : "GearFinal", "key1" : nil,      "key2" : "GEAR_FINAL"], 
+        ["type" : hidden::ItemSliderGear, "name" : "MaxSpeed",  "key1" : nil,      "key2" : "MAX_SPEED_AUTO"]
+    ];
+
+    method open(context, cp, regulation, mode)
+    {
+        self.manual_project = nil;
+        self.mode = mode;
+        self.cp = cp;
+        self.regulation = regulation;
+        self.result = true;
+        self.closed = false;
+        self.popup = main::SequenceUtil::ModalPage(context, ROOT);
+        self.popup.open();
+
+        return self.result;
+    }
+
+    method close(context)
+    {
+        if (self.closed)
+            return;
+
+        self.closed = true;
+        ContextMain.event_mask = 5;
+        ContextMain.disableInput();
+
+        FadeActor.on_effect_end = function (context)
+        {
+            if (ROOT.popup != nil)
+            {
+                ROOT.popup.close();
+                ROOT.popup = nil;
+            }
+
+            ContextMain.enableInput();
+        };
+
+        FadeActor.out = true;
+    }
+
+    method abort(context)
+    {
+        if (__projects__.defined("ManualProject"))
+            ManualProject::ManualDetailPopup.abort(context);
+
+        self.result = false;
+        self.close(context);
+        ContextMain.enableInput();
+        context.cursor_visible = true;
+    }
+
+    method onInitialize(context)
+    {
+        ButtonHelpGT5.set(context, [
+            [ButtonHelpGT5.getEnterButtonName(), context.translate(ROOT, "Component", "Enter")], 
+            [ButtonHelpGT5.getCancelButtonName(), context.translate(ROOT, "Component", "Cancel")]
+        ]);
+
+        self.cp.permanentlyBeginInfo();
+        self.cp.beginSetting();
+        createWidget(context);
+        reflect(context);
+
+        return EVENTRESULT_FILTER;
+    }
+
+    method reflect(context)
+    {
+        switch (self.mode)
+        {
+            case Mode::SUSPENSION:
+                reflectSuspension(context);
+                break;
+            case Mode::VARIABLE_CENTER_DIFF:
+                reflectVariableCenterDiff(context);
+                break;
+            case Mode::LSD:
+                reflectLsd(context);
+                break;
+            case Mode::BALLAST:
+                reflectBallast(context);
+                break;
+            case Mode::AERO:
+                reflectAero(context);
+                break;
+            case Mode::BRAKE_CONTROLLER:
+                reflectBrakeController(context);
+                break;
+            case Mode::AIR_RESTRICTOR:
+                reflectAirRestrictor(context);
+                break;
+            case Mode::AYC_CONTROLLER:
+                reflectAycController(context);
+                break;
+            case Mode::TURBO:
+                reflectTurbo(context);
+                break;
+            case Mode::GEAR:
+                reflectGear(context);
+                break;
+        }
+    }
+
+    method setupSlider2(context, slider, min, max, value)
+    {
+        slider.min = min;
+        slider.max = max;
+        slider.index = value;
+        slider.setup(context);
+        slider.insensitive = min == max;
+    }
+
+    method setupSliderDiff(context, slider, min, max, default_value, value)
+    {
+        slider.default_value = default_value;
+        slider.min = min - default_value;
+        slider.max = max - default_value;
+        slider.index = value - default_value;
+        slider.setup(context);
+        slider.insensitive = min == max;
+    }
+
+    method reflectSuspension(context)
+    {
+        var suspension_info = cp.getSettingInfoSuspension();
+
+        {
+            var manual_root = PlaceHolder::HBox["Suspension"].Body::Category::Manual::PlaceHolder;
+
+            setupSliderDiff(context, manual_root.RideHeight::sliderF, suspension_info.rideheightMINF, suspension_info.rideheightMAXF, 
+                suspension_info.rideheightDFF, cp.FrontRideheight);
+            setupSliderDiff(context, manual_root.RideHeight::sliderR, suspension_info.rideheightMINR, suspension_info.rideheightMAXR, 
+                suspension_info.rideheightDFR, cp.RearRideheight);
+
+            manual_root.SpringRate::sliderF.format_callback = format_func1_10;
+            manual_root.SpringRate::sliderR.format_callback = format_func1_10;
+
+            setupSlider2(context, manual_root.SpringRate::sliderF, 
+            suspension_info.springrateMINF, suspension_info.springrateMAXF, cp.FrontSpringRate);
+            setupSlider2(context, manual_root.SpringRate::sliderR, 
+            suspension_info.springrateMINR, suspension_info.springrateMAXR, cp.RearSpringRate);
+
+            if (manual_root["Damper"] != nil)
+            {
+                setupSlider2(context, manual_root.Damper::sliderF, 1, suspension_info.damplevelBF, cp.FrontDamperF1B);
+                setupSlider2(context, manual_root.Damper::sliderR, 1, suspension_info.damplevelBR, cp.RearDamperF1B);
+            }
+
+            if (manual_root["DamperBump"] != nil)
+            {
+                setupSlider2(context, manual_root.DamperBump::sliderF, 1, suspension_info.damplevelBF, cp.FrontDamperF1B);
+                setupSlider2(context, manual_root.DamperBump::sliderR, 1, suspension_info.damplevelBR, cp.RearDamperF1B);
+            }
+
+            if (manual_root["DamperRebump"] != nil)
+            {
+                setupSlider2(context, manual_root.DamperRebump::sliderF, 1, suspension_info.damplevelRF, cp.FrontDamperF1R);
+                setupSlider2(context, manual_root.DamperRebump::sliderR, 1, suspension_info.damplevelRR, cp.RearDamperF1R);
+            }
+
+            var stabilizer_min = 1;
+            setupSlider2(context, manual_root.Stabilizer::sliderF, stabilizer_min, suspension_info.stabilizerFlevel, cp.FrontStabilizer);
+            setupSlider2(context, manual_root.Stabilizer::sliderR, stabilizer_min, suspension_info.stabilizerRlevel, cp.RearStabilizer);
+        }
+
+        {
+            var manual_root = PlaceHolder::HBox["Alignment"].Body::Category::Manual::PlaceHolder;
+            manual_root.Camber::sliderF.format_callback = format_func1_10;
+            manual_root.Camber::sliderR.format_callback = format_func1_10;
+
+            setupSlider2(context, manual_root.Camber::sliderF, suspension_info.camberMINF, suspension_info.camberMAXF, cp.FrontCamber);
+            setupSlider2(context, manual_root.Camber::sliderR, suspension_info.camberMINR, suspension_info.camberMAXR, cp.RearCamber);
+
+            manual_root.Toe::sliderF.format_callback = format_func1_100;
+            manual_root.Toe::sliderR.format_callback = format_func1_100;
+
+            setupSlider2(context, manual_root.Toe::sliderF, suspension_info.toeMINF, suspension_info.toeMAXF, cp.FrontToe);
+            setupSlider2(context, manual_root.Toe::sliderR, suspension_info.toeMINR, suspension_info.toeMAXR, cp.RearToe);
+        }
+
+        suspension_info = nil;
+    }
+
+    function format_func5(context, value)
+    {
+        return 5 * value.toInt();
+    }
+
+    method reflectVariableCenterDiff(context)
+    {
+        var drivetrain_info = cp.getSettingInfoDriveTrain();
+
+        var manual_root = PlaceHolder::HBox["VariableCenterDiff"].Body::Category::Manual::PlaceHolder;
+        manual_root.VariableCenterDiff::sliderF.format_callback = format_func5;
+
+        setupSlider2(context, manual_root.VariableCenterDiff::sliderF, 
+            drivetrain_info.param4WDMIN / 5, drivetrain_info.param4WDMAX / 5, cp.Param4WD / 5);
+
+        manual_root.VariableCenterDiff::sliderR.format_callback = format_func5;
+
+        setupSlider2(context, manual_root.VariableCenterDiff::sliderR, 
+            (100 - drivetrain_info.param4WDMAX) / 5, (100 - drivetrain_info.param4WDMIN) / 5, (100 - cp.Param4WD) / 5);
+
+        drivetrain_info = nil;
+    }
+
+    method reflectBrakeController(context)
+    {
+        var brake_controller_info = cp.getSettingInfoBrakeController();
+
+        var manual_root = PlaceHolder::HBox["BrakeController"].Body::Category::Manual::PlaceHolder;
+        var min = 0;
+        var max = 10;
+        setupSlider2(context, manual_root.BrakeController::sliderF, min, max, cp.FrontBrakeBalanceLevel);
+        setupSlider2(context, manual_root.BrakeController::sliderR, min, max, cp.RearBrakeBalanceLevel);
+
+        brake_controller_info = nil;
+    }
+
+    method reflectLsd(context)
+    {
+        var lsd_info = cp.getSettingInfoLSD();
+        var manual_root = PlaceHolder::HBox["Lsd"].Body::Category::Manual::PlaceHolder;
+
+        setupSlider2(context, manual_root.InitialTorque::sliderF, lsd_info.LSDparamFMIN, lsd_info.LSDparamFMAX, cp.FrontLSDParam);
+        setupSlider2(context, manual_root.InitialTorque::sliderR, lsd_info.LSDparamRMIN, lsd_info.LSDparamRMAX, cp.RearLSDParam);
+
+        setupSlider2(context, manual_root.Accel::sliderF, lsd_info.LSDparam2FMIN, lsd_info.LSDparam2FMAX, cp.FrontLSDParam2);
+        setupSlider2(context, manual_root.Accel::sliderR, lsd_info.LSDparam2RMIN, lsd_info.LSDparam2RMAX, cp.RearLSDParam2);
+
+        setupSlider2(context, manual_root.Brake::sliderF, lsd_info.LSDparam3FMIN, lsd_info.LSDparam3FMAX, cp.FrontLSDParam3);
+        setupSlider2(context, manual_root.Brake::sliderR, lsd_info.LSDparam3RMIN, lsd_info.LSDparam3RMAX, cp.RearLSDParam3);
+
+        lsd_info = nil;
+    }
+
+    method reflectBallast(context)
+    {
+        var manual_root = PlaceHolder::HBox["Ballast"].Body::Category::Manual::PlaceHolder;
+
+        setupSlider2(context, manual_root.BallastWeight::sliderR, 0, 200, cp.ballastWeight);
+        setupSlider2(context, manual_root.BallastPosition::sliderR, -50, 50, cp.ballastPosition);
+
+        var image_item_root = PlaceHolder::HBox["Ballast"].Body::Image::ImageItem["Ballast"];
+        image_item_root.BallastPosition::Rear.visible = false;
+        reflectBallastParameter(context);
+    }
+
+    method reflectBallastParameter(context)
+    {
+        var image_item_root = PlaceHolder::HBox["Ballast"].Body::Image::ImageItem["Ballast"];
+        image_item_root.Weight::SBox::TextFace.text = cp.getWeight();
+        image_item_root.Weight::TextFace.text = pdiext::MUnit::GetUnitOfMass();
+        image_item_root.Performance::SBox::TextFace.text = cp.getPP1000();
+        image_item_root.Performance::TextFace.text = context.translate(ROOT, "Unit", "PTS");
+
+        |var violate_power, var violate_weight, var violate_aspiration, var violate_pp| = isViolateRegulation(context, cp, ROOT.regulation);
+
+        image_item_root.Weight.active = violate_weight;
+        image_item_root.Performance.active = violate_pp;
+
+        var ballast_front = cp.getFrontWeightPercentage();
+        image_item_root.BallastPosition::labelF.text = ballast_front;
+        image_item_root.BallastPosition::labelR.text = 100 - ballast_front;
+    }
+
+    method reflectAero(context)
+    {
+        var chassis_info = cp.getSettingInfoChassis();
+        var manual_root = PlaceHolder::HBox["Aero"].Body::Category::Manual::PlaceHolder;
+        setupSlider2(context, manual_root.DownForce::sliderF, chassis_info.clMINF, chassis_info.clMAXF, cp.FrontCl);
+
+        var minR = chassis_info.clMINR;
+        var maxR = chassis_info.clMAXR;
+        var wing_info = cp.getSettingInfoWing();
+
+        if (wing_info != nil)
+        {
+            minR += wing_info.clMINR_plus;
+            maxR += wing_info.clMAXR_plus;
+        }
+
+        wing_info = nil;
+        setupSlider2(context, manual_root.DownForce::sliderR, minR, maxR, cp.RearCl);
+        chassis_info = nil;
+        reflectAeroParameter(context);
+    }
+
+    method reflectAeroParameter(context)
+    {
+        var image_item_root = PlaceHolder::HBox["Aero"].Body::Image::ImageItem["Aero"];
+        image_item_root.Performance::SBox::TextFace.text = cp.getPP1000();
+        image_item_root.Performance::TextFace.text = context.translate(ROOT, "Unit", "PTS");
+        |var violate_power, var violate_weight, var violate_aspiration, var violate_pp| = isViolateRegulation(context, cp, ROOT.regulation);
+        image_item_root.Performance.active = violate_pp;
+    }
+
+    method reflectAirRestrictor(context)
+    {
+        var manual_root = PlaceHolder::HBox["AirRestrictor"].Body::Category::Manual::PlaceHolder;
+
+        if (cp.restrictorPermill == 0)
+            cp.restrictorPermill = 1000;
+
+        var ps0 = 0;
+
+        {
+            var cp0 = gtengine::MCarParameter();
+            cp0.deepCopy(cp);
+            cp0.restrictorPermill = 1000;
+
+            cp0.beginInfo();
+            var power_list = cp0.getPower();
+            ps0 = power_list[0];
+            cp0.endInfo();
+        }
+
+        manual_root.Air::sliderR.format_callback = format_func1_10;
+        manual_root.Air::sliderR.unit_text = "%";
+
+        if (ps0 < 50)
+        {
+            cp.restrictorPermill = 1000;
+            setupSlider2(context, manual_root.Air::sliderR, cp.restrictorPermill, cp.restrictorPermill, cp.restrictorPermill);
+        }
+        else
+        {
+            var maxps = ps0;
+            var minps = maxps * 0.5;
+
+            if (minps < 50)
+                minps = 50;
+            if (minps > (maxps * 0.9))
+                minps = maxps * 0.9;
+
+            var lower_permil = 1000 * (minps / maxps);
+
+            setupSlider2(context, manual_root.Air::sliderR, lower_permil, 1000, cp.restrictorPermill);
+        }
+
+        reflectAirRestrictorParameter(context);
+    }
+
+    method reflectAirRestrictorParameter(context)
+    {
+        var image_item_root = PlaceHolder::HBox["AirRestrictor"].Body::Image::ImageItem["AirRestrictor"];
+        var power_list = cp.getPower();
+
+        image_item_root.Power::SBox::TextFace.text = pdiext::MUnit::GetPowerForDisplay(power_list[0]);
+        image_item_root.Power::TextFace.text = pdiext::MUnit::GetUnitOfPower();
+        image_item_root.Performance::SBox::TextFace.text = cp.getPP1000();
+        image_item_root.Performance::TextFace.text = context.translate(ROOT, "Unit", "PTS");
+
+        |var violate_power, var violate_weight, var violate_aspiration, var violate_pp| = isViolateRegulation(context, cp, ROOT.regulation);
+        image_item_root.Power.active = violate_power;
+        image_item_root.Performance.active = violate_pp;
+    }
+
+    method reflectAycController(context)
+    {
+        var lsd_info = cp.getSettingInfoLSD();
+        var manual_root = PlaceHolder::HBox["AycController"].Body::Category::Manual::PlaceHolder;
+
+        setupSlider2(context, manual_root.AycController::sliderR, lsd_info.LSDparamRMIN, lsd_info.LSDparamRMAX, cp.RearLSDParam);
+
+        lsd_info = nil;
+    }
+
+    method reflectTurbo(context)
+    {
+        var manual_root = PlaceHolder::HBox["Turbo"].Body::Category::Manual::PlaceHolder;
+        setupSlider2(context, manual_root.Turbo::sliderR, 0, 0, 0);
+    }
+
+    method reflectGear(context)
+    {
+        updateGearGraph(context);
+        var gear_info = cp.getSettingInfoGear();
+
+        var default_gear_list = [
+            gear_info.Gear1st, gear_info.Gear2nd, gear_info.Gear3rd, gear_info.Gear4th, 
+            gear_info.Gear5th, gear_info.Gear6th, gear_info.Gear7th, gear_info.Gear8th, 
+            gear_info.Gear9th, gear_info.Gear10th, gear_info.Gear11th
+        ];
+
+        var gear_list = [
+            self.cp.Gear1st, self.cp.Gear2nd, self.cp.Gear3rd, self.cp.Gear4th, 
+            self.cp.Gear5th, self.cp.Gear6th, self.cp.Gear7th, self.cp.Gear8th, 
+            self.cp.Gear9th, self.cp.Gear10th, self.cp.Gear11th
+        ];
+
+        var rangeMin;
+        var rangeMax;
+
+        {
+            var tmp_cp = gtengine::MCarParameter();
+            tmp_cp.deepCopy(self.cp);
+            tmp_cp.FinalGearRatio = tmp_cp.GearLastFinal;
+            tmp_cp.quicktune_maxspeed = tmp_cp.quicktune_maxspeed;
+
+            var tmp_gear_list = [
+                tmp_cp.Gear1st, tmp_cp.Gear2nd, tmp_cp.Gear3rd, tmp_cp.Gear4th, 
+                tmp_cp.Gear5th, tmp_cp.Gear6th, tmp_cp.Gear7th, tmp_cp.Gear8th, 
+                tmp_cp.Gear9th, tmp_cp.Gear10th, tmp_cp.Gear11th
+            ];
+
+            |rangeMin, rangeMax| = tmp_cp.getGearRatioTuningRange(gear_info.Nshift, tmp_gear_list);
+        }
+
+        var manual_root = PlaceHolder::HBox["Gear"].Body::Category::Manual::PlaceHolder;
+        
+        // Gears
+        for (var i = 0; i < default_gear_list.size; i += 2)
+        {
+            var name = "Gear%d_%d".format(i + 1, i + 2);
+
+            if (gear_info.Nshift <= i)
+            {
+                if (manual_root[name].visible)
+                {
+                    manual_root[name].visible = false;
+                    var val = PlaceHolder::HBox["Gear"].Body::Category::Manual::ScalarInterpolator.getEndValue(0);
+
+                    PlaceHolder::HBox["Gear"].Body::Category::Manual::ScalarInterpolator.setEndValue(0, val - manual_root[name].h)
+                }
+
+                continue;
+            }
+
+            var sliderL = manual_root[name].sliderL;
+            var sliderR = manual_root[name].sliderR;
+            sliderL.format_callback = format_func;
+            sliderR.format_callback = format_func;
+
+            setupSlider2(context, sliderL, rangeMin[i], rangeMax[i], gear_list[i]);
+            setupSlider2(context, sliderR, rangeMin[i + 1], rangeMax[i + 1], gear_list[i + 1]);
+
+            var showR = i + 1 < gear_info.Nshift;
+            manual_root[name].TextFaceR.visible = showR;
+            sliderR.visible = showR;
+
+            var flag = gear_info.gearflag == 0 || gear_info.maxspeedMIN == gear_info.maxspeedMAX;
+            sliderL.insensitive = flag;
+            sliderR.insensitive = flag;
+        }
+
+        // Final Gear
+        {
+            var slider = manual_root["GearFinal"].sliderR;
+            slider.format_callback = format_func;
+
+            setupSlider2(context, slider, gear_info.finalgearMIN, gear_info.finalgearMAX, self.cp.FinalGearRatio);
+            slider.insensitive = gear_info.finalgearMIN == gear_info.finalgearMAX;
+        }
+
+        // Max Speed
+        {
+            var slider = manual_root["MaxSpeed"].sliderR;
+            slider.format_callback = format_funcMaxGear;
+
+            setupSlider2(context, slider, gear_info.maxspeedMIN, gear_info.maxspeedMAX, self.cp.quicktune_maxspeed);
+
+            if (!slider.insensitive)
+                slider.insensitive = 0 == gear_info.gearflag;
+        }
+
+        gear_info = nil;
+    }
+
+    method updateGearNth(context)
+    {
+        var gear_list = [
+            self.cp.Gear1st, self.cp.Gear2nd, self.cp.Gear3rd, self.cp.Gear4th, 
+            self.cp.Gear5th, self.cp.Gear6th, self.cp.Gear7th, self.cp.Gear8th, 
+            self.cp.Gear9th, self.cp.Gear10th, self.cp.Gear11th
+        ];
+
+        var gear_info = cp.getSettingInfoGear();
+        var rangeMin;
+        var rangeMax;
+
+        {
+            var tmp_cp = gtengine::MCarParameter();
+            tmp_cp.deepCopy(self.cp);
+            tmp_cp.FinalGearRatio = tmp_cp.GearLastFinal;
+            tmp_cp.quicktune_maxspeed = tmp_cp.quicktune_maxspeed;
+
+            var tmp_gear_list = [
+                tmp_cp.Gear1st, tmp_cp.Gear2nd, tmp_cp.Gear3rd, tmp_cp.Gear4th, 
+                tmp_cp.Gear5th, tmp_cp.Gear6th, tmp_cp.Gear7th, tmp_cp.Gear8th, 
+                tmp_cp.Gear9th, tmp_cp.Gear10th, tmp_cp.Gear11th
+            ];
+
+            |rangeMin, rangeMax| = tmp_cp.getGearRatioTuningRange(gear_info.Nshift, tmp_gear_list);
+        }
+
+        var manual_root = PlaceHolder::HBox["Gear"].Body::Category::Manual::PlaceHolder;
+
+        for (var i = 0; i < gear_list.size; i += 2)
+        {
+            var name = "Gear%d_%d".format(i + 1, i + 2);
+
+            if (!manual_root[name].visible)
+                continue;
+
+            var sliderL = manual_root[name].sliderL;
+            var sliderR = manual_root[name].sliderR;
+
+            setupSlider2(context, sliderL, rangeMin[i], rangeMax[i], gear_list[i]);
+            setupSlider2(context, sliderR, rangeMin[i + 1], rangeMax[i + 1], gear_list[i + 1]);
+
+            var flag = 0 == gear_info.gearflag || gear_info.maxspeedMIN == gear_info.maxspeedMAX;
+            sliderL.insensitive = flag;
+            sliderR.insensitive = flag;
+        }
+
+        gear_info = nil;
+    }
+
+    method updateGearGraph(context)
+    {
+        self.cp.permanentlyBeginInfo();
+        var gear_data = self.cp.buildGearRatioData();
+        |var shiftNum, var endSpeed, var startRPM, var endRPM| = self.cp.getGearRatioInfo();
+
+        var graph = PlaceHolder::HBox["Gear"].Body::Image::PlaceHolder::ItemGraph::Graph;
+        graph.gf.points = gear_data;
+        graph.gf.scale = [1.0, -1.0];
+        var max_rpm = 1.0;
+
+        for (var i = 1; i <= shiftNum; ++i)
+        {
+            if (max_rpm < endRPM[i])
+                max_rpm = endRPM[i];
+        }
+
+        var item = PlaceHolder::HBox["Gear"].Body::Image::PlaceHolder::ItemGraph;
+
+        {
+            var line = graph.line;
+
+            var lineY = graph.gf.h * (1.0 - (endRPM[1].toFloat() / max_rpm));
+            line.y = (lineY - (line.h * 0.5)) + 0.5;
+            var margin = 6;
+
+            if (line.y < (item.RPM.h + line.h) + margin)
+                item.RPM.y = (line.y + line.h) + margin;
+            else
+                item.RPM.y = (line.y - margin) - item.RPM.h;
+        }
+
+        item.TextFaceSpeed.text = pdiext::MUnit::GetVelocityForDisplay(endSpeed[shiftNum]);
+        item.RPM::TextFaceRPM.text = max_rpm;
+    }
+
+    function format_func(context, value)
+    {
+        return "%.3t".format(value);
+    }
+
+    function format_funcMaxGear(context, value)
+    {
+        var kmph = 10 * value.toInt();
+        return pdiext::MUnit::GetVelocityForDisplay(kmph);
+    }
+
+    function format_func1_10(context, value)
+    {
+        return "%.1t".format(value);
+    }
+
+    function format_func1_100(context, value)
+    {
+        return "%.2t".format(value);
+    }
+
+    method createWidget(context)
+    {
+        var setting_list;
+
+        switch (self.mode)
+        {
+            case Mode::SUSPENSION:
+                var category = self.cp.getParts(gtengine::CarPartsType::SUSPENSION);
+
+                if (category == gtengine::PARTS_SUSPENSION::RACING)
+                {
+                    setting_list = [
+                        ["title" : "Suspension", "auto" : SUSPENSION_AUTO, "manual" : SUSPENSION_MANUAL, "default" : "manual", "help" : 1], 
+                        ["title" : "Alignment", "auto" : ALIGNMENT_AUTO, "manual" : ALIGNMENT_MANUAL, "default" : "manual", "help" : 2]
+                    ];
+                }
+                else
+                {
+                    setting_list = [
+                        ["title" : "Suspension", "auto" : SUSPENSION_AUTO, "manual" : SUSPENSION_MANUAL0, "default" : "manual", "help" : 1], 
+                        ["title" : "Alignment", "auto" : ALIGNMENT_AUTO, "manual" : ALIGNMENT_MANUAL, "default" : "manual", "help" : 2]
+                    ];
+                }
+
+                break;
+
+            case Mode::VARIABLE_CENTER_DIFF:
+                setting_list = [
+                    ["title" : "VariableCenterDiff", "auto" : VARIABLE_CENTER_DIFF_AUTO, "manual" : VARIABLE_CENTER_DIFF_MANUAL, "default" : "manual", "help" : 8]
+                ];
+
+                break;
+                
+            case Mode::LSD:
+                setting_list = [
+                    ["title" : "Lsd", "auto" : LSD_AUTO, "manual" : LSD_MANUAL, "default" : "manual", "help" : 3]
+                ];
+
+                break;
+
+            case Mode::BALLAST:
+                setting_list = [
+                    ["title" : "Ballast", "auto" : nil, "manual" : BALLAST_MANUAL, "default" : "manual", "help" : 11]
+                ];
+
+                break;
+
+            case Mode::AERO:
+                setting_list = [
+                    ["title" : "Aero", "auto" : AERO_AUTO, "manual" : AERO_MANUAL, "default" : "manual", "help" : 5]
+                ];
+
+                break;
+
+            case Mode::BRAKE_CONTROLLER:
+                setting_list = [
+                    ["title" : "BrakeController", "auto" : BRAKE_CONTROLLER_AUTO, "manual" : BRAKE_CONTROLLER_MANUAL, "default" : "manual", "help" : 6]
+                ];
+
+                break;
+
+            case Mode::AIR_RESTRICTOR:
+                setting_list = [
+                    ["title" : "AirRestrictor", "auto" : nil, "manual" : AIR_RESTRICTOR_MANUAL, "default" : "manual", "help" : 9]
+                ];
+
+                break;
+
+            case Mode::AYC_CONTROLLER:
+                setting_list = [
+                    ["title" : "AycController", "auto" : nil, "manual" : AYC_CONTROLLER_MANUAL, "default" : "manual", "help" : 7]
+                ];
+
+                break;
+
+            case Mode::TURBO:
+                setting_list = [
+                    ["title" : "Turbo", "auto" : nil, "manual" : TURBO_MANUAL, "default" : "manual", "help" : 10]
+                ];
+
+                break;
+
+            case Mode::GEAR:
+                setting_list = [
+                    ["title" : "Gear", "auto" : GEAR_AUTO, "manual" : GEAR_MANUAL, "default" : "manual", "help" : 4]
+                ];
+
+                break;
+        }
+
+        PlaceHolder::HBox.clearChild(context);
+
+        foreach (var setting in setting_list)
+        {
+            var item = hidden::ItemPane.doCopy();
+            item.initialize(context, setting["title"], setting["help"]);
+            PlaceHolder::HBox.appendChild(context, item);
+            item.doInitialize(context);
+
+            if (self.mode == Mode::GEAR)
+            {
+                item.Body::Image.h += 120;
+                var item1 = hidden::ItemGraph.doCopy();
+                item.Body::Image::PlaceHolder.appendChild(context, item1);
+            }
+
+            var auto_setting_list = setting["auto"];
+            var manual_setting_list = setting["manual"];
+            if (manual_setting_list != nil)
+            {
+                var h = item.Body::Category::Manual::PlaceHolder.pack_pad_bottom + item.Body::Category::Manual::Footer.h;
+                var item0 = hidden::ItemTitle.doCopy();
+                h += item0.h;
+                item0.TextFace.text = context.translate(ROOT, "QuickTune", "ADJUSTMENT_MANUAL");
+
+                if (self.mode == Mode::GEAR || self.mode == Mode::AIR_RESTRICTOR || self.mode == Mode::BALLAST)
+                {
+                    item0.TextFaceFront.visible = false;
+                    item0.TextFaceRear.visible = false;
+                }
+
+                item.Body::Category::Manual::PlaceHolder.appendChild(context, item0);
+
+                foreach (var manual_setting in manual_setting_list)
+                {
+                    var item1 = manual_setting["type"].doCopy();
+                    item1.name = manual_setting["name"];
+                    h += item1.h;
+
+                    item.Body::Category::Manual::PlaceHolder.appendChild(context, item1);
+                    item1.initialize(context, manual_setting);
+                }
+
+                item.Body::Category::Manual::ScalarInterpolator.setEndValue(0, h);
+            }
+
+            if (auto_setting_list != nil)
+            {
+                var h = item.Body::Category::Auto::PlaceHolder.pack_pad_bottom + item.Body::Category::Auto::Footer.h;
+                var item0 = hidden::ItemTitle.doCopy();
+                h += item0.h;
+
+                item0.TextFace.text = context.translate(ROOT, "QuickTune", "ADJUSTMENT_AUTO");
+                item.Body::Category::Auto::PlaceHolder.appendChild(context, item0);
+
+                foreach (var auto_setting in auto_setting_list)
+                {
+                    var item1 = auto_setting["type"].doCopy();
+                    item1.name = auto_setting["name"];
+                    h += item1.h;
+
+                    item.Body::Category::Auto::PlaceHolder.appendChild(context, item1);
+                    item1.initialize(context, auto_setting);
+                }
+
+                item.Body::Category::Auto::ScalarInterpolator.setStartValue(0, h);
+            }
+
+            var is_auto = setting["default"] == "auto";
+            item.Body::Category::Auto.insensitive = !is_auto;
+            item.Body::Category::Manual.insensitive = is_auto;
+
+            item.Body::Category::Auto::ScalarInterpolator.reverse = is_auto;
+            item.Body::Category::Manual::ScalarInterpolator.reverse = is_auto;
+            item.Body::Category::Auto::ScalarInterpolator.warp();
+            item.Body::Category::Manual::ScalarInterpolator.warp();
+
+            ROOT.setFocus(item.Body::Image::Help);
+            item.Body::Category::Auto::Footer::Button.insensitive = true;
+            item.Body::Category::Manual::Footer::Button.insensitive = true;
+        }
+    }
+
+    method onFinalize(context)
+    {
+        self.cp.endSetting();
+
+        if (self.manual_project != nil)
+        {
+            main::manager.unloadProject(self.manual_project);
+            self.manual_project = nil;
+        }
+    }
+
+    method onCancel(context)
+    {
+        main::sound.play("cancel");
+        close(context);
+        return EVENTRESULT_FILTER;
+    }
+
+    module hidden
+    {
+        module ItemPane
+        {
+            method initialize(context, title, help_id)
+            {
+                self.name = title;
+                self.Body::Title::TextFace.text = context.translate(ROOT, "QuickTune", title.upcase());
+                self.Body::Image::Help.help_id = help_id;
+
+                if (ROOT::hidden::ImageItem[title] != nil)
+                {
+                    var image_item = ROOT::hidden::ImageItem[title].doCopy();
+                    self.Body::Image::ImageItem.appendChild(context, image_item);
+                }
+
+                self.Body::Image::Help::InfoGray.visible = false;
+                self.Body::Image::Help::Info.visible = true;
+
+                var can_default = true;
+                if (title == "Suspension" || title == "Alignment")
+                {
+                    var category = ROOT.cp.getParts(gtengine::CarPartsType::SUSPENSION);
+                    if (category == gtengine::PARTS_SUSPENSION::NORMAL || category == gtengine::PARTS_SUSPENSION::SPORTS1)
+                        can_default = false;
+                }
+                else if (title == "Gear")
+                {
+                    var category = ROOT.cp.getParts(gtengine::CarPartsType::GEAR);
+                    if (category == gtengine::PARTS_GEAR::NORMAL || category == gtengine::PARTS_GEAR::CLOSE || category == gtengine::PARTS_GEAR::SUPER_CLOSE)
+                        can_default = false;
+                }
+                else if (title == "Lsd")
+                {
+                    var category = ROOT.cp.getParts(gtengine::CarPartsType::LSD);
+                    if (category == gtengine::PARTS_LSD::NORMAL)
+                        can_default = false;
+                }
+                else if (title == "VariableCenterDiff")
+                {
+                    var category = ROOT.cp.getParts(gtengine::CarPartsType::DRIVETRAIN);
+                    if (category == gtengine::PARTS_DRIVETRAIN::NORAML)
+                        can_default = false;
+                }
+
+                self.Body::Category::Auto::Footer::SetDefault.insensitive = !can_default;
+                self.Body::Category::Manual::Footer::SetDefault.insensitive = !can_default;
+            }
+
+            method setDefaultSuspension(context, cp)
+            {
+                var suspension_info = cp.getSettingInfoSuspension();
+
+                cp.FrontRideheight = suspension_info.rideheightDFF;
+                cp.RearRideheight = suspension_info.rideheightDFR;
+                cp.FrontSpringRate = suspension_info.springrateDFF;
+                cp.RearSpringRate = suspension_info.springrateDFR;
+                cp.FrontDamperF1B = suspension_info.dampF1BDFF;
+                cp.FrontDamperF2B = suspension_info.dampF1BDFF;
+                cp.FrontDamperF1R = suspension_info.dampF1BDFF;
+                cp.FrontDamperF2R = suspension_info.dampF1BDFF;
+                cp.RearDamperF1B = suspension_info.dampF1BDFR;
+                cp.RearDamperF2B = suspension_info.dampF1BDFR;
+                cp.RearDamperF1R = suspension_info.dampF1BDFR;
+                cp.RearDamperF2R = suspension_info.dampF1BDFR;
+                cp.FrontStabilizer = suspension_info.stabilizerDFF;
+                cp.RearStabilizer = suspension_info.stabilizerDFR;
+
+                suspension_info = nil;
+            }
+
+            method setDefaultAlignment(context, cp)
+            {
+                var suspension_info = cp.getSettingInfoSuspension();
+                
+                cp.FrontToe = suspension_info.toeDFF;
+                cp.RearToe = suspension_info.toeDFR;
+                cp.FrontCamber = suspension_info.camberDFF;
+                cp.RearCamber = suspension_info.camberDFR;
+
+                suspension_info = nil;
+            }
+
+            method setDefaultVariableCenterDiff(context, cp)
+            {
+                var drivetrain_info = cp.getSettingInfoDriveTrain();
+                cp.Param4WD = drivetrain_info.param4WDDF;
+                drivetrain_info = nil;
+            }
+
+            method setDefaultLsd(context, cp)
+            {
+                var lsd_info = cp.getSettingInfoLSD();
+
+                cp.FrontLSDParam = lsd_info.LSDparamFDF;
+                cp.RearLSDParam = lsd_info.LSDparamRDF;
+                cp.FrontLSDParam2 = lsd_info.LSDparam2FDF;
+                cp.RearLSDParam2 = lsd_info.LSDparam2RDF;
+                cp.FrontLSDParam3 = lsd_info.LSDparam3FDF;
+                cp.RearLSDParam3 = lsd_info.LSDparam3RDF;
+
+                lsd_info = nil;
+            }
+
+            method setDefaultAycController(context, cp)
+            {
+                var lsd_info = cp.getSettingInfoLSD();
+                cp.RearLSDParam = lsd_info.LSDparamRDF;
+                lsd_info = nil;
+            }
+
+            method setDefaultAero(context, cp)
+            {
+                var chassis_info = cp.getSettingInfoChassis();
+                cp.FrontCl = chassis_info.clDFF;
+                cp.RearCl = chassis_info.clDFR;
+
+                var wing_info = cp.getSettingInfoWing();
+                if (wing_info != nil)
+                    cp.RearCl += wing_info.clDFR_plus;
+
+                wing_info = nil;
+                chassis_info = nil;
+            }
+
+            method setDefaultBrakeController(context, cp)
+            {
+                cp.FrontBrakeBalanceLevel = gtengine::SettingDefault::BRAKE_BALANCE_LEVEL;
+                cp.RearBrakeBalanceLevel = gtengine::SettingDefault::BRAKE_BALANCE_LEVEL;
+            }
+
+            method setDefaultGear(context, cp)
+            {
+                var gear_info = cp.getSettingInfoGear();
+
+                cp.Gear1st = gear_info.Gear1st;
+                cp.Gear2nd = gear_info.Gear2nd;
+                cp.Gear3rd = gear_info.Gear3rd;
+                cp.Gear4th = gear_info.Gear4th;
+                cp.Gear5th = gear_info.Gear5th;
+                cp.Gear6th = gear_info.Gear6th;
+                cp.Gear7th = gear_info.Gear7th;
+                cp.Gear8th = gear_info.Gear8th;
+                cp.Gear9th = gear_info.Gear9th;
+                cp.Gear10th = gear_info.Gear10th;
+                cp.Gear11th = gear_info.Gear11th;
+                cp.FinalGearRatio = gear_info.finalgearDF;
+                cp.GearLastFinal = cp.FinalGearRatio;
+                cp.quicktune_maxspeed = gear_info.maxspeedDF;
+
+                gear_info = nil;
+            }
+
+            method setDefaultBallast(context, cp)
+            {
+                cp.ballastPosition = 0;
+                cp.ballastWeight = 0;
+            }
+
+            method setDefaultAirRestrictor(context, cp)
+            {
+                cp.restrictorPermill = 1000;
+            }
+
+            method setDefault(context)
+            {
+                if (!DialogUtil::openConfirmDialog(context, DialogUtil::YESNO, 
+                context.translate(ROOT, "QuickTune", "ARE_YOU_SURE_TO_SET_DEFAULT")))
+                    return;
+
+                var cp = ROOT.cp;
+                switch (self.name)
+                {
+                    case "Suspension":
+                        setDefaultSuspension(context, cp);
+                        break;
+                    case "Alignment":
+                        setDefaultAlignment(context, cp);
+                        break;
+                    case "VariableCenterDiff":
+                        setDefaultVariableCenterDiff(context, cp)
+                        break;
+                    case "Lsd":
+                        setDefaultLsd(context, cp);
+                        break;
+                    case "Aero":
+                        setDefaultAero(context, cp)
+                        break;
+                    case "BrakeController":
+                        setDefaultBrakeController(context, cp);
+                        break;
+                    case "AycController":
+                        setDefaultAycController(context, cp);
+                        break;
+                    case "Gear":
+                        setDefaultGear(context, cp);
+                        break;
+                    case "Ballast":
+                        setDefaultBallast(context, cp);
+                        break;
+                    case "AirRestrictor":
+                        setDefaultAirRestrictor(context, cp);
+                        break;
+                    default:
+                        break;
+                }
+
+                ROOT.reflect(context);
+            }
+
+            module Body
+            {
+                module Image::Help
+                {
+                    attribute help_id;
+
+                    method onActivate(context)
+                    {
+                        if (!__projects__.defined("ManualProject"))
+                            ROOT.manual_project = main::manager.loadProject("/%{main::PROJECT_ROOT_DIR}/manual/manual");
+
+                        if (__projects__.defined("ManualProject"))
+                        {
+                            main::sound.play("ok");
+                            ManualProject::ManualDetailPopup.open(context, ["Setting_%02d".format(help_id)], 0);
+                        }
+                        else
+                        {
+                            main::sound.play("disable");
+                        }
+
+                        return EVENTRESULT_FILTER;
+                    }
+                }
+
+                module Category
+                {
+                    module Auto::Footer
+                    {
+                        module Button
+                        {
+                            method onActivate(context)
+                            {
+                                main::sound.play("ok");
+                                Manual::ScalarInterpolator.on_effect_end = function (context)
+                                {
+                                    Manual::ScalarInterpolator.on_effect_end = nil;
+                                    context.cursor_visible = true;
+                                };
+
+                                Manual::ScalarInterpolator.out = true;
+                                Auto::ScalarInterpolator.out = true;
+                                context.cursor_visible = false;
+                                ROOT.setFocus(Manual::Footer::Button);
+                                Manual.insensitive = false;
+                                Auto.insensitive = true;
+
+                                return EVENTRESULT_FILTER;
+                            }
+                        }
+
+                        module SetDefault
+                        {
+                            method onActivate(context)
+                            {
+                                main::sound.play("ok");
+                                var target = self.parent.parent.parent.parent.parent;
+                                target.setDefault(context);
+                                return EVENTRESULT_FILTER;
+                            }
+                        }
+                    }
+
+                    module Manual::Footer
+                    {
+                        module Button
+                        {
+                            method onActivate(context)
+                            {
+                                main::sound.play("ok");
+                                Auto::ScalarInterpolator.on_effect_end = function (context)
+                                {
+                                    Auto::ScalarInterpolator.on_effect_end = nil;
+                                    context.cursor_visible = true;
+                                };
+
+                                Auto::ScalarInterpolator.out = false;
+                                Manual::ScalarInterpolator.out = false;
+                                context.cursor_visible = false;
+                                ROOT.setFocus(Auto::Footer::Button);
+                                Manual.insensitive = true;
+                                Auto.insensitive = false;
+
+                                return EVENTRESULT_FILTER;
+                            }
+                        }
+
+                        module SetDefault
+                        {
+                            method onActivate(context)
+                            {
+                                main::sound.play("ok");
+                                var target = self.parent.parent.parent.parent.parent;
+                                target.setDefault(context);
+                                return EVENTRESULT_FILTER;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        module ItemSliderLR
+        {
+            method initialize(context, setting)
+            {
+                self.TextFace.text = context.translate(ROOT, "QuickTune", setting["key"]);
+
+                if (setting["no_front"] != nil && setting["no_front"])
+                    self.sliderF.visible = false;
+                else
+                    self.sliderF.visible = true;
+
+                if (self.name == "Air")
+                    self.sliderR.step_factor = 100;
+                else if (self.name == "BallastWeight")
+                    self.sliderR.step_factor = 20;
+
+                self.doInitialize(context);
+            }
+
+            function findActorTarget(context, widget, name)
+            {
+                var body = widget.parent.parent.parent.parent.parent;
+                var image_item = body.Image::ImageItem.first[widget.parent.name];
+                return image_item[name];
+            }
+
+            function hideImage(context, widget, name)
+            {
+                var body = widget.parent.parent.parent.parent.parent;
+                var parent = body.Image::ImageItem.first;
+                var pname = widget.parent.name;
+
+                foreach (var label in ["RideHeight", "SpringRate", "DamperBump", "DamperRebump", "Damper"])
+                    parent[label][name].visible = label == pname;
+            }
+
+            function showImage(context, widget, name)
+            {
+                var body = widget.parent.parent.parent.parent.parent;
+                var parent = body.Image::ImageItem.first;
+                var pname = widget.parent.name;
+
+                foreach (var label in ["RideHeight", "SpringRate", "DamperBump", "DamperRebump", "Damper"])
+                    parent[label][name].visible = true;
+            }
+
+            module sliderF
+            {
+                attribute default_value;
+
+                method onFocusEnter(context)
+                {
+                    var target = findActorTarget(context, self, "Front");
+                    if (target != nil && target["ParallelActor"] != nil)
+                    {
+                        target.ParallelActor.restart();
+                        target.visible = true;
+                    }
+
+                    var name = self.parent.name;
+                    if (name == "RideHeight" || name == "SpringRate" || name == "DamperBump" || name == "DamperRebump" || name == "Damper")
+                    {
+                        hideImage(context, self, "Front");
+                    }
+
+                    return EVENTRESULT_CONTINUE;
+                }
+
+                method onFocusLeave(context)
+                {
+                    var target = findActorTarget(context, self, "Front");
+
+                    if (target != nil && target["ParallelActor"] != nil)
+                    {
+                        target.ParallelActor.reset();
+                    }
+
+                    var name = self.parent.name;
+                    if (name == "RideHeight" || name == "SpringRate" || name == "DamperBump" || name == "DamperRebump" || name == "Damper")
+                    {
+                        showImage(context, self, "Front");
+                    }
+
+                    return EVENTRESULT_FILTER;
+                }
+
+                method onValueChanged(context)
+                {
+                    __prototype__::onValueChanged(context);
+                    var cp = ROOT.cp;
+
+                    switch (self.parent.name)
+                    {
+                        case "RideHeight":
+                            cp.FrontRideheight = self.index + self.default_value;
+                            break;
+                        case "SpringRate":
+                            cp.FrontSpringRate = self.index;
+                            break;
+                        case "Damper":
+                            cp.FrontDamperF1B = self.index;
+                            cp.FrontDamperF2B = self.index;
+                            cp.FrontDamperF1R = self.index;
+                            cp.FrontDamperF2R = self.index;
+                            break;
+                        case "DamperBump":
+                            cp.FrontDamperF1B = self.index;
+                            cp.FrontDamperF2B = self.index;
+                            break;
+                        case "DamperRebump":
+                            cp.FrontDamperF1R = self.index;
+                            cp.FrontDamperF2R = self.index;
+                            break;
+                        case "Stabilizer":
+                            cp.FrontStabilizer = self.index;
+                            break;
+                        case "Camber":
+                            cp.FrontCamber = self.index;
+                            break;
+                        case "Toe":
+                            cp.FrontToe = self.index;
+                            break;
+                        case "InitialTorque":
+                            cp.FrontLSDParam = self.index;
+                            break;
+                        case "Accel":
+                            cp.FrontLSDParam2 = self.index;
+                            break;
+                        case "Brake":
+                            cp.FrontLSDParam3 = self.index;
+                            break;
+                        case "DownForce":
+                            cp.FrontCl = self.index;
+                            cp.permanentlyBeginInfo();
+                            ROOT.reflectAeroParameter(context);
+                            break;
+                        case "BrakeController":
+                            cp.FrontBrakeBalanceLevel = self.index;
+                            break;
+                        case "AycController":
+                            cp.FrontLSDParam = self.index;
+                            break;
+                        case "VariableCenterDiff":
+                            cp.Param4WD = 5 * self.index;
+                            break;
+                        default:
+                            break;
+                    }
+                }
+
+                method onPopupClosed(context)
+                {
+                    __prototype__::onPopupClosed(context);
+
+                    if (self.parent.name == "VariableCenterDiff")
+                    {
+                        self.parent.sliderR.value = 20 - self.value;
+                        self.parent.sliderR.reflect(context);
+                    }
+                }
+            }
+
+            module sliderR
+            {
+                attribute default_value;
+
+                method onFocusEnter(context)
+                {
+                    var target = findActorTarget(context, self, "Rear");
+                    if (target != nil && target["ParallelActor"] != nil)
+                    {
+                        target.ParallelActor.restart();
+                        target.visible = true;
+
+                        if (target.parent.name == "BallastWeight")
+                        {
+
+                        }
+                        else if (target.parent.name == "BallastPosition")
+                        {
+                            target.parent.parent.BallastWeight::Rear.visible = false;
+                            target.parent.parent.BallastPosition::Rear.visible = true;
+                        }
+                    }
+
+                    var name = self.parent.name;
+                    if (name == "RideHeight" || name == "SpringRate" || name == "DamperBump" || name == "DamperRebump" || name == "Damper")
+                        hideImage(context, self, "Rear");
+
+                    return EVENTRESULT_CONTINUE;
+                }
+
+                method onFocusLeave(context)
+                {
+                    var target = findActorTarget(context, self, "Rear");
+
+                    if (target != nil && target["ParallelActor"] != nil)
+                    {
+                        target.ParallelActor.reset();
+
+                        if (target.parent.name == "BallastWeight")
+                        {
+                            
+                        }
+                        else if (target.parent.name == "BallastPosition")
+                        {
+                            target.parent.parent.BallastWeight::Rear.visible = true;
+                            target.parent.parent.BallastPosition::Rear.visible = false;
+                        }
+                    }
+
+                    var name = self.parent.name;
+                    if (name == "RideHeight" || name == "SpringRate" || name == "DamperBump" || name == "DamperRebump" || name == "Damper")
+                        showImage(context, self, "Rear");
+
+                    return EVENTRESULT_FILTER;
+                }
+
+                method onValueChanged(context)
+                {
+                    __prototype__::onValueChanged(context);
+                    var cp = ROOT.cp;
+
+                    switch (self.parent.name)
+                    {
+                        case "RideHeight":
+                            cp.RearRideheight = self.index + self.default_value;
+                            break;
+                        case "SpringRate":
+                            cp.RearSpringRate = self.index;
+                            break;
+                        case "Damper":
+                            cp.RearDamperF1B = self.index;
+                            cp.RearDamperF2B = self.index;
+                            cp.RearDamperF1R = self.index;
+                            cp.RearDamperF2R = self.index;
+                            break;
+                        case "DamperBump":
+                            cp.RearDamperF1B = self.index;
+                            cp.RearDamperF2B = self.index;
+                            break;
+                        case "DamperRebump":
+                            cp.RearDamperF1R = self.index;
+                            cp.RearDamperF2R = self.index;
+                            break;
+                        case "Stabilizer":
+                            cp.RearStabilizer = self.index;
+                            break;
+                        case "Camber":
+                            cp.RearCamber = self.index;
+                            break;
+                        case "Toe":
+                            cp.RearToe = self.index;
+                            break;
+                        case "InitialTorque":
+                            cp.RearLSDParam = self.index;
+                            break;
+                        case "Accel":
+                            cp.RearLSDParam2 = self.index;
+                            break;
+                        case "Brake":
+                            cp.RearLSDParam3 = self.index;
+                            break;
+                        case "BallastWeight":
+                            cp.ballastWeight = self.index;
+                            cp.permanentlyBeginInfo();
+                            ROOT.reflectBallastParameter(context);
+                            break;
+                        case "BallastPosition":
+                            cp.ballastPosition = self.index;
+                            cp.permanentlyBeginInfo();
+                            ROOT.reflectBallastParameter(context);
+                            break;
+                        case "DownForce":
+                            cp.RearCl = self.index;
+                            cp.permanentlyBeginInfo();
+                            ROOT.reflectAeroParameter(context);
+                            break;
+                        case "BrakeController":
+                            cp.RearBrakeBalanceLevel = self.index;
+                            break;
+                        case "Air":
+                            cp.restrictorPermill = self.index;
+                            cp.permanentlyBeginInfo();
+                            ROOT.reflectAirRestrictorParameter(context);
+                            break;
+                        case "AycController":
+                            cp.RearLSDParam = self.index;
+                            break;
+                        case "Turbo":
+                            break;
+                        case "VariableCenterDiff":
+                            cp.Param4WD = 100 - (5 * self.index);
+                            break;
+                        default:
+                            break;
+                    }
+                }
+
+                method onPopupClosed(context)
+                {
+                    __prototype__::onPopupClosed(context);
+
+                    if (self.parent.name == "VariableCenterDiff")
+                    {
+                        self.parent.sliderF.value = 20 - self.value;
+                        self.parent.sliderF.reflect(context);
+                    }
+                }
+            }
+        }
+
+        module ItemSlider
+        {
+            method initialize(context, setting)
+            {
+                self.HBox::Left::TextFace.text = setting["key1"];
+                self.HBox::Right::TextFace.text = setting["key2"];
+                self.doInitialize(context);
+            }
+
+            module slider
+            {
+                method onValueChanged(context)
+                {
+                    __prototype__::onValueChanged(context);
+                    var cp = ROOT.cp;
+
+                    switch (self.parent.name)
+                    {
+                        case "Suspension":
+                            break;
+                        case "Alignment":
+                            break;
+                        case "VariableCenterDiff":
+                            cp.Param4WD = 5 * self.index;
+                            break;
+                        case "LsdAccel":
+                            break;
+                        case "LsdBrake":
+                            break;
+                        case "BrakeController":
+                            break;
+                        default:
+                            break;
+                    }
+                }
+            }
+        }
+
+        module ItemSliderGear
+        {
+            method initialize(context, setting)
+            {
+                var key1 = setting["key1"];
+                var key2 = setting["key2"];
+
+                self.TextFaceL.text = (key1 == nil) ? "" : context.translate(ROOT, "QuickTune", key1);
+                self.TextFaceR.text = (key2 == nil) ? "" : context.translate(ROOT, "QuickTune", key2);
+
+                if (key1 == nil)
+                    self.sliderL.visible = false;
+                if (key2 == nil)
+                    self.sliderR.visible = false;
+
+                self.doInitialize(context);
+
+                if (self.name != "MaxSpeed")
+                {
+                    self.sliderL.step_factor = 100;
+                    self.sliderR.step_factor = 100;
+                }
+            }
+
+            module sliderL
+            {
+                method onValueChanged(context)
+                {
+                    __prototype__::onValueChanged(context);
+                    var cp = ROOT.cp;
+
+                    switch (self.parent.name)
+                    {
+                        case "Gear1_2":
+                            cp.Gear1st = self.index;
+                            break;
+                        case "Gear3_4":
+                            cp.Gear3rd = self.index;
+                            break;
+                        case "Gear5_6":
+                            cp.Gear5th = self.index;
+                            break;
+                        case "Gear7_8":
+                            cp.Gear7th = self.index;
+                            break;
+                        case "Gear9_10":
+                            cp.Gear9th = self.index;
+                            break;
+                        case "Gear11_12":
+                            cp.Gear11th = self.index;
+                            break;
+                    }
+
+                    ROOT.updateGearGraph(context);
+                }
+            }
+
+            module sliderR
+            {
+                method onValueChanged(context)
+                {
+                    __prototype__::onValueChanged(context);
+                    var cp = ROOT.cp;
+
+                    switch (self.parent.name)
+                    {
+                        case "Gear1_2":
+                            cp.Gear2nd = self.index;
+                            ROOT.updateGearGraph(context);
+                            break;
+                        case "Gear3_4":
+                            cp.Gear4th = self.index;
+                            ROOT.updateGearGraph(context);
+                            break;
+                        case "Gear5_6":
+                            cp.Gear6th = self.index;
+                            ROOT.updateGearGraph(context);
+                            break;
+                        case "Gear7_8":
+                            cp.Gear8th = self.index;
+                            ROOT.updateGearGraph(context);
+                            break;
+                        case "Gear9_10":
+                            cp.Gear10th = self.index;
+                            ROOT.updateGearGraph(context);
+                            break;
+                        case "GearFinal":
+                            cp.FinalGearRatio = self.index;
+                            ROOT.updateGearGraph(context);
+                            break;
+                        case "MaxSpeed":
+                            if (cp.quicktune_maxspeed != self.index)
+                            {
+                                cp.GearLastFinal = cp.FinalGearRatio;
+                                cp.quicktune_maxspeed = self.index;
+                                ROOT.updateGearGraph(context);
+                                ROOT.updateGearNth(context);
+                            }
+
+                            break;
+                    }
+                }
+            }
+        }
+
+        module ItemGraph
+        {
+            method onInitialize(context)
+            {
+                self.TextFaceSpeedUnit.text = context.translate(ROOT, "Unit", pdiext::MUnit::GetUnitKeywordOfVelocity());
+                self.RPM::TextFaceRPMUnit.text = pdiext::MUnit::GetUnitOfRpm();
+            }
+        }
+    } 
+}
