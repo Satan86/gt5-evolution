@@ -559,10 +559,10 @@ module ROOT
                     var difficulty = pdiapp::XmlUtil::load_map_and_array("/textdata/gt5/arcade_difficulty.xml", "DifficultyData", "difficulty", "name");
 
                     var difficulty_setting = difficulty.map;
-                    var difficulty_normal = 0;
-                    var difficulty_name = "normal";
+                    var difficulty_pro = 0;
+                    var difficulty_name = "pro";
 
-                    GAME_STATUS.user_profile.context.arcade_difficulty = difficulty_normal;
+                    GAME_STATUS.user_profile.context.arcade_difficulty = difficulty_pro;
 
                     var map = difficulty_setting[difficulty_name];
                     var entry_set = gp.event.entry_set;
