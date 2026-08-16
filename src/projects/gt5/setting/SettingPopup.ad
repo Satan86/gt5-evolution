@@ -1189,8 +1189,8 @@ module ROOT
                     var kind = ["", "C", "V"];
                     var data_list = [
                         [gtengine::PARTS_TIRE::COMFORT_HARD_A, gtengine::PARTS_TIRE::COMFORT_SOFT_A, "COMFORTTIRE"], 
-                        [gtengine::PARTS_TIRE::SPORTS_HARD_A, gtengine::PARTS_TIRE::SPORTS_SOFT_A, "SPORTTIRE"], 
-                        [gtengine::PARTS_TIRE::RACING_HARD_A, gtengine::PARTS_TIRE::RACING_SOFT_A, "RACINGTIRE"], 
+                        [gtengine::PARTS_TIRE::SPORTS_HARD_A, gtengine::PARTS_TIRE::SPORTS_SUPER_SOFT_A, "SPORTTIRE"], 
+                        [gtengine::PARTS_TIRE::RACING_HARD_A, gtengine::PARTS_TIRE::RACING_SUPER_SOFT_A, "RACINGTIRE"], 
                         [gtengine::PARTS_TIRE::RAIN_INTERMEDIATE_A, gtengine::PARTS_TIRE::RAIN_HEAVY_WET_A, "RAINTIRE"], 
                         [gtengine::PARTS_TIRE::DIRT_A, gtengine::PARTS_TIRE::DIRT_A, "DIRTTIRE"], 
                         [gtengine::PARTS_TIRE::SNOW_A, gtengine::PARTS_TIRE::SNOW_A, "SNOWTIRE"]
@@ -2278,9 +2278,11 @@ module ROOT
                     gtengine::PARTS_TIRE::SPORTS_HARD_A :    62, 
                     gtengine::PARTS_TIRE::SPORTS_MEDIUM_A :  65, 
                     gtengine::PARTS_TIRE::SPORTS_SOFT_A :    68, 
+                    gtengine::PARTS_TIRE::SPORTS_SUPER_SOFT_A :    71, 
                     gtengine::PARTS_TIRE::RACING_HARD_A :    74, 
                     gtengine::PARTS_TIRE::RACING_MEDIUM_A :  77, 
                     gtengine::PARTS_TIRE::RACING_SOFT_A :    80, 
+                    gtengine::PARTS_TIRE::RACING_SUPER_SOFT_A :    83, 
                     gtengine::PARTS_TIRE::DIRT_A :           88, 
                     gtengine::PARTS_TIRE::SNOW_A :           89
                 ];
