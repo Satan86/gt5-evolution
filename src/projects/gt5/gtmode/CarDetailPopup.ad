@@ -269,7 +269,7 @@ module ROOT
 
         context.pushEvent(main::menu::MFunctionEvent(postInitialize, context));
 
-        main::menu::FrameInterval = 2;
+        //main::menu::FrameInterval = 2;
     }
 
     method postInitialize(context)
