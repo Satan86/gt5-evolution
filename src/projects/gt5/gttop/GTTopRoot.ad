@@ -1179,13 +1179,13 @@ module GTTopRoot::Menus::MainMenu
                 "is_enable_func" : getIconVisible,
             ],
 
-            [
+            /* [
                 "icon" : "photo",
                 'localize_key' : "ICON_GPS_REPLAY",
                 "board" : "bord",
                 "on_activate_func" : onGpsReplay,
                 "is_enable_func" : enableTRUE,
-            ],
+            ], */
 
             // Online Lounge/LAN
             [
