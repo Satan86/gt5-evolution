@@ -1,0 +1,95 @@
+module ROOT
+{
+    attribute sModalPage;
+    attribute sResult;
+    hidden.visible = false;
+
+    method open(context)
+    {
+        self.sResult = nil;
+        self.sModalPage = SequenceUtil::ModalPage(context, ROOT);
+        self.sModalPage.open();
+
+        return sResult;
+    }
+
+    method close(context, pilot_id)
+    {
+        self.sResult = pilot_id;
+
+        if (self.sModalPage != nil)
+        {
+            self.sModalPage.close();
+            self.sModalPage = nil;
+        }
+    }
+
+    method abort(context)
+    {
+        close(context, nil);
+    }
+
+    method onInitialize(context)
+    {
+        Pane::Bspec::HBox.initialize(context);
+    }
+
+    method onFinalize(context)
+    {
+        Pane::Bspec::HBox.finalize(context);
+    }
+
+    method onCancel(context)
+    {
+        main::sound.play("cancel");
+        ROOT.close(context, nil);
+        return EVENTRESULT_FILTER;
+    }
+
+    module Pane::Bspec::HBox
+    {
+        method initialize(context)
+        {
+            var player_slot = RaceOperator.getPlayerSlot(0);
+            var cur_pilot_id = ORG.getRidingDriverIndex(player_slot);
+
+            for (var i = 0; i < 4; ++i)
+            {
+                var dp = RaceOperator.getTargetDriverParameter(0, i);
+                if (dp == nil || dp.isVacant())
+                    continue;
+
+                var item = hidden::BspecDriver.doCopy();
+                item.pilot_id = i;
+                self.appendChild(context, item);
+
+                if (i == cur_pilot_id)
+                    ROOT.setFocus(item);
+
+                item.setInfo(dp.residence_id, dp);
+                
+            }
+        }
+
+        method finalize(context)
+        {
+            self.clearChildren(context);
+        }
+    }
+
+    module hidden::BspecDriver
+    {
+        attribute pilot_id;
+
+        method onActivate(context)
+        {
+            main::sound.play("ok");
+
+            var player_slot = RaceOperator.getPlayerSlot(0);
+            ORG.setRidingDriverIndex(player_slot, self.pilot_id);
+            ROOT.close(context, self.pilot_id);
+
+            return EVENTRESULT_FILTER;
+        }
+    }
+}

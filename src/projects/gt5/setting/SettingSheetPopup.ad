@@ -1,0 +1,1041 @@
+module ROOT
+{
+    module local::CarPartsType
+    {
+        static BALLAST = 1000;
+        static AERO = 1001;
+        static AIR_RESTRICTOR = 1002;
+    }
+
+    static PARTS_TYPE_LIST = [
+        gtengine::CarPartsType::LIGHT_WEIGHT, gtengine::CarPartsType::LIGHT_WEIGHT_WINDOW, 
+        gtengine::CarPartsType::BONNET, local::CarPartsType::AERO, 
+        gtengine::CarPartsType::STIFFNESS, gtengine::CarPartsType::COMPUTER, 
+        gtengine::CarPartsType::NATUNE, gtengine::CarPartsType::INTAKE_MANIFOLD, 
+        gtengine::CarPartsType::AIR_CLEANER, gtengine::CarPartsType::EXHAUST_MANIFOLD, 
+        gtengine::CarPartsType::CATALYST, gtengine::CarPartsType::MUFFLER, 
+        gtengine::CarPartsType::SUPERCHARGER, gtengine::CarPartsType::TURBINEKIT, 
+        gtengine::CarPartsType::GEAR, gtengine::CarPartsType::CLUTCH, 
+        gtengine::CarPartsType::FLYWHEEL, gtengine::CarPartsType::LSD, 
+        gtengine::CarPartsType::DRIVETRAIN, gtengine::CarPartsType::PROPELLERSHAFT, 
+        gtengine::CarPartsType::SUSPENSION, gtengine::CarPartsType::BRAKE_CONTROLLER
+    ];
+
+    attribute equipped_parts_type;
+    attribute garage_id;
+    attribute slot_id_org = 0;
+    attribute slot_id = 0;
+    attribute regulation;
+    attribute course_condition;
+    attribute cp_org;
+    attribute popup;
+    attribute closed = false;
+    attribute result = [false, 0];
+    attribute no_update_mode = false;
+    attribute has_AYC = false;
+
+    hidden.visible = false;
+
+    method open(context, garage_id, regulation, cp_org, no_update_mode, course_condition)
+    {
+        self.garage_id = garage_id;
+        self.slot_id = GAME_STATUS.user_profile.garage.getCurrentSlot(garage_id);
+        self.slot_id_org = self.slot_id;
+        self.regulation = regulation;
+        self.cp_org = cp_org;
+        self.no_update_mode = false;
+        self.course_condition = course_condition;
+
+        self.result = [false, self.slot_id];
+        self.closed = false;
+        self.popup = main::SequenceUtil::ModalPage(context, ROOT);
+        self.popup.open();
+
+        return self.result;
+    }
+
+    method close(context)
+    {
+        if (self.closed)
+            return;
+
+        self.closed = true;
+        ContextMain.event_mask = 5;
+        ContextMain.disableInput();
+
+        DetailPopup2::FadeActor.on_effect_end = function (context) 
+        {
+            if (ROOT.popup != nil)
+            {
+                ROOT.popup.close();
+                ROOT.popup = nil;
+            }
+
+            ContextMain.enableInput();
+        };
+
+        DetailPopup2::FadeActor.out = true;
+    }
+
+    method abort(context)
+    {
+        OSKUtil::abort();
+        self.close(context);
+        ContextMain.enableInput();
+        self.result = [false, self.slot_id];
+    }
+
+    method onInitialize(context)
+    {
+        ROOT.setFocus(aExit);
+        initializePartsInfo(context, self.cp_org);
+        updateSheetComment(context);
+        updateSetButtons(context);
+        updateInfo(context, self.cp_org);
+
+        return EVENTRESULT_FILTER;
+    }
+
+    method onFinalize(context)
+    {
+        self.regulation = nil;
+        self.course_condition = nil;
+    }
+
+    method onCancel(context)
+    {
+        main::sound.play("cancel");
+        ROOT.setFocus(aExit);
+        return EVENTRESULT_FILTER;
+    }
+
+    function initializePartsInfo(context, cp)
+    {
+
+    }
+
+    function updateSheetComment(context)
+    {
+        var comment_list = GAME_STATUS.user_profile.garage.getCommentABC(ROOT.garage_id);
+        var comment = comment_list[ROOT.slot_id];
+
+        if (comment == nil || comment == "")
+        {
+            var default_comment_list = ["default_comment_set_A", "default_comment_set_B", "default_comment_set_C"];
+            comment = context.translate(ROOT, default_comment_list[ROOT.slot_id]);
+        }
+
+        aSheetComment.text = comment;
+    }
+
+    function updateSetButtons(context)
+    {
+        aSetA.active = ROOT.slot_id == 0;
+        aSetB.active = ROOT.slot_id == 1;
+        aSetC.active = ROOT.slot_id == 2;
+    }
+
+    function updateSettingHeader(context, src, dst, page, keyword)
+    {
+        var item = src.doCopy();
+        item.title.text = context.translate(ROOT, page, keyword);
+        dst.appendChild(context, item);
+    }
+
+    function updateSettingParametersFrontRear(context, dst, front_list, rear_list, page_list, keyword_list, active_list)
+    {
+        var i;
+        for (i = 0; i < front_list.size; ++i)
+        {
+            var item = (i & 1) ? hidden::Left::data_even.doCopy() : hidden::Left::data_odd.doCopy();
+            item.title.text = context.translate(ROOT, page_list[i], keyword_list[i]);
+            item.fronti.text = item.front.text = front_list[i];
+            item.reari.text = item.rear.text = rear_list[i];
+
+            if (active_list[i])
+            {
+                item.fronti.visible = false;
+                item.reari.visible = false;
+            }
+            else
+            {
+                item.front.visible = false;
+                item.rear.visible = false;
+            }
+
+            dst.appendChild(context, item);
+        }
+    }
+
+    function updateSettingParametersFrontRearActive(context, dst, front_list, rear_list, page_list, keyword_list, active_front_list, active_rear_list)
+    {
+        var i;
+        for (i = 0; i < front_list.size; ++i)
+        {
+            var item = (i & 1) ? hidden::Left::data_even.doCopy() : hidden::Left::data_odd.doCopy();
+            item.title.text = context.translate(ROOT, page_list[i], keyword_list[i]);
+            item.fronti.text = item.front.text = front_list[i];
+            item.reari.text = item.rear.text = rear_list[i];
+
+            if (active_front_list[i])
+                item.fronti.visible = false;
+            else
+                item.front.visible = false;
+
+            if (active_rear_list[i])
+                item.reari.visible = false;
+            else
+                item.rear.visible = false;
+
+            dst.appendChild(context, item);
+        }
+    }
+
+    function updateSettingParametersSingle(context, dst, data_list, page_list, keyword_list, active_list)
+    {
+        var i;
+        for (i = 0; i < data_list.size; ++i)
+        {
+            var item = (i & 1) ? hidden::Right::data_even.doCopy() : hidden::Right::data_odd.doCopy();
+            item.title.text = context.translate(ROOT, page_list[i], keyword_list[i]);
+            item.valuei.text = item.value.text = data_list[i];
+
+            if (active_list[i])
+                item.valuei.visible = false;
+            else
+                item.value.visible = false;
+
+            dst.appendChild(context, item);
+        }
+    }
+
+    function isExistPartsRange(cp, parts_type, category_min, category_max)
+    {
+        var is_exist_parts = false;
+        cp.beginPartsInfo();
+
+        for (var category = category_min; category <= category_max; ++category)
+        {
+            if (cp.isExistParts(parts_type, category))
+            {
+                is_exist_parts = true;
+                break;
+            }
+        }
+
+        cp.endPartsInfo();
+        return is_exist_parts;
+    }
+
+    function updateSettingSuspension(context, cp)
+    {
+        var dst = aSettingLeft.Suspension;
+        dst.clearChild(context);
+        var is_exist_parts = isExistPartsRange(cp, gtengine::CarPartsType::SUSPENSION, 
+        gtengine::PARTS_SUSPENSION::SPORTS1, gtengine::PARTS_SUSPENSION::RACING);
+
+        if (!is_exist_parts)
+            return;
+
+        var head_src = hidden::Left::head;
+        updateSettingHeader(context, head_src, dst, "GameItemCategory", "SUSPENSION");
+
+        var suspension_info = cp.getSettingInfoSuspension();
+        if (ROOT.equipped_parts_type[gtengine::CarPartsType::SUSPENSION] == gtengine::PARTS_SUSPENSION::RACING)
+        {
+            var front_list = [
+                "%d".format(cp.FrontRideheight - suspension_info.rideheightDFF), 
+                "%.1t".format(cp.FrontSpringRate), 
+                "%d".format(cp.FrontDamperF1B), 
+                "%d".format(cp.FrontDamperF1R), 
+                "%d".format(cp.FrontStabilizer), 
+                "%.1t".format(cp.FrontCamber), 
+                "%.2t".format(cp.FrontToe)
+            ];
+
+            var rear_list = [
+                "%d".format(cp.RearRideheight - suspension_info.rideheightDFR), 
+                "%.1t".format(cp.RearSpringRate), 
+                "%d".format(cp.RearDamperF1B), 
+                "%d".format(cp.RearDamperF1R), 
+                "%d".format(cp.RearStabilizer), 
+                "%.1t".format(cp.RearCamber), 
+                "%.2t".format(cp.RearToe)
+            ];
+
+            var page_list = ["QuickTune", "QuickTune", "QuickTune", "QuickTune", "QuickTune", "QuickTune", "QuickTune"];
+            var keyword_list = ["RIDE_HEIGHT0", "SPRING_RATE", "DAMPER_BUMP", "DAMPER_REBUMP", "STABILIZER", "CAMBER", "TOE"];
+
+            var factive_list = [
+                suspension_info.rideheightMINF != suspension_info.rideheightMAXF, 
+                suspension_info.springrateMINF != suspension_info.springrateMAXF, 
+                suspension_info.damplevelBF != 1, 
+                suspension_info.damplevelRF != 1, 
+                suspension_info.stabilizerFlevel != 1, 
+                suspension_info.camberMINF != suspension_info.camberMAXF, 
+                suspension_info.toeMINF != suspension_info.toeMAXF
+            ];
+
+            var ractive_list = [
+                suspension_info.rideheightMINR != suspension_info.rideheightMAXR, 
+                suspension_info.springrateMINR != suspension_info.springrateMAXR, 
+                suspension_info.damplevelBF != 1, 
+                suspension_info.damplevelRF != 1, 
+                suspension_info.stabilizerRlevel != 1, 
+                suspension_info.camberMINR != suspension_info.camberMAXR, 
+                suspension_info.toeMINR != suspension_info.toeMAXR
+            ];
+
+            updateSettingParametersFrontRearActive(context, dst, front_list, rear_list, page_list, keyword_list, factive_list, ractive_list);
+        }
+        else
+        {
+            var front_list = [
+                "%d".format(cp.FrontRideheight - suspension_info.rideheightDFR), 
+                "%.1t".format(cp.FrontSpringRate), 
+                "%d".format(cp.FrontDamperF1B), 
+                "%d".format(cp.FrontStabilizer), 
+                "%.1t".format(cp.FrontCamber), 
+                "%.2t".format(cp.FrontToe)
+            ];
+
+            var rear_list = [
+                "%d".format(cp.RearRideheight - suspension_info.rideheightDFR), 
+                "%.1t".format(cp.RearSpringRate), 
+                "%d".format(cp.RearDamperF1B), 
+                "%d".format(cp.RearStabilizer), 
+                "%.1t".format(cp.RearCamber), 
+                "%.2t".format(cp.RearToe)
+            ];
+
+            var page_list = ["QuickTune", "QuickTune", "QuickTune", "QuickTune", "QuickTune", "QuickTune"];
+            var keyword_list = ["RIDE_HEIGHT0", "SPRING_RATE", "DAMPER", "STABILIZER", "CAMBER", "TOE"];
+
+            var factive_list = [
+                suspension_info.rideheightMINF != suspension_info.rideheightMAXF, 
+                suspension_info.springrateMINF != suspension_info.springrateMAXF, 
+                suspension_info.damplevelBF != 1, 
+                suspension_info.stabilizerFlevel != 1,
+                suspension_info.camberMINF != suspension_info.camberMAXF, 
+                suspension_info.toeMINF != suspension_info.toeMAXF
+            ];
+
+            var ractive_list = [
+                suspension_info.rideheightMINR != suspension_info.rideheightMAXR, 
+                suspension_info.springrateMINR != suspension_info.springrateMAXR, 
+                suspension_info.damplevelBF != 1, 
+                suspension_info.stabilizerRlevel != 1, 
+                suspension_info.camberMINR != suspension_info.camberMAXR, 
+                suspension_info.toeMINR != suspension_info.toeMAXR
+            ];
+
+            updateSettingParametersFrontRearActive(context, dst, front_list, rear_list, page_list, keyword_list, factive_list, ractive_list);
+        }
+
+        suspension_info = nil;
+    }
+
+    function updateSettingLSD(context, cp)
+    {
+        var dst = aSettingLeft.LSD;
+        dst.clearChild(context);
+
+        var parts_type = gtengine::CarPartsType::LSD;
+        if (ROOT.equipped_parts_type[parts_type] == gtengine::PARTS_LSD::AYCC)
+            return;
+
+        var is_exist_parts = isExistPartsRange(cp, parts_type, gtengine::PARTS_LSD::VARIABLE, gtengine::PARTS_LSD::AYCC);
+        if (!is_exist_parts)
+            return;
+
+        var head_src = hidden::Left::head;
+        updateSettingHeader(context, head_src, dst, "QuickTune", "LSD");
+
+        var lsd_info = cp.getSettingInfoLSD();
+        if (1)
+        {
+            var front_list = [
+                "%d".format(cp.FrontLSDParam),
+                "%d".format(cp.FrontLSDParam2),
+                "%d".format(cp.FrontLSDParam3)
+            ];
+
+            var rear_list = [
+                "%d".format(cp.RearLSDParam),
+                "%d".format(cp.RearLSDParam2),
+                "%d".format(cp.RearLSDParam3)
+            ];
+
+            var page_list = ["QuickTune", "QuickTune", "QuickTune"];
+            var keyword_list = ["LSD_INITIAL_TORQUE", "LSD_ACCEL", "LSD_BRAKE"];
+
+            var factive_list = [
+                lsd_info.LSDparamFMIN != lsd_info.LSDparamFMAX, 
+                lsd_info.LSDparam2FMIN != lsd_info.LSDparam2FMAX,
+                lsd_info.LSDparam3FMIN != lsd_info.LSDparam3FMAX
+            ];
+
+            var ractive_list = [
+                lsd_info.LSDparamRMIN != lsd_info.LSDparamRMAX, 
+                lsd_info.LSDparam2RMIN != lsd_info.LSDparam2RMAX,
+                lsd_info.LSDparam3RMIN != lsd_info.LSDparam3RMAX
+            ];
+
+            updateSettingParametersFrontRearActive(context, dst, front_list, rear_list, page_list, keyword_list, factive_list, ractive_list);
+        }
+
+        lsd_info = nil;
+    }
+
+    function updateSettingAero(context, cp)
+    {
+        var dst = aSettingLeft.Aero;
+        dst.clearChild(context);
+
+        var result = false;
+
+        var chassis_info = cp.getSettingInfoChassis();
+        if (chassis_info.clMINF != chassis_info.clMAXF || chassis_info.clMINR != chassis_info.clMAXR)
+            result = true;
+
+        var wing_info = cp.getSettingInfoWing();
+        if (!result)
+        {
+            if (wing_info != nil)
+            {
+                if (wing_info.clMINR_plus != wing_info.clMAXR_plus)
+                    result = true;
+            }
+        }
+
+        if (result)
+        {
+            var head_src = hidden::Left::head;
+            updateSettingHeader(context, head_src, dst, "QuickTune", "SPOILER");
+
+            var front_list = ["%d".format(cp.FrontCl)];
+            var rear_list = ["%d".format(cp.RearCl)];
+            var page_list = ["QuickTune"];
+            var keyword_list = ["DOWN_FORCE"];
+
+            var minF = chassis_info.clMINF;
+            var maxF = chassis_info.clMAXF;
+            var minR = chassis_info.clMINR;
+            var maxR = chassis_info.clMAXR;
+
+            if (wing_info != nil)
+            {
+                minR += wing_info.clMINR_plus;
+                maxR += wing_info.clMAXR_plus;
+            }
+
+            var factive_list = [minF != maxF];
+            var ractive_list = [minR != maxR];
+
+            updateSettingParametersFrontRearActive(context, dst, front_list, rear_list, page_list, keyword_list, factive_list, ractive_list);
+        }
+
+        wing_info = nil;
+        chassis_info = nil;
+    }
+
+    function updateSettingBrake(context, cp)
+    {
+        var head_src = hidden::Left::head;
+
+        var dst = aSettingLeft.Brake;
+        dst.clearChild(context);
+
+        var is_kart = gtengine::MSpecDB::checkGenericFlag("is_racing_kart", cp.getCarCode());
+        if (is_kart)
+            return;
+
+        updateSettingHeader(context, head_src, dst, "GameItemCategory", "BRAKE_BALANCECONTROLLER");
+
+        var front_list = ["%d".format(cp.FrontBrakeBalanceLevel)];
+        var rear_list = ["%d".format(cp.RearBrakeBalanceLevel)];
+        var page_list = ["QuickTune"];
+        var keyword_list = ["BRAKECONTROLLER"];
+        var active_list = [true];
+
+        updateSettingParametersFrontRear(context, dst, front_list, rear_list, page_list, keyword_list, active_list);
+    }
+
+    function updateSettingBallast(context, cp)
+    {
+        var head_src = hidden::Right::head;
+
+        var dst = aSettingRight.aSettingRight.Ballast;
+        dst.clearChild(context);
+
+        updateSettingHeader(context, head_src, dst, "QuickTune", "BALLAST");
+
+        var data_list = ["%d".format(cp.ballastWeight), "%d".format(cp.ballastPosition)];
+        var page_list = ["QuickTune", "QuickTune"];
+        var keyword_list = ["BALLAST_MOUNT", "BALLAST_POSITION"];
+        var active_list = [true, true];
+
+        updateSettingParametersSingle(context, dst, data_list, page_list, keyword_list, active_list);
+    }
+
+    function updateSettingLimitter(context, cp)
+    {
+        var head_src = hidden::Right::head;
+        
+        var dst = aSettingRight.Limitter;
+        dst.clearChild(context);
+        updateSettingHeader(context, head_src, dst, "QuickTune", "AIRRESTRICTOR");
+
+        var data_list = ["%.1t%%".format(cp.restrictorPermill)];
+        var page_list = ["QuickTune"];
+        var keyword_list = ["AIR_RESTRICTOR_LEVEL"];
+        var active_list = [true];
+
+        updateSettingParametersSingle(context, dst, data_list, page_list, keyword_list, active_list);
+    }
+
+    function updateSettingDriverControlledCenterDifferential(context, cp)
+    {
+        var dst = aSettingRight.Diff;
+        dst.clearChild(context);
+
+        var parts_type = gtengine::CarPartsType::DRIVETRAIN;
+        var type = ROOT.equipped_parts_type[parts_type];
+        var drivetrain_info = cp.getSettingInfoDriveTrain();
+
+        var active = drivetrain_info.param4WDMIN != drivetrain_info.param4WDMAX;
+        if (type == 0 && active)
+            type = 3;
+
+        drivetrain_info = nil;
+
+        if (type == 0)
+            return;
+
+        var head_src = hidden::Left::head;
+        updateSettingHeader(context, head_src, dst, "GameItem", type == 3 ? "center_diff_00a" : "center_diff_01");
+
+        var front_list = ["%d".format(cp.Param4WD)];
+        var rear_list = ["%d".format(100 - cp.Param4WD)];
+        var page_list = ["QuickTune"];
+        var keyword_list = ["VARIABLECENTERDIFF"];
+        var active_list = [active];
+
+        updateSettingParametersFrontRear(context, dst, front_list, rear_list, page_list, keyword_list, active_list);
+    }
+
+    function updateSettingAYC(context, cp)
+    {
+        var dst = aSettingRight.AYC;
+        dst.clearChild(context);
+
+        if (ROOT.equipped_parts_type[gtengine::CarPartsType::LSD] != gtengine::PARTS_LSD::AYCC)
+            return;
+
+        var head_src = hidden::Right::head;
+        updateSettingHeader(context, head_src, dst, "QuickTune", "AYCCONTROLLER");
+        var lsd_info = cp.getSettingInfoLSD();
+
+        var data_list = ["%d".format(cp.RearLSDParam)];
+        var page_list = ["QuickTune"];
+        var keyword_list = ["AYC_STRENGTH"];
+        var active_list = [lsd_info.LSDparamRMIN != lsd_info.LSDparamRMAX];
+
+        lsd_info = nil;
+
+        updateSettingParametersSingle(context, dst, data_list, page_list, keyword_list, active_list);
+    }
+
+    function updateSettingTransmission(context, cp)
+    {
+        var head_src = hidden::Right::head;
+        var dst = aSettingRight.Transmission;
+        dst.clearChild(context);
+        var is_exist_parts = isExistPartsRange(cp, gtengine::CarPartsType::GEAR, 
+        gtengine::PARTS_GEAR::CLOSE, gtengine::PARTS_GEAR::VARIABLE);
+
+        if (!is_exist_parts)
+            return;
+
+        updateSettingHeader(context, head_src, dst, "GameItemCategory", "TRANSMISSION");
+
+
+        {
+            var gear_list = [
+                cp.Gear1st, cp.Gear2nd, cp.Gear3rd, 
+                cp.Gear4th, cp.Gear5th, cp.Gear6th, cp.Gear7th,
+                cp.Gear8th, cp.Gear9th, cp.Gear10th, cp.Gear11th
+            ];
+
+            var gear_keywords = [
+                "GEAR1", "GEAR2", "GEAR3", 
+                "GEAR4", "GEAR5", "GEAR6", "GEAR7", 
+                "GEAR8", "GEAR9", "GEAR10", "GEAR11"
+            ];
+
+            var i;
+
+            var gear_info = cp.getSettingInfoGear();
+            var disable = 0 == gear_info.gearflag || gear_info.maxspeedMIN == gear_info.maxspeedMAX;
+
+            for (i = 0; i < gear_list.size; ++i)
+            {
+                if (gear_info.Nshift <= i)
+                    break;
+                
+                var item = (i & 1) ? hidden::Right::data_even.doCopy() : hidden::Right::data_odd.doCopy();
+                item.title.text = context.translate(ROOT, "QuickTune", gear_keywords[i]);
+                item.valuei.text = item.value.text = "%.3t".format(gear_list[i]);
+
+                if (disable)
+                    item.value.visible = false;
+                else
+                    item.valuei.visible = false;
+                
+                aSettingRight.Transmission.appendChild(context, item);
+            }
+
+            {
+                var item = (i & 1) ? hidden::Right::data_even.doCopy() : hidden::Right::data_odd.doCopy();
+                item.title.text = context.translate(ROOT, "QuickTune", "GEAR_FINAL");
+                item.valuei.text = item.value.text = "%.3t".format(cp.FinalGearRatio);
+
+                if (gear_info.finalgearMIN != gear_info.finalgearMAX)
+                    item.valuei.visible = false;
+                else
+                    item.value.visible = false;
+
+                aSettingRight.Transmission.appendChild(context, item);
+                ++i;
+            }
+
+            {
+                var item = (i & 1) ? hidden::Right::data_even.doCopy() : hidden::Right::data_odd.doCopy();
+                item.title.text = context.translate(ROOT, "QuickTune", "MAX_SPEED_AUTO");
+                item.valuei.text = item.value.text = "%d".format(cp.quicktune_maxspeed * 10);
+                var disable = gear_info.gearflag == 0 || gear_info.maxspeedMIN == gear_info.maxspeedMAX;
+
+                if (disable)
+                    item.value.visible = false;
+                else
+                    item.valuei.visible = false;
+
+                aSettingRight.Transmission.appendChild(context, item);
+                ++i;
+            }
+
+            gear_info = nil;
+        }
+    }
+
+    function updateEquippedPartsList(context, cp)
+    {
+        ROOT.equipped_parts_type = Map();
+        aPartsList.clearChild(context);
+        aPartsList.visible = false;
+
+        foreach (var parts_type in PARTS_TYPE_LIST)
+        {
+            if (parts_type == gtengine::CarPartsType::BRAKE_CONTROLLER)
+            {
+                var is_kart = gtengine::MSpecDB::checkGenericFlag("is_racing_kart", cp.getCarCode());
+
+                if (is_kart)
+                    break;
+            }
+
+            var category = cp.getParts(parts_type);
+            ROOT.equipped_parts_type[parts_type] = category;
+            var data = SettingPopup::CATEGORY_LIST[parts_type];
+            var image = data["image"];
+            var _title = "%{image}_%02d".format(category);
+
+            var ayc_controller = "lsd_02" == _title;
+            var suspension_04 = "suspension_04" == _title;
+            var lightweight_bonnet_01 = "lightweight_bonnet_01" == _title;
+            var lightweight_bonnet_02 = "lightweight_bonnet_02" == _title;
+            var air_restrictor = "air_restrictor_00" == _title;
+
+            if (ayc_controller)
+                _title = "aycc_01";
+            else if (suspension_04)
+                _title = "suspension_03";
+            else if (lightweight_bonnet_01)
+                _title = "lightweight_bonnet_02";
+            else if (lightweight_bonnet_02)
+                _title = "lightweight_bonnet_01";
+            else if (air_restrictor)
+                _title = "air_restrictor";
+
+            if (_title == "center_diff_00")
+            {
+                var is_dctrl_impreza = gtengine::MSpecDB::checkGenericFlag("is_dctrl_impreza", cp.getCarCode());
+                var car_label = cp.getCarLabel();
+
+                if (is_dctrl_impreza)
+                    _title = "center_diff_00a";
+            }
+
+            if (category > 0)
+            {
+                var text = nil;
+                if (parts_type == gtengine::CarPartsType::LIGHT_WEIGHT)
+                {
+                    text = (context.translate(ROOT, "GameItemCategory", "LIGHTWEIGHT") + " ") + context.translate(ROOT, "GameItem", _title);
+                }
+                else if (parts_type == gtengine::CarPartsType::NATUNE)
+                {
+                    text = (context.translate(ROOT, "GameItemCategory", "NATUNE") + " ") + context.translate(ROOT, "GameItem", _title);
+                }
+                else if (parts_type == gtengine::CarPartsType::SUSPENSION && _title == "suspension_03")
+                {
+                    text = (context.translate(ROOT, "GameItemCategory", "SUSPENSION") + " ") + context.translate(ROOT, "GameItem", _title);
+                }
+                else
+                {
+                    text = context.translate(ROOT, "GameItem", _title);
+                }
+
+                var item = hidden::Parts.doCopy();
+                item.TextFace.text = text;
+                aPartsList.appendChild(context, item);
+            }
+        }
+
+        aPartsList.visible = true;
+    }
+
+    function updateTire(context, cp)
+    {
+        |var tire_f, var tire_r| = cp.getTireCategories();
+        aFrontTire::tire.text = TireUtil::getName(context, tire_f, ROOT);
+        aRearTire::tire.text = TireUtil::getName(context, tire_r, ROOT);
+    }
+
+    function updatePerformanceBallast(context, cp)
+    {
+        var ballast_front = cp.getFrontWeightPercentage();
+        aBallastBallance::labelF.text = ballast_front;
+        aBallastBallance::labelR.text = 100 - ballast_front;
+    }
+
+    function updatePerformance(context, cp)
+    {
+        var power_list = cp.getPower();
+        var power = power_list[0];
+        var weight = cp.getWeight();
+        var pp = cp.getPP1000();
+        var power_text = pdiext::MUnit::GetPowerForDisplay(power);
+
+        aPower::SBox::TextFace.text = power_text;
+        aPower::SBox::TextFaceRed.text = power_text;
+        aPower::SBox::Unit.text = pdiext::MUnit::GetUnitOfPower();
+
+        aWeight::SBox::TextFace.text = weight;
+        aWeight::SBox::TextFaceRed.text = weight;
+        aWeight::SBox::Unit.text = pdiext::MUnit::GetUnitOfMass();
+
+        aPerformance::SBox::TextFace.text = pp;
+        aPerformance::SBox::TextFaceRed.text = pp;
+
+        |var violate_power, var violate_weight, var violate_aspiration, var violate_pp| = isViolateRegulation(context, cp, ROOT.regulation, ROOT.course_condition);
+
+        aPower.active = violate_power;
+        aPower::SBox::TextFace.visible = !violate_power;
+        aPower::SBox::TextFaceRed.visible = violate_power;
+        aWeight.active = violate_weight;
+        aWeight::SBox::TextFace.visible = !violate_weight;
+        aWeight::SBox::TextFaceRed.visible = violate_weight;
+        aPerformance.active = violate_pp;
+        aPerformance::SBox::TextFace.visible = !violate_pp;
+        aPerformance::SBox::TextFaceRed.visible = violate_pp;
+
+        updatePerformanceBallast(context, cp);
+    }
+
+    function updateInfo(context, cp)
+    {
+        cp.permanentlyBeginInfo();
+        cp.beginSetting();
+
+        updateEquippedPartsList(context, cp);
+        updatePerformance(context, cp);
+
+        aSettingLeft.visible = false;
+        aSettingRight.visible = false;
+
+        updateSettingSuspension(context, cp);
+        updateSettingLSD(context, cp);
+        updateSettingAero(context, cp);
+        updateSettingBrake(context, cp);
+        updateSettingBallast(context, cp);
+        updateSettingLimitter(context, cp);
+        updateSettingDriverControlledCenterDifferential(context, cp);
+        updateSettingAYC(context, cp);
+        updateSettingTransmission(context, cp);
+
+        aSettingLeft.visible = true;
+        aSettingRight.visible = true;
+
+        updateTire(context, cp);
+        cp.endSetting();
+    }
+
+    function changeSet(context, slot_id)
+    {
+        if (ROOT.no_update_mode || ROOT.slot_id == slot_id)
+        {
+            main::sound.play("disable");
+            return false;
+        }
+
+        main::sound.play("ok");
+        ROOT.slot_id = slot_id;
+        ROOT.result = [(ROOT.result[0] || ROOT.slot_id != ROOT.slot_id_org) ? true : false, ROOT.slot_id];
+
+        var old_cp = GAME_STATUS.user_profile.garage.getCar(ROOT.garage_id);
+        GAME_STATUS.user_profile.garage.changeSlot(ROOT.garage_id, slot_id);
+
+        var new_cp = GAME_STATUS.user_profile.garage.getCar(ROOT.garage_id);
+        new_cp.copyForChangeSet(old_cp);
+        GAME_STATUS.user_profile.garage.updateCar(new_cp);
+
+        DetailPopup2::Pane::Body::HBox::Setting::FadeActor.reverse = false;
+        DetailPopup2::Pane::Body::HBox::Setting::FadeActor.on_effect_end = function (context) 
+        {
+            updateSheetComment(context);
+            updateSetButtons(context);
+            updateInfo(context, new_cp);
+
+            var chr = ["a", "b", "c"][ROOT.slot_id];
+            aPerformanceBackgroundABC.image_path = "image/gt5/setting/chr_%{chr}.dds";
+
+            DetailPopup2::Pane::Body::HBox::Setting::FadeActor.on_effect_end = nil;
+            DetailPopup2::Pane::Body::HBox::Setting::FadeActor.reverse = true;
+            DetailPopup2::Pane::Body::HBox::Setting::FadeActor.start();
+        }
+
+        DetailPopup2::Pane::Body::HBox::Setting::FadeActor.start();
+        GAME_STATUS.user_profile.context.need_save = SaveDataUtilGT5::STATUSCODE::NEED_SAVE;
+
+        return true;
+    }
+
+    module DetailPopup2::Pane
+    {
+        module Footer
+        {
+            module CommandB
+            {
+                method setBalloonTip(context, event)
+                {
+                    var w = event.widget;
+                    var key = w.name;
+                    var localized_text = context.translate(ROOT, key);
+                    BalloonTip.set_value(context, w, localized_text, 0);
+                }
+
+                module Copy
+                {
+                    method copyCurrentSheet(context, dst_slot_id)
+                    {
+                        if (DialogUtil::openConfirmDialog(context, DialogUtil::DEFAULT_NO, context.translate(ROOT, "ConfirmCopying")))
+                        {
+                            var old_cp = GAME_STATUS.user_profile.garage.getCar(ROOT.garage_id);
+                            GAME_STATUS.user_profile.garage.changeSlot(ROOT.garage_id, dst_slot_id);
+                            
+                            var new_cp = GAME_STATUS.user_profile.garage.getCar(ROOT.garage_id);
+                            new_cp.deepCopy(old_cp);
+
+                            GAME_STATUS.user_profile.garage.updateCar(new_cp);
+                            GAME_STATUS.user_profile.garage.changeSlot(ROOT.garage_id, ROOT.slot_id);
+                            ROOT.result = [true, ROOT.slot_id];
+                        }
+                    }
+
+                    method onCopyCurrentSheetToA(context)
+                    {
+                        copyCurrentSheet(context, 0);
+                    }
+
+                    method onCopyCurrentSheetToB(context)
+                    {
+                        copyCurrentSheet(context, 1);
+                    }
+
+                    method onCopyCurrentSheetToC(context)
+                    {
+                        copyCurrentSheet(context, 2);
+                    }
+
+                    method onActivate(context)
+                    {
+                        main::sound.play("ok");
+
+                        var data_list_a = [
+                            UIKitProject::ContextMenuPopup::Data(context.translate(ROOT, "CopyToSetA"), false, onCopyCurrentSheetToA, nil), 
+                            UIKitProject::ContextMenuPopup::Data(context.translate(ROOT, "CopyToSetB"), true, onCopyCurrentSheetToB, nil), 
+                            UIKitProject::ContextMenuPopup::Data(context.translate(ROOT, "CopyToSetC"), true, onCopyCurrentSheetToC, nil), 
+                            nil, 
+                            UIKitProject::ContextMenuPopup::Data(context.translate(ROOT, "MyHome", "CANCEL"), true, function (context) {}, nil)
+                        ];
+
+                        var data_list_b = [
+                            UIKitProject::ContextMenuPopup::Data(context.translate(ROOT, "CopyToSetA"), true, onCopyCurrentSheetToA, nil), 
+                            UIKitProject::ContextMenuPopup::Data(context.translate(ROOT, "CopyToSetB"), false, onCopyCurrentSheetToB, nil), 
+                            UIKitProject::ContextMenuPopup::Data(context.translate(ROOT, "CopyToSetC"), true, onCopyCurrentSheetToC, nil), 
+                            nil, 
+                            UIKitProject::ContextMenuPopup::Data(context.translate(ROOT, "MyHome", "CANCEL"), true, function (context) {}, nil)
+                        ];
+
+                        var data_list_c = [
+                            UIKitProject::ContextMenuPopup::Data(context.translate(ROOT, "CopyToSetA"), true, onCopyCurrentSheetToA, nil), 
+                            UIKitProject::ContextMenuPopup::Data(context.translate(ROOT, "CopyToSetB"), true, onCopyCurrentSheetToB, nil), 
+                            UIKitProject::ContextMenuPopup::Data(context.translate(ROOT, "CopyToSetC"), false, onCopyCurrentSheetToC, nil), 
+                            nil, 
+                            UIKitProject::ContextMenuPopup::Data(context.translate(ROOT, "MyHome", "CANCEL"), true, function (context) {}, nil)
+                        ];
+
+                        var data_list_abc = [data_list_a, data_list_b, data_list_c];
+                        var x = self.sx + (self.w * self.cursor_align_x);
+                        var y = (self.sy + (self.h * self.cursor_align_y)) - 210;
+
+                        UIKitProject::ContextMenuPopup.open(context, x, y, nil, data_list_abc[ROOT.slot_id]);
+                        return EVENTRESULT_FILTER;
+                    }
+
+                    method onFocusEnter(context, event)
+                    {
+                        setBalloonTip(context, event);
+                        return EVENTRESULT_FILTER;
+                    }
+
+                    method onFocusLeave(context)
+                    {
+                        BalloonTip.reset_value();
+                        return EVENTRESULT_FILTER;
+                    }
+                }
+
+                module EditComment
+                {
+                    method onActivate(context)
+                    {
+                        main::sound.play("ok");
+                        var config = ["limit_length" : 40];
+                        var result = OSKUtil::open(context, aSheetComment.text, self, config);
+
+                        if (result != nil)
+                        {
+                            aSheetComment.text = result;
+                            GAME_STATUS.user_profile.garage.updateSlotComment(ROOT.garage_id, GAME_STATUS.user_profile.garage.getCurrentSlot(ROOT.garage_id), result);
+                            ROOT.result = [true, ROOT.slot_id];
+                        }
+
+                        return EVENTRESULT_FILTER;
+                    }
+
+                    method onFocusEnter(context, event)
+                    {
+                        setBalloonTip(context, event);
+                        return EVENTRESULT_FILTER;
+                    }
+
+                    method onFocusLeave(context)
+                    {
+                        BalloonTip.reset_value();
+                        return EVENTRESULT_FILTER;
+                    }
+                }
+
+                module SetA
+                {
+                    method onActivate(context)
+                    {
+                        changeSet(context, 0);
+                        return EVENTRESULT_FILTER;
+                    }
+
+                    method onFocusEnter(context, event)
+                    {
+                        setBalloonTip(context, event);
+                        return EVENTRESULT_FILTER;
+                    }
+
+                    method onFocusLeave(context)
+                    {
+                        BalloonTip.reset_value();
+                        return EVENTRESULT_FILTER;
+                    }
+                }
+
+                module SetB
+                {
+                    method onActivate(context)
+                    {
+                        changeSet(context, 1);
+                        return EVENTRESULT_FILTER;
+                    }
+
+                    method onFocusEnter(context, event)
+                    {
+                        setBalloonTip(context, event);
+                        return EVENTRESULT_FILTER;
+                    }
+
+                    method onFocusLeave(context)
+                    {
+                        BalloonTip.reset_value();
+                        return EVENTRESULT_FILTER;
+                    }
+                }
+
+                module SetC
+                {
+                    method onActivate(context)
+                    {
+                        changeSet(context, 2);
+                        return EVENTRESULT_FILTER;
+                    }
+
+                    method onFocusEnter(context, event)
+                    {
+                        setBalloonTip(context, event);
+                        return EVENTRESULT_FILTER;
+                    }
+
+                    method onFocusLeave(context)
+                    {
+                        BalloonTip.reset_value();
+                        return EVENTRESULT_FILTER;
+                    }
+                }
+
+                module Exit
+                {
+                    method onActivate(context)
+                    {
+                        main::sound.play("ok");
+                        ROOT.close(context);
+                        return EVENTRESULT_FILTER;
+                    }
+
+                    method onFocusEnter(context, event)
+                    {
+                        var w = event.widget;
+                        var key = w.name.upcase();
+                        var localized_text = context.translate(ROOT, "MyHome", key);
+                        BalloonTip.set_value(context, w, localized_text, 0);
+                        return EVENTRESULT_FILTER;
+                    }
+
+                    method onFocusLeave(context)
+                    {
+                        BalloonTip.reset_value();
+                        return EVENTRESULT_FILTER;
+                    }
+                }
+            }
+        }
+    }
+}
