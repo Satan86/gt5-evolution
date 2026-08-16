@@ -1,0 +1,407 @@
+module ConfirmDialog
+{
+    attribute result;
+    attribute current_type = 0;
+    attribute cancel_disable;
+    attribute event_loop;
+    attribute original_y = Dialog.y;
+    attribute cursor_visible_when_open = false;
+    attribute activate_sound;
+
+    static sInstance = nil;
+    static sActivateSound = nil;
+
+    function onRealize(manager)
+    {
+        ConfirmDialog.display_layer_name = "transition";
+        ConfirmDialog.display_priority = 100;
+        var rcc = manager.getUpdateContext().getRenderContextCount();
+        sInstance = Array(rcc);
+    }
+
+    SCALE_WIDGET_SDTV(Dialog::Message::message, 2.6);
+
+    function onDestroy(manager)
+    {
+        sInstance = nil;
+        sActivateSound = nil;
+    }
+
+    method onFinalize(context)
+    {
+        if (self.event_loop != nil)
+        {
+            self.event_loop.leave();
+            self.event_loop = nil;
+        }
+
+        self.Dialog::Message::message.text = "";
+        self.Dialog::Title::title.text = "";
+        self.Dialog::Title::titleE.text = "";
+        self.Dialog::Buttons::YesNo::Yes::label.text = "";
+        self.Dialog::Buttons::YesNoClose::Yes::label.text = "";
+        self.Dialog::Buttons::YesNo::No::label.text = "";
+        self.Dialog::Buttons::YesNoClose::No::label.text = "";
+        self.Dialog::Buttons::OK::label.text = "";
+    }
+
+    method open_motion(context)
+    {
+        setFadeActorRoot(self);
+        self.actor.out = true;
+        self.actor.warp();
+        context.pushPage(self);
+        self.actor.out = false;
+    }
+
+    method close_motion(context)
+    {
+        self.actor.out = true;
+        context.closePage(self, self.actor.period);
+    }
+
+    method open(context, type, message, title, root, yes_text, no_text, equalized, auto_close)
+    {
+        PROJECT::clearBalloonTip(context);
+        sInstance[self.context_number] = self;
+
+        if (sActivateSound != nil)
+        {
+            self.activate_sound = sActivateSound;
+            sActivateSound = nil;
+        }
+
+        self.cursor_visible_when_open = context.cursor_visible;
+        context.cursor_visible = true;
+        context.enableInput();
+
+        if (title != nil)
+        {
+            if (root != nil)
+                self.Dialog::Title::title.text = context.translate(root, title);
+            else
+                self.Dialog::Title::title.text = title;
+        }
+
+        if (yes_text == nil)
+        {
+            if (type != 4 && type != 3)
+                yes_text = context.translate(ConfirmDialog, "OK");
+            else
+                yes_text = context.translate(ConfirmDialog, "Yes");
+        }
+
+        else
+        {
+            if (root != nil)
+                yes_text = context.translate(root, yes_text);
+
+            self.cancel_disable = true;
+        }
+
+        if (no_text == nil)
+        {
+            if (type != 4 && type != 3)
+                no_text = context.translate(ConfirmDialog, "Cancel");
+            else
+                no_text = context.translate(ConfirmDialog, "No");
+        }
+
+        else
+        {
+            if (root != nil)
+                no_text = context.translate(root, no_text);
+
+            self.cancel_disable = true;
+        }
+
+        var mf = self.Dialog::Message::message;
+
+        if (equalized != nil && equalized)
+        {
+            mf.align = -1;
+            mf.equalized = true;
+        }
+
+        else
+        {
+            mf.align = 4;
+            mf.equalized = false;
+        }
+
+        self.Dialog::Buttons::YesNo::Yes::label.text = yes_text;
+        self.Dialog::Buttons::YesNoClose::Yes::label.text = yes_text;
+        self.Dialog::Buttons::YesNo::No::label.text = no_text;
+        self.Dialog::Buttons::YesNoClose::No::label.text = no_text;
+        self.Dialog::Buttons::OK::label.text = yes_text;
+
+        self.current_type = type;
+
+        switch (type)
+        {
+            case 0:
+                self.Dialog::Buttons::YesNoClose.visible = false;
+                self.Dialog::Buttons::YesNo.visible = false;
+                self.Dialog::Buttons::OK.visible = true;
+
+                if (title == nil)
+                {
+                    self.Dialog::Title::title.text = context.translate(ConfirmDialog, "Confirm");
+                }
+
+                self.Dialog::Title::title.visible = true;
+                self.Dialog::Title::titleE.visible = false;
+                self.Dialog::Title::bg.visible = true;
+                self.Dialog::Title::bgE.visible = false;
+                self.Dialog::Message::caution.visible = false;
+                break;
+
+            case 1:
+            case 3:
+            case 4:
+            case 5:
+                self.Dialog::Buttons::YesNoClose.visible = type == 5;
+                self.Dialog::Buttons::YesNo.visible = type != 5;
+                self.Dialog::Buttons::OK.visible = false;
+
+                if (title == nil)
+                {
+                    self.Dialog::Title::title.text = context.translate(ConfirmDialog, "Dialog");
+                }
+
+                self.Dialog::Title::title.visible = true;
+                self.Dialog::Title::titleE.visible = false;
+                self.Dialog::Title::bg.visible = true;
+                self.Dialog::Title::bgE.visible = false;
+                self.Dialog::Message::caution.visible = false;
+                break;
+
+            case 2:
+                self.Dialog::Buttons::YesNoClose.visible = false;
+                self.Dialog::Buttons::YesNo.visible = false;
+                self.Dialog::Buttons::OK.visible = true;
+
+                if (title == nil)
+                {
+                    self.Dialog::Title::titleE.text = context.translate(ConfirmDialog, "Incomplete");
+                }
+
+                self.Dialog::Title::title.visible = false;
+                self.Dialog::Title::titleE.visible = true;
+                self.Dialog::Title::bg.visible = false;
+                self.Dialog::Title::bgE.visible = true;
+                self.Dialog::Message::caution.visible = true;
+                break;
+
+            default:
+                ;
+        }
+
+        self.Dialog::Message::message.text = message;
+
+        switch (type)
+        {
+            case 0:
+                self.setFocus(self.Dialog::Buttons::OK);
+                break;
+            case 1:
+            case 4:
+                self.setFocus(self.Dialog::Buttons::YesNo::Yes);
+                break;
+            case 3:
+                self.setFocus(self.Dialog::Buttons::YesNo::No);
+                break;
+            case 2:
+                self.setFocus(self.Dialog::Buttons::OK);
+                break;
+            case 5:
+                self.setFocus(self.Dialog::Buttons::YesNoClose::Close);
+                break;
+            default:
+                ;
+        }
+
+        var auto_close_mode = false;
+
+        if (nil != auto_close && auto_close)
+        {
+            if (0 == type || 2 == type)
+                auto_close_mode = true;
+        }
+
+        if (auto_close_mode)
+        {
+            if (self.Dialog::Buttons.visible)
+            {
+                self.Dialog.h -= self.Dialog::Buttons.h;
+                self.Dialog::Buttons.visible = false;
+                self.Dialog::Footer.visible = true;
+            }
+        }
+
+        else
+        {
+            if (!self.Dialog::Buttons.visible)
+            {
+                self.Dialog.h += self.Dialog::Buttons.h;
+                self.Dialog::Buttons.visible = true;
+                self.Dialog::Footer.visible = false;
+            }
+        }
+
+        self.open_motion(context);
+        self.result = nil;
+
+        if (auto_close_mode)
+        {
+            self.Dialog::Buttons::OK.visible = false;
+            self.setFocus(nil);
+            context.pushEvent(menu::MFunctionEvent(ActivateOKButtonWait, context));
+        }
+
+        self.event_loop = main::menu::EventLoop(context);
+        self.event_loop.enter();
+        var r = self.result;
+
+        if (r == nil)
+            r = false;
+
+        self.result = nil;
+        sInstance[self.context_number] = nil;
+
+        return r;
+    }
+
+    method close(context)
+    {
+        if (self.event_loop != nil)
+        {
+            self.event_loop.leave();
+            self.event_loop = nil;
+        }
+
+        self.setFocus(nil);
+        close_motion(context);
+        self.cancel_disable = nil;
+        context.cursor_visible = self.cursor_visible_when_open;
+        self.activate_sound = nil;
+    }
+
+    method onCancel(context)
+    {
+        if (true == self.cancel_disable)
+            return EVENTRESULT_FILTER;
+
+        main::sound.play("cancel");
+        self.result = false;
+        close(context, false);
+        return EVENTRESULT_FILTER;
+    }
+
+    function OpenDialog(context, type, message, title, root, yes_text, no_text, equalized, auto_close)
+    {
+        var dialog = ConfirmDialog.doCopy();
+        dialog.context_number = context.context_number;
+
+        return dialog.open(context, type, message, title, root, yes_text, no_text, equalized, auto_close);
+    }
+
+    function ForceCancel(context)
+    {
+        var dialog = sInstance[context.context_number];
+
+        if (dialog != nil)
+        {
+            if (dialog.event_loop != nil && dialog.result == nil)
+            {
+                dialog.result = false;
+                dialog.close(context);
+            }
+        }
+    }
+
+    function SetActivateSound(name)
+    {
+        sActivateSound = name;
+    }
+
+    function ActivateOKButtonWait(context)
+    {
+        context.sync(1.0);
+        ActivateOKButton(context);
+    }
+
+    function ActivateOKButton(context)
+    {
+        var dialog = sInstance[context.context_number];
+
+        if (dialog != nil)
+            dialog.Dialog::Buttons::OK.onActivate(context);
+    }
+}
+
+module ConfirmDialog::Dialog::Buttons::OK
+{
+    method onActivate(context, event, item)
+    {
+        main::sound.play((self.ConfirmDialog.activate_sound != nil) ? self.ConfirmDialog.activate_sound : "ok");
+        self.ConfirmDialog.result = true;
+        self.ConfirmDialog.close(context);
+        return EVENTRESULT_FILTER;
+    }
+}
+
+module ConfirmDialog::Dialog::Buttons::YesNo::Yes
+{
+    method onActivate(context, event, item)
+    {
+        main::sound.play((self.ConfirmDialog.activate_sound != nil) ? self.ConfirmDialog.activate_sound : "ok");
+        self.ConfirmDialog.result = true;
+        self.ConfirmDialog.close(context);
+        return EVENTRESULT_FILTER;
+    }
+}
+
+module ConfirmDialog::Dialog::Buttons::YesNo::No
+{
+    method onActivate(context, event, item)
+    {
+        main::sound.play("ok");
+        self.ConfirmDialog.result = false;
+        self.ConfirmDialog.close(context);
+        return EVENTRESULT_FILTER;
+    }
+}
+
+module ConfirmDialog::Dialog::Buttons::YesNoClose::Yes
+{
+    method onActivate(context, event, item)
+    {
+        main::sound.play((self.ConfirmDialog.activate_sound != nil) ? self.ConfirmDialog.activate_sound : "ok");
+        self.ConfirmDialog.result = 1;
+        self.ConfirmDialog.close(context);
+        return EVENTRESULT_FILTER;
+    }
+}
+
+module ConfirmDialog::Dialog::Buttons::YesNoClose::No
+{
+    method onActivate(context, event, item)
+    {
+        main::sound.play("ok");
+        self.ConfirmDialog.result = 2;
+        self.ConfirmDialog.close(context);
+        return EVENTRESULT_FILTER;
+    }
+}
+
+module ConfirmDialog::Dialog::Buttons::YesNoClose::Close
+{
+    method onActivate(context, event, item)
+    {
+        main::sound.play("ok");
+        self.ConfirmDialog.result = 4;
+        self.ConfirmDialog.close(context);
+        return EVENTRESULT_FILTER;
+    }
+}

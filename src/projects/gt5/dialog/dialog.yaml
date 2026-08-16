@@ -1,0 +1,20 @@
+project_name: DialogProject
+project_folder: ..
+
+base_include_folder: ../../../../
+
+output_name : dialog
+
+version : 12
+
+files_to_compile:
+  - name: DialogProjectComponent.ad
+    project_component: true
+  - name: dialog.ad
+    is_main: true
+  - name: ConfirmExecDialog.ad
+  - name: ProgressDialog.ad
+  - name: ServerSelectDialog.ad
+  - name: DimmerDialog.ad
+  - name: PrizeDialog.ad
+  - name: InformationDialog.ad
