@@ -826,19 +826,19 @@ GT5 2.11 is prefered over 2.17 due to 2.12<->2.17 having no extra content, and m
 | config                 |    ❌    | N/A                                                                              |
 | cursor                 |    ❌    | N/A                                                                              |
 | demo_movie             |    ❌    | N/A                                                                              |
-| dialog                 |    ❌    | N/A                                                                              |
+| dialog                 |    ✔️    | Dialog/prompt handlers                                                           |
 | gps_replay             |    ❌    | N/A                                                                              |
 | gtauto                 |    ❌    | N/A                                                                              |
 | gtmode                 |    ✔️    | GT Mode. Includes main screen, garage, a/bspec, & every single submenu starting from there. |
 | gttop                  |    ✔️    | Main Menu                                                                        |
 | gttv                   |    ❌    | N/A                                                                              |
-| gttv2                  |    ❌    | N/A                                                                              |
-| leavedemo              |    ❌    | N/A                                                                              |
+| gttv2                  |    ✔️    | Main GTTV Menu                                                                   |
+| leavedemo              |    ✔️    | Demonstration/Replays on Inactivity                                              |
 | manual                 |    ❌    | N/A                                                                              |
 | main (scripts)         |    ✔️    | Entrypoint and all util scripts used by ALL projects.                            |
-| multimonitor           |    ❌    | N/A                                                                              |
-| museum                 |    ❌    | N/A                                                                              |
-| news                   |    ❌    | N/A                                                                              |
+| multimonitor           |    ✔️    | N/A                                                                              |
+| museum                 |    ✔️    | Museum (Online) Menu                                                             |
+| news                   |    ✔️    | News (Online) Menu                                                               |
 | online                 |    ❌    | N/A                                                                              |
 | online_bspec           |    ❌    | N/A                                                                              |
 | option                 |    ❌    | N/A                                                                              |
@@ -848,7 +848,7 @@ GT5 2.11 is prefered over 2.17 due to 2.12<->2.17 having no extra content, and m
 | race_*                 |    ❌    | Plugins for each game mode (sits on top of `race`)                               |
 | ranking                |    ❌    | N/A                                                                              |
 | rcvtst                 |    ❌    | N/A                                                                              |
-| setting                |    ❌    | N/A                                                                              |
+| setting                |    ✔️    | Car Settings/Tuning                                                              |
 | ui_kit                 |    ❌    | N/A                                                                              |
 | user_profile           |    ❌    | N/A                                                                              |
 | user_profile_driver    |    ❌    | N/A                                                                              |
