@@ -1,0 +1,40 @@
+module PROJECT
+{
+    static dialog_fade_time = 0.2;
+
+    function setFadeActor(widget)
+    {
+        var actor = main::menu::MFadeActor(widget, 1.0);
+        actor.repeat = true;
+        actor.period = 0.25;
+        widget.actor = actor;
+    }
+
+    function setMoveActor(widget)
+    {
+        var actor = main::menu::MMoveActor(widget, widget.x, 480.0);
+        widget.actor = actor;
+        widget.actor.ratio = 0.2;
+    }
+
+    function setFadeActorRoot(root)
+    {
+        var actor = main::menu::MFadeActor(root, 1.0);
+        actor.repeat = false;
+        actor.period = dialog_fade_time;
+        root.actor = actor;
+    }
+
+    function clearBalloonTip(context, event_root)
+    {
+        if (event_root == nil)
+            event_root = context.getRootWindow();
+
+        if (event_root != nil && event_root["BalloonTip"] != nil)
+        {
+            event_root["BalloonTip"].reset_value();
+            var function_event = main::menu::MFunctionEvent(event_root["BalloonTip"].reset_value);
+            context.pushEvent(function_event);  // VSCODE EXTENSION BUG: Something to do with Functions as a variable. re-named to prevent bug for now.
+        }
+    }
+}

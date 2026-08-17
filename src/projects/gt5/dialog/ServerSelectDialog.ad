@@ -1,0 +1,130 @@
+module ROOT
+{
+    function selectWithoutDialog(context, server_list, idx)
+    {
+        setServer(context, server_list[idx]);
+    }
+
+    function setServer(context, server_data)
+    {
+        Grim2Util::initialize(context, server_data["region"]);
+    }
+
+    static sServerList = nil;
+    static sEventLoop = nil;
+
+    function open(context, server_list)
+    {
+        PROJECT::clearBalloonTip(context);
+        sServerList = server_list;
+        context.pushPage(ROOT);
+
+        if (sEventLoop != nil)
+        {
+            sEventLoop.leave();
+            sEventLoop = nil;
+        }
+
+        sEventLoop = main::menu::EventLoop(context);
+        sEventLoop.enter();
+    }
+
+    function close(context)
+    {
+        if (sEventLoop != nil)
+        {
+            sEventLoop.leave();
+            sEventLoop = nil;
+        }
+
+        ROOT.actor.out = true;
+        context.closePage(ROOT, ROOT.actor.period);
+    }
+
+    method onRealize(context)
+    {
+        ROOT.display_priority = 50;
+        setFadeActorRoot(ROOT);
+
+        if (main::pdiext::MSystemConfiguration::isSDTV())
+        {
+            var s = 1.25;
+            Dialog::Title::label.original_scale_x *= s;
+            Dialog::Title::label.original_scale_y *= s;
+            hidden::Item::label.original_scale_x *= s;
+            hidden::Item::label.original_scale_y *= s;
+        }
+    }
+
+    function onInitialize(context)
+    {
+        hidden.visible = false;
+        ActorUtil::ResetActors(ROOT);
+        Dialog::ServerList::ListBox.create_items(context, sServerList);
+    }
+
+    function onFinalize(context)
+    {
+        sServerList = nil;
+
+        if (sEventLoop != nil)
+        {
+            sEventLoop.leave();
+            sEventLoop = nil;
+        }
+    }
+}
+
+module ROOT::Dialog::ServerList::ListBox
+{
+    function create_items(context, list_datas)
+    {
+        ListBox.setItemTemplate(context, hidden::Item);
+        ListBox.setItemCount(list_datas.size);
+
+        for (var i = 0; i < list_datas.size; i++)
+        {
+            var list_data = list_datas[i];
+            var item_w = ListBox.getItemWidget(i, context);
+            item_w.initialize(context, list_data);
+        }
+    }
+
+    function onFocusNotify(context, new_index, old_index)
+    {
+        var new_item = ListBox.getItemWidget(new_index, context);
+
+        if (new_item != nil)
+            ROOT.setFocus(new_item);
+
+        return EVENTRESULT_FILTER;
+    }
+
+    function onActivate(context)
+    {
+        main::sound.play("ok");
+        var fidx = ListBox.focus_index;
+        var focus_item = ListBox.getItemWidget(fidx, context);
+        focus_item.activate(context);
+
+        return EVENTRESULT_FILTER;
+    }
+}
+
+module ROOT::hidden::Item
+{
+    attribute sServerData;
+
+    method initialize(context, server_data)
+    {
+        self.sServerData = server_data;
+        self.label.text = server_data["name"];
+    }
+
+    method activate(context)
+    {
+        CursorUtil::setCursor(context, "wait");
+        ROOT::setServer(context, self.sServerData);
+        ROOT.close(context);
+    }
+}

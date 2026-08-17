@@ -1,0 +1,251 @@
+module ROOT
+{
+    attribute event_loop_;
+    attribute result_;
+    attribute message_begin_;
+    attribute message_waiting_;
+    attribute message_success_;
+    attribute message_failed_;
+    attribute func_;
+    attribute arg_;
+    attribute end_time_sec_;
+    attribute end_timer_;
+    attribute no_progress_;
+
+    function OpenDialog(context, message_begin, message_waiting, message_success, message_failed, func, arg, end_time_sec, no_progress)
+    {
+        var dialog = ROOT.doCopy();
+        dialog.context_number = context.context_number;
+        return dialog.open(context, message_begin, message_waiting, message_success, message_failed, func, arg, end_time_sec, no_progress);
+    }
+
+    method open(context, message_begin, message_waiting, message_success, message_failed, func, arg, end_time_sec, no_progress)
+    {
+        PROJECT::clearBalloonTip(context);
+
+        self.message_begin_ = message_begin;
+        self.message_waiting_ = message_waiting;
+        self.message_success_ = message_success;
+        self.message_failed_ = message_failed;
+        self.func_ = func;
+        self.arg_ = arg;
+        self.end_time_sec_ = end_time_sec;
+        self.end_timer_ = nil;
+        self.no_progress_ = no_progress;
+        self.result_ = false;
+
+        context.pushPage(self);
+        self.event_loop_ = main::menu::EventLoop(context);
+        self.event_loop_.enter();
+
+        var res = self.result_ != false;
+        self.result_ = nil;
+        return res;
+    }
+
+    method close(context)
+    {
+        CursorUtil::setCursor(context, "cursor_chrome");
+
+        if (self.end_timer_ != nil)
+        {
+            WatcherUtil::Delete(self.end_timer_);
+            self.end_timer_ = nil;
+        }
+
+        if (self.event_loop_ != nil)
+        {
+            self.event_loop_.leave();
+            self.event_loop_ = nil;
+        }
+
+        self.actor.out = true;
+        context.closePage(self, self.actor.period);
+    }
+
+    method onCancel(context)
+    {
+        main::sound.play("cancel");
+        self.close(context);
+        return EVENTRESULT_FILTER;
+    }
+
+    function onRealize(context)
+    {
+        ROOT.display_priority = 50;
+    }
+
+    SCALE_WIDGET_SDTV(Dialog::Message::message, 2.6);
+
+    method onInitialize(context)
+    {
+        setFadeActorRoot(self);
+        ActorUtil::ResetActors(self);
+        self.Dialog::Message::Progress.visible = false;
+        self.Dialog::Title::label.text = context.translate(ConfirmDialog, "Confirm");
+
+        self.Dialog::Buttons::YesNo.insensitive = true;
+        self.Dialog::Buttons::YesNo.visible = false;
+        self.Dialog::Buttons::OK.insensitive = true;
+        self.Dialog::Buttons::OK.visible = false;
+        context.pushEvent(main::menu::MScriptEvent(context, self, "on_initialize"));
+    }
+
+    method on_initialize(context)
+    {
+        if (self.message_begin_ != nil)
+            self.phase_1(context);
+        else
+            self.phase_2(context, 1.0);
+    }
+
+    method onFinalize(context)
+    {
+        self.message_begin_ = nil;
+        self.message_waiting_ = nil;
+        self.message_success_ = nil;
+        self.message_failed_ = nil;
+        self.func_ = nil;
+        self.arg_ = nil;
+        self.end_time_sec_ = nil;
+        self.end_timer_ = nil;
+        self.no_progress_ = nil;
+
+        if (self.event_loop_ != nil)
+        {
+            self.event_loop_.leave();
+            self.event_loop_ = nil;
+        }
+    }
+
+    method phase_1(context)
+    {
+        self.Dialog::Buttons::YesNo.insensitive = false;
+        self.Dialog::Buttons::YesNo.visible = true;
+        self.Dialog::Message::message.text = self.message_begin_;
+        self.setFocus(self.Dialog::Buttons::YesNo::No);
+    }
+
+    method phase_2(context, wait_second)
+    {
+        var popup_close = false;
+        CursorUtil::setCursor(context, "wait");
+        self.Dialog::Title::label.text = context.translate(ROOT, "Executing");
+
+        if (self.no_progress_ != nil)
+            self.Dialog::Message::Progress.visible = false;
+        else
+            self.Dialog::Message::Progress.visible = true;
+
+        self.Dialog::Message::message.text = self.message_waiting_;
+        self.Dialog::Buttons::YesNo.insensitive = true;
+        self.Dialog::Buttons::YesNo.visible = false;
+
+        if (self.end_time_sec_ != nil)
+        {
+            self.Dialog::Buttons.visible = false;
+            self.Dialog::Footer.visible = true;
+        }
+
+        else
+        {
+            self.Dialog::Buttons.visible = true;
+            self.Dialog::Footer.visible = false;
+        }
+
+        self.setFocus(self.Dialog::Buttons::OK);
+
+        if (wait_second != nil)
+            context.wait(wait_second);
+
+        {
+            var result = self.func_(context, self.arg_, self);
+            self.Dialog::Title::label.text = context.translate(ROOT, "Done");
+            self.Dialog::Message::Progress.visible = false;
+
+            if (result == nil)
+                result = false;
+
+            result.toInt();
+
+            if (result != false)
+            {
+                if (self.message_success_ != nil)
+                    self.Dialog::Message::message.text = self.message_success_;
+                else
+                    popup_close = true;
+            }
+
+            else
+            {
+                if (self.message_failed_ != nil)
+                    self.Dialog::Message::message.text = self.message_failed_;
+                else
+                    popup_close = true;
+            }
+
+            self.result_ = result;
+        }
+
+        if (popup_close)
+        {
+            self.close(context);
+            return EVENTRESULT_FILTER;
+        }
+
+        if (self.end_time_sec_ != nil)
+        {
+            self.end_timer_ = WatcherUtil::Create(context, self.close, (self.end_time_sec_ * 60).toInt());
+            self.Dialog::Buttons::OK.insensitive = true;
+            self.Dialog::Buttons::OK.visible = false;
+            self.setFocus(self.Dialog::Buttons::OK);
+
+            return EVENTRESULT_FILTER;
+        }
+
+        CursorUtil::setCursor(context, "cursor_chrome");
+        self.Dialog::Buttons::OK.insensitive = false;
+        self.Dialog::Buttons::OK.visible = true;
+        self.setFocus(self.Dialog::Buttons::OK);
+
+        return EVENTRESULT_FILTER;
+    }
+
+    method setSuccessMessage(txt)
+    {
+        self.message_success_ = txt;
+    }
+}
+
+module ROOT::Dialog::Buttons
+{
+    module OK
+    {
+        method onActivate(context)
+        {
+            main::sound.play("ok");
+            self.ROOT.close(context);
+            return EVENTRESULT_FILTER;
+        }
+    }
+
+    module YesNo::Yes
+    {
+        method onActivate(context)
+        {
+            main::sound.play("return");
+            self.ROOT.phase_2(context, 1.0);
+            return EVENTRESULT_FILTER;
+        }
+    }
+
+    module YesNo::No
+    {
+        method onActivate(context)
+        {
+            main::sound.play("ok");
+            self.ROOT.close(context, false);
+            return EVENTRESULT_FILTER;
+        }
+    }
+}

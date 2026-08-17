@@ -1,0 +1,653 @@
+module ROOT
+{
+    static sInstance = nil;
+    static sArgs = nil;
+
+    attribute cursor_visible_when_open;
+    attribute dialog;
+    attribute args;
+    attribute event_loop;
+    attribute result;
+
+    function openPrizeMoneyDialog(context, args)
+    {
+        var root = ROOT.doCopy();
+        root.context_number = context.context_number;
+        return root._open_dialog(context, root.Money, args);
+    }
+
+    function openPrizeAspecExpDialog(context, args, without_dialog)
+    {
+        var root = ROOT.doCopy();
+        root.context_number = context.context_number;
+        return root._open_dialog(context, root.AspecExp, args, without_dialog);
+    }
+
+    function openPrizeBspecExpDialog(context, args)
+    {
+        var root = ROOT.doCopy();
+        root.context_number = context.context_number;
+        return root._open_dialog(context, root.BspecExp, args);
+    }
+
+    function ForceClose(context)
+    {
+        var dialog = sInstance[context.context_number];
+
+        if (dialog != nil)
+        {
+            if (dialog.event_loop != nil && dialog.result == nil)
+            {
+                DialogUtil::cancelConfirmDialog(context);
+                dialog._close_dialog(context, true);
+            }
+        }
+    }
+
+    method appear()
+    {
+        if (self.dialog != nil)
+            self.dialog.actor.out = false;
+
+        self.actor.out = false;
+    }
+
+    method disappear()
+    {
+        if (self.dialog != nil)
+            self.dialog.actor.out = true;
+
+        self.actor.out = true;
+    }
+
+    method _open_dialog(context, dialog, args, without_dialog)
+    {
+        var event_root = context.getRootWindow();
+        sInstance[self.context_number] = self;
+        self.dialog = dialog;
+        self.args = args;
+
+        if (without_dialog != nil && without_dialog)
+        {
+            self.dialog.setup(context, self.args);
+            return true;
+        }
+
+        setMoveActor(self.dialog);
+        setFadeActorRoot(self);
+
+        {
+            var ratio = 1.0;
+            self.dialog.visible = true;
+            self.dialog.insensitive = false;
+
+            self.dialog.actor.ratio = 0.2 * ratio;
+            self.dialog.actor.destinationY = ((main
+                ::menu::ScreenHeight - self.dialog.h) / 2) + 100;
+
+            self.dialog.actor.out = true;
+            self.dialog.actor.warp();
+            self.actor.out = true;
+            self.actor.warp();
+        }
+
+        self.cursor_visible_when_open = context.cursor_visible;
+        context.cursor_visible = true;
+        context.pushPage(self);
+
+        main::sound.play("attention");
+        self.appear();
+        context.sync(0.4);
+
+        PROJECT::clearBalloonTip(context, event_root);
+        self.event_loop = main::menu::EventLoop(context);
+        self.event_loop.enter();
+
+        var res = self.result;
+        if (res == nil)
+            res = false;
+
+        self.result = nil;
+        sInstance[self.context_number] = nil;
+
+        return res;
+    }
+
+    method onInitialize(context)
+    {
+        self.dialog.setup(context, self.args);
+        self.args = nil;
+    }
+
+    method _close_dialog(context, force)
+    {
+        if (force == nil)
+            force = false;
+        
+        ROOT.result = !force;
+
+        if (self.event_loop != nil)
+        {
+            self.event_loop.leave();
+            self.event_loop = nil;
+        }
+
+        self.dialog.actor.destinationY = ((main
+            ::menu::ScreenHeight - self.dialog.h) / 2) - 200;
+
+        self.disappear();
+
+        if (!force)
+            context.closePage(self, self.actor.period);
+        else
+            context.closePage(self);
+
+        context.cursor_visible = self.cursor_visible_when_open;
+        self.cursor_visible_when_open = nil;
+        self.dialog = nil;
+    }
+
+    function onRealize(manager)
+    {
+        ROOT.display_priority = 50;
+        var rcc = manager.getUpdateContext().getRenderContextCount();
+        sInstance = Array(rcc);
+    }
+
+    function onDestroy(manager)
+    {
+        sInstance = nil;
+    }
+
+    method onFinalize(context)
+    {
+        if (self.event_loop != nil)
+        {
+            self.event_loop.leave();
+            self.event_loop = nil;
+        }
+    }
+}
+
+module ROOT::Money
+{
+    attribute thread_;
+    attribute my_cash_;
+    attribute prize_money_;
+    attribute pp_bonus_;
+    attribute and_apply_;
+    attribute skip_;
+    attribute over_limit_cash_;
+
+    method setup(context, args)
+    {
+        if (args == nil || args.size < 2)
+        {
+
+        }
+
+        self.my_cash_ = GAME_STATUS.user_profile.cash;
+        self.skip_ = false;
+        self.over_limit_cash_ = false;
+        self.prize_money_ = args[0];
+        self.and_apply_ = args[1];
+
+        var ol_login_bonus_precent = 0;
+        var pp_bonus = 0;
+        var pp_diff = 0;
+
+        if (args.size > 2 && args[2] != nil)
+        {
+            if (args[2].isInstanceOf(Array))
+            {
+                var bonus_args = args[2];
+                ol_login_bonus_precent = bonus_args[0];
+                pp_bonus = bonus_args[1];
+                pp_diff = bonus_args[2];
+            }
+            else
+                ol_login_bonus_precent = args[2];
+        }
+
+        var gold;
+        var silver;
+        var bronze;
+
+        if (args.size > 3 && args[3] != nil)
+        {
+            |gold, silver, bronze| = args[3];
+        }
+
+        if (self.and_apply_)
+        {
+            GAME_STATUS.user_profile.addCash(context, self.prize_money_, false);
+            main::GAME_STATUS.user_profile.context.need_save = SaveDataUtilGT5::STATUSCODE::NEED_SAVE;
+        }
+
+        self.Button::OK.visible = false;
+        self.Button::Skip.visible = true;
+
+        if (ol_login_bonus_precent > 100)
+        {
+            self.Body::PrizeMoney::Mag.visible = true;
+            self.Body::PrizeMoney::Mag::TextFace.text = context.translate(ROOT, "Unit", "PERCENT").build(ol_login_bonus_precent);
+        }
+        else
+            self.Body::PrizeMoney::Mag.visible = false;
+
+        if (pp_bonus > 0)
+        {
+            self.Body::PPBonus.visible = true;
+            self.Body::PPBonus.text = context.translate(ROOT, "PP_BONUS").build(main::pdiext::MMisc::GetMoneyString(pp_bonus));
+        }
+        else
+            self.Body::PPBonus.visible = false;
+
+        if (gold != nil || silver != nil || bronze != nil)
+        {
+            self.Body::PrizeMoney::Trophy.visible = true;
+            self.Body::PrizeMoney::Trophy.gold.visible = gold == true;
+            self.Body::PrizeMoney::Trophy.plus1.visible = gold == true && (silver == true || bronze == true);
+
+            self.Body::PrizeMoney::Trophy.silver.visible = silver == true;
+            self.Body::PrizeMoney::Trophy.plus2.visible = gold == true || (silver == true && bronze == true);
+            self.Body::PrizeMoney::Trophy.bronze.visible = bronze == true;
+        }
+        else
+            self.Body::PrizeMoney::Trophy.visible = false;
+
+        self.Body::PrizeMoney::Money::value.text = main::pdiext::MMisc::GetMoneyString(self.prize_money_);
+        self.Body::MyMoney::Money::value.text = main::pdiext::MMisc::GetMoneyString(self.my_cash_);
+
+        context.cursor_visible = true;
+        self.thread_ = Thread(self.start_addition, context);
+        self.thread_.start();
+    }
+
+    function onRealize(manager)
+    {
+        if (main::pdiext::MSystemConfiguration::isSDTV())
+        {
+            var s = 1.25;
+            Title::title.original_scale_x *= s;
+            Title::title.original_scale_y *= s;
+        }
+
+        Money.visible = false;
+        Money.insensitive = true;
+    }
+
+    method onFinalize(manager)
+    {
+        if (self.thread_ != nil)
+        {
+            self.thread_.terminate();
+            self.thread_ = nil;
+        }
+    }
+
+    method start_addition(context)
+    {
+        var current = self.my_cash_;
+        var target = self.my_cash_ + self.prize_money_;
+        var cash_max = GAME_STATUS.user_profile.getCashLimit();
+
+        if (target > cash_max)
+        {
+            target = cash_max;
+            self.over_limit_cash_ = true;
+        }
+
+        var chip = (self.prize_money_ / 100).toInt();
+        if (chip < 1)
+            chip = 1;
+
+        for (;;)
+        {
+            main::sound.play("credit");
+            current += chip;
+
+            if (self.skip_ || current >= target)
+            {
+                self.Body::MyMoney::Money::value.text = main::pdiext::MMisc::GetMoneyString(target);
+                break;
+            }
+            else
+                self.Body::MyMoney::Money::value.text = main::pdiext::MMisc::GetMoneyString(current);
+
+            Thread::Sleep(0.02);
+        }
+
+        self.end_addition(context);
+    }
+
+    method end_addition(context)
+    {
+        if (self.over_limit_cash_)
+        {
+            var cash_max = GAME_STATUS.user_profile.getCashLimit();
+            var cash_max_str = main::pdiext::MMisc::GetMoneyString(cash_max);
+            var error_msg = context.translate(context.getCursorProject(), "Component", "YOU_CANNOT_GET_MONEY_MORE").build(cash_max_str);
+            DialogUtil::openConfirmDialog(context, DialogUtil::OK, error_msg);
+        }
+
+        self.prize_money_ = nil;
+        self.and_apply_ = nil;
+        self.skip_ = nil;
+        self.Button::Skip.visible = false;
+        self.Button::OK.visible = true;
+
+        ROOT.setFocus(self.Button::OK);
+    }
+
+    module Button::OK
+    {
+        method onActivate(context)
+        {
+            main::sound.play("ok");
+            self.ROOT._close_dialog(context);
+        
+            return EVENTRESULT_FILTER;
+        }
+    }
+
+    module Button::Skip
+    {
+        method onActivate(context)
+        {
+            self.Money.skip_ = true;
+            return EVENTRESULT_FILTER;
+        }
+    }
+}
+
+module ROOT::AspecExp
+{
+    method setup(context, args)
+    {
+        var user_profile = main::GAME_STATUS.user_profile;
+
+        if (args == nil || args.size < 2)
+        {
+
+        }
+
+        var prize_exp = args[0];
+        var and_apply = args[1];
+        var ol_login_bonus_precent = 0;
+        var pp_bonus = 0;
+        var pp_diff = 0;
+
+        if (args.size > 2 && args[2] != nil)
+        {
+            if (args[2].isInstanceOf(Array))
+            {
+                var bonus_args = args[2];
+                ol_login_bonus_precent = bonus_args[0];
+                pp_bonus = bonus_args[1];
+                pp_diff = bonus_args[2];
+            }
+            else
+                ol_login_bonus_precent = args[2];
+        }
+
+        var gold;
+        var silver;
+        var bronze;
+
+        if (args.size > 3 && args[3] != nil)
+        {
+            |gold, silver, bronze| = args[3];
+        }
+
+        var current_exp = GAME_STATUS.user_profile.getAspecTotalPoint();
+        var current_level = GAME_STATUS.user_profile.getAspecLevel();
+        var need_exp_for_next = GAME_STATUS.user_profile.getPointForNextLevel(current_level);
+        var next_exp = current_exp + prize_exp;
+        var next_level = GAME_STATUS.user_profile.PointToLevel(next_exp);
+
+        var before_exp = GAME_STATUS.user_profile.getCurrentPoint(current_exp);
+        var exp = GAME_STATUS.user_profile.getCurrentPoint(next_exp);
+        var current_point = GAME_STATUS.user_profile.getCurrentPoint(current_exp);
+        var next_point = GAME_STATUS.user_profile.getCurrentPoint(next_exp);
+        var level_up = current_level < next_level;
+
+        self.Body::PrizeExp::Exp::value.text = prize_exp;
+        self.Body::LevelAndPoint::Lv::value.text = current_level;
+        self.Body::LevelAndPoint::Lv::arrow.visible = level_up;
+        self.Body::LevelAndPoint::Lv::value_f.visible = level_up;
+        self.Body::LevelAndPoint::Lv::value_f.text = next_level;
+
+        if (ol_login_bonus_precent > 100)
+        {
+            self.Body::PrizeExp::Mag.visible = true;
+            self.Body::PrizeExp::Mag::TextFace.text = context.translate(ROOT, "Unit", "PERCENT").build(ol_login_bonus_precent);
+        }
+        else
+            self.Body::PrizeExp::Mag.visible = false;
+
+        if (pp_bonus > 0)
+        {
+            self.Body::PPBonus.visible = true;
+            self.Body::PPBonus.text = context.translate(ROOT, "PP_BONUS").build(pp_bonus);
+        }
+        else
+            self.Body::PPBonus.visible = false;
+
+        if (gold != nil || silver != nil || bronze != nil)
+        {
+            self.Body::PrizeExp::Trophy.visible = true;
+            self.Body::PrizeExp::Trophy.gold.visible = gold == true;
+            self.Body::PrizeExp::Trophy.plus1.visible = gold == true && (silver == true || bronze == true);
+
+            self.Body::PrizeExp::Trophy.silver.visible = silver == true;
+            self.Body::PrizeExp::Trophy.plus2.visible = gold == true || (silver == true && bronze == true);
+
+            self.Body::PrizeExp::Trophy.bronze.visible = bronze == true;
+        }
+        else
+            self.Body::PrizeExp::Trophy.visible = false;
+
+        var width = self.Body::Bar::bar::ColorFace.w;
+        
+        if (need_exp_for_next > 0)
+        {
+            self.Body::LevelAndPoint::Exp::value.text = exp;
+            self.Body::LevelAndPoint::Exp::next.text = need_exp_for_next;
+
+            var ratio = current_point.toFloat() / need_exp_for_next;
+            self.Body::Bar::bar::ScalarInterpolator.setEndValue(0, width * ratio);
+            self.Body::Bar::bar::ScalarInterpolator.restart();
+            self.Body::LevelAndPoint::comment.visible = false;
+
+            var next_ratio = next_point.toFloat() / need_exp_for_next;
+            if (level_up)
+            {
+                next_ratio = 1.0;
+
+                self.Body::LevelAndPoint::Exp::value.text = before_exp + prize_exp;
+                self.Body::LevelAndPoint::Lv::value_f.text = next_level;
+                self.Body::LevelAndPoint::Lv::value_f.ScalarInterpolator.restart();
+                self.Body::LevelAndPoint::Lv::value_f.ScalarInterpolator0.restart();
+
+                var path = "/sound_gt/se/gt5_levelup1";
+                SoundUtil::PlayStreamSE(path);
+
+                self.Body::LevelAndPoint::comment.visible = true;
+                self.Body::LevelAndPoint::comment.text = context.translate(ROOT, "RANK_UP").build(next_level);
+                self.Body::LevelAndPoint::comment.ScalarInterpolator.restart();
+                ActionLogUtil::aspecLevel(next_level);
+            }
+
+            self.Body::Bar::bar2::ScalarInterpolator.setEndValue(0, width * next_ratio);
+            self.Body::Bar::bar2::ScalarInterpolator.restart();
+        }
+        else
+        {
+            self.Body::LevelAndPoint::Exp::value.text = "--";
+            self.Body::LevelAndPoint::Exp::next.text = "--";
+            self.Body::Bar::bar.w = 0;
+        }
+
+        if (and_apply)
+        {
+            user_profile.addAspecPoint(prize_exp);
+            main::GAME_STATUS.user_profile.context.need_save = SaveDataUtilGT5::STATUSCODE::NEED_SAVE;
+        }
+    }
+
+    function onRealize(manager)
+    {
+        if (main::pdiext::MSystemConfiguration::isSDTV())
+            var s = 1.25;
+
+        AspecExp.visible = false;
+        AspecExp.insensitive = true;
+    }
+
+    module Button::OK
+    {
+        method onActivate(context)
+        {
+            main::sound.play("ok");
+            self.ROOT._close_dialog(context);
+        
+            return EVENTRESULT_FILTER;
+        }
+    }
+}
+
+module ROOT::BspecExp
+{
+    hidden.visible = false;
+
+    method setup(context, args)
+    {
+        var user_profile = main::GAME_STATUS.user_profile;
+
+        if (args == nil || args.size < 2)
+        {
+
+        }
+
+        var prize_exp = args[0];
+        var and_apply = args[1];
+        var ol_login_bonus_precent = 0;
+        var pp_bonus = 0;
+        var pp_diff = 0;
+
+        if (args.size > 2 && args[2] != nil)
+        {
+            if (args[2].isInstanceOf(Array))
+            {
+                var bonus_args = args[2];
+                ol_login_bonus_precent = bonus_args[0];
+                pp_bonus = bonus_args[1];
+                pp_diff = bonus_args[2];
+            }
+            else
+                ol_login_bonus_precent = args[2];
+        }
+
+        var current_exp = GAME_STATUS.user_profile.getBspecTotalPoint();
+        var current_level = GAME_STATUS.user_profile.getBspecLevel();
+        var need_exp_for_next = GAME_STATUS.user_profile.getPointForNextLevel(current_level);
+        var next_exp = current_exp + prize_exp;
+        var next_level = GAME_STATUS.user_profile.PointToLevel(next_exp);
+
+        var before_exp = GAME_STATUS.user_profile.getCurrentPoint(current_exp);
+        var exp = GAME_STATUS.user_profile.getCurrentPoint(next_exp);
+        var current_point = GAME_STATUS.user_profile.getCurrentPoint(current_exp);
+        var next_point = GAME_STATUS.user_profile.getCurrentPoint(next_exp);
+        var level_up = current_level < next_level;
+
+        self.Body::PrizeExp::Exp::value.text = prize_exp;
+        self.Body::LevelAndPoint::Lv::value.text = current_level;
+        self.Body::LevelAndPoint::Lv::arrow.visible = level_up;
+        self.Body::LevelAndPoint::Lv::value_f.visible = level_up;
+        self.Body::LevelAndPoint::Lv::value_f.text = next_level;
+
+        if (ol_login_bonus_precent > 100)
+        {
+            self.Body::PrizeExp::Mag.visible = true;
+            self.Body::PrizeExp::Mag::TextFace.text = context.translate(ROOT, "Unit", "PERCENT").build(ol_login_bonus_precent);
+        }
+        else
+            self.Body::PrizeExp::Mag.visible = false;
+
+        if (pp_bonus > 0)
+        {
+            self.Body::PPBonus.visible = true;
+            self.Body::PPBonus.text = context.translate(ROOT, "PP_BONUS").build(pp_bonus);
+        }
+        else
+            self.Body::PPBonus.visible = false;
+
+        var width = self.Body::Bar::bar::ColorFace.w;
+        
+        if (need_exp_for_next > 0)
+        {
+            self.Body::LevelAndPoint::Exp::value.text = exp;
+            self.Body::LevelAndPoint::Exp::next.text = need_exp_for_next;
+
+            var ratio = current_point.toFloat() / need_exp_for_next;
+            self.Body::Bar::bar::ScalarInterpolator.setEndValue(0, width * ratio);
+            self.Body::Bar::bar::ScalarInterpolator.restart();
+            self.Body::LevelAndPoint::comment.visible = false;
+
+            var next_ratio = next_point.toFloat() / need_exp_for_next;
+            if (level_up)
+            {
+                next_ratio = 1.0;
+
+                self.Body::LevelAndPoint::Exp::value.text = before_exp + prize_exp;
+                self.Body::LevelAndPoint::Lv::value_f.text = next_level;
+                self.Body::LevelAndPoint::Lv::value_f.ScalarInterpolator.restart();
+                self.Body::LevelAndPoint::Lv::value_f.ScalarInterpolator0.restart();
+
+                var path = "/sound_gt/se/gt5_levelup1";
+                SoundUtil::PlayStreamSE(path);
+
+                self.Body::LevelAndPoint::comment.visible = true;
+                self.Body::LevelAndPoint::comment.text = context.translate(ROOT, "RANK_UP").build(next_level);
+                self.Body::LevelAndPoint::comment.ScalarInterpolator.restart();
+                ActionLogUtil::bspecLevel(next_level);
+            }
+
+            self.Body::Bar::bar2::ScalarInterpolator.setEndValue(0, width * next_ratio);
+            self.Body::Bar::bar2::ScalarInterpolator.restart();
+        }
+        else
+        {
+            self.Body::LevelAndPoint::Exp::value.text = "--";
+            self.Body::LevelAndPoint::Exp::next.text = "--";
+            self.Body::Bar::bar.w = 0;
+        }
+
+        if (and_apply)
+        {
+            user_profile.addBspecPoint(prize_exp);
+            main::GAME_STATUS.user_profile.context.need_save = SaveDataUtilGT5::STATUSCODE::NEED_SAVE;
+        }
+    }
+
+    function onRealize(manager)
+    {
+        if (main::pdiext::MSystemConfiguration::isSDTV())
+            var s = 1.25;
+
+        BspecExp.visible = false;
+        BspecExp.insensitive = true;
+    }
+
+    module Button::OK
+    {
+        method onActivate(context)
+        {
+            main::sound.play("ok");
+            self.ROOT._close_dialog(context);
+        
+            return EVENTRESULT_FILTER;
+        }
+    }
+}
