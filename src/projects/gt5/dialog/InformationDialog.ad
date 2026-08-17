@@ -1,0 +1,180 @@
+module ROOT
+{
+    SCALE_WIDGET_SDTV(Popup::Dialog::Body::MessageBox::clip::space::TextFace, 2.6);
+
+    static sInstance = nil;
+    attribute loaded_gpb;
+    attribute cursor_visible_when_open;
+    attribute event_loop;
+    attribute result;
+
+    method open(context, message, title, image_path, gpb_path_and_gpb_name)
+    {
+        PROJECT::clearBalloonTip(context);
+
+        sInstance[self.context_number] = self;
+        self.FadeActor.reverse = false;
+        self.FadeActor.reset();
+        self.opacity = 0.01;
+        
+        var body = self.Popup::Dialog::Body;
+        if (title != nil)
+            self.Popup::Dialog::Title::label.text = title;
+        else
+            self.Popup::Dialog::Title::label.text = context.translate(ROOT, "LABEL_INFORMATION");
+
+        if (message != nil)
+            body.MessageBox::clip::space::TextFace.text = message;
+
+        var image_face = body.ImageBox::ImageFace;
+        if (image_path != nil)
+        {
+            body.ImageBox.visible = true;
+
+            if (gpb_path_and_gpb_name == nil)
+            {
+                image_face.from_disk = true;
+            }
+            else
+            {
+                image_face.from_disk = false;
+                |var gpb_path, var gpb_name| = gpb_path_and_gpb_name;
+                self.loadGpb(context, gpb_path, gpb_name);
+            }
+
+            image_face.image_path = image_path;
+            image_face.adjustSize();
+        }
+        else
+        {
+            body.ImageBox.visible = true;
+            image_face.from_disk = true;
+            image_face.image_path = "/piece/itemcategory/info_instruction.img";
+            image_face.adjustSize();
+        }
+
+        var adj = main::menu::MAdjustment();
+        body.Scrollbar::VScrollbar.adjustment = adj;
+        body.MessageBox::clip.v_adjustment = adj;
+        body.MessageBox::clip.space.y = 0.0;
+        body.MessageBox::clip.manual_target_y = 0.0;
+        body.Scrollbar.minimum_width = 0.0;
+
+        self.cursor_visible_when_open = context.cursor_visible;
+        context.cursor_visible = true;
+
+        context.pushPage(self);
+        main::sound.play("attention");
+        self.FadeActor.start();
+        context.sync(0.5);
+        self.event_loop = main::menu::EventLoop(context);
+        self.event_loop.enter();
+
+        var res = self.result;
+        if (res == nil)
+            res = false;
+
+        self.result = nil;
+        sInstance[self.context_number] = nil;
+
+        return res;
+    }
+
+    method close(context)
+    {
+        if (self.event_loop != nil)
+        {
+            self.event_loop.leave();
+            self.event_loop = nil;
+        }
+
+        self.unloadGpb(context);
+        self.FadeActor.reverse = true;
+        self.FadeActor.start();
+
+        context.closePage(self, 0.5);
+        context.cursor_visible = self.cursor_visible_when_open;
+        self.cursor_visible_when_open = nil;
+    }
+
+    function onRealize(manager)
+    {
+        ROOT.display_priority = 50;
+        var rcc = manager.getUpdateContext().getRenderContextCount();
+        sInstance = Array(rcc);
+    }
+
+    function onDestroy(manager)
+    {
+        sInstance = nil;
+    }
+
+    method onFinalize(context)
+    {
+        if (self.event_loop != nil)
+        {
+            self.event_loop.leave();
+            self.event_loop = nil;
+        }
+
+        self.Popup::Dialog::Title::label.text = "";
+
+        var body = self.Popup::Dialog::Body;
+        body.MessageBox::clip::space::TextFace.text = "";
+
+        var image_face = body.ImageBox::ImageFace;
+        image_face.image_path = "";
+    }
+
+    method onKeyPress(context, event)
+    {
+        var scrollclip = self.Popup::Dialog::Body::MessageBox::clip;
+        var space = scrollclip.space;
+        var textface = space.TextFace;
+        var line_height = textface.line_height;
+        var status = EVENTRESULT_CONTINUE;
+
+        if (event.keysym == CELL_PAD_CTRL_L3_UP)
+        {
+            if (scrollclip.manualTargetIncY(line_height))
+                status = EVENTRESULT_STOP;
+        }
+
+        if (event.keysym == CELL_PAD_CTRL_L3_DOWN)
+        {
+            if (scrollclip.manualTargetIncY(-line_height))
+                status = EVENTRESULT_STOP;
+        }
+
+        return status;
+    }
+
+    method loadGpb(context, gpb_path, gpb_name)
+    {
+        self.unloadGpb(context);
+        context.loadGpb(gpb_path, gpb_name);
+        self.loaded_gpb = [gpb_path, gpb_name];
+    }
+
+    method unloadGpb(context)
+    {
+        if (self.loaded_gpb != nil)
+        {
+            |var gpb_path, var gpb_name| = self.loaded_gpb;
+            context.unloadGpb(gpb_path, gpb_name);
+            self.loaded_gpb = nil;
+        }
+    }
+}
+
+module ROOT::Popup::Dialog::Button::OK
+{
+    method onActivate(context, event, item)
+    {
+        sound.play("ok");
+        self.ROOT.result = true;
+        self.ROOT.close(context);
+
+        return EVENTRESULT_FILTER;
+    }
+}

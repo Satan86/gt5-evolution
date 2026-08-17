@@ -1,0 +1,475 @@
+module DialogProjectComponent::Buttons::CancelOK::Cancel
+{
+    method onFocusLeave(context)
+    {
+        var root = context.getRootWindow();
+        return EVENTRESULT_FILTER;
+    }
+
+    method onFocusEnter(context)
+    {
+        var root = context.getRootWindow();
+        return EVENTRESULT_FILTER;
+    }
+
+    SCALE_WIDGET_SDTV(label, 2.6);
+    SCALE_WIDGET_SDTV(labeli, 2.6);
+}
+
+module DialogProjectComponent::Buttons::CancelOK::Cancel::bgf
+{
+    method __init__()
+    {
+        self.actor = main::menu::MFadeActor(self, 1.0);
+        self.actor.period = 0.25;
+        self.actor.repeat = true;
+    }
+}
+
+module DialogProjectComponent::Buttons::CancelOK::OK
+{
+    method onFocusLeave(context)
+    {
+        var root = context.getRootWindow();
+        return EVENTRESULT_FILTER;
+    }
+
+    method onFocusEnter(context)
+    {
+        var root = context.getRootWindow();
+        return EVENTRESULT_FILTER;
+    }
+
+    SCALE_WIDGET_SDTV(label, 2.6);
+    SCALE_WIDGET_SDTV(labeli, 2.6);
+}
+
+module DialogProjectComponent::Buttons::CancelOK::OK::bgf
+{
+    method __init__()
+    {
+        self.actor = main::menu::MFadeActor(self, 1.0);
+        self.actor.period = 0.25;
+        self.actor.repeat = true;
+    }
+}
+
+module DialogProjectComponent::Buttons::oval
+{
+    method onFocusLeave(context)
+    {
+        var root = context.getRootWindow();
+        return EVENTRESULT_FILTER;
+    }
+    
+    method onFocusEnter(context)
+    {
+        var root = context.getRootWindow();
+        return EVENTRESULT_FILTER;
+    }
+    
+    SCALE_WIDGET_SDTV(label, 2.6);
+    
+    method decide(context)
+    {
+        var bgf = self.bgf;
+        bgf.actor.period = 0.05;
+        context.sync(0.5);
+        bgf.actor.period = 0.25;
+        bgf.actor.out = false;
+        bgf.actor.warp();
+    }
+}
+
+module DialogProjectComponent::Buttons::oval::bgf
+{
+    method __init__()
+    {
+        self.actor = main::menu::MFadeActor(self, 1.0);
+        self.actor.period = 0.25;
+        self.actor.repeat = true;
+    }
+}
+
+module DialogProjectComponent::HDPulldown::Item
+{
+    SCALE_WIDGET_SDTV(label, 2.6);
+}
+
+module DialogProjectComponent::FinderItem
+{
+    method _set_car_info(context, item_w, car, garage_id, car_image_size, tuner_logo_size)
+    {
+        var car_code;
+        var car_color;
+        var cpp;
+        if (car.isInstanceOf(main::gtengine::MCarParameter) || car.isInstanceOf(main::gtengine::MCarThin))
+        {
+            var cp = car;
+            car_code = cp.getCarCode();
+            car_color = cp.color;
+        } 
+        else 
+        {
+            if (car.isInstanceOf(Garage2::CarParameterProxy) ||
+                car.isInstanceOf(CarData::CarParameterProxy) ||
+                car.isInstanceOf(ImportGarage::CarParameterProxy))
+            {
+                cpp = car;
+                car_code = cpp.car_code;
+                car_color = cpp.color;
+
+                if (car.isInstanceOf(Garage2::CarParameterProxy))
+                    garage_id = car.garage_id;
+            } 
+            else 
+            {
+                if (car.isInstanceOf(ULong) || car.isInstanceOf(Long))
+                {
+                    car_code = main::gtengine::MSpecDB::getCarCode(car);
+                    var col = main::gtengine::MSpecDB::getCarVariationFlag(car_code, 1);
+                    car_color = col == nil ? 0 : col;
+                }
+            }
+        }
+
+        if (car_code != nil && car_code != main::gtengine::MSpecDB::NO_CODE64)
+        {
+            var car_label = main::gtengine::MSpecDB::getCarLabel(car_code);
+            if (item_w["car"] != nil && item_w["car"].visible)
+            {
+                var path = "";
+                if (garage_id != nil)
+                {
+                    path = GarageUtil::getThumbnailPath(garage_id, car_image_size);
+                }
+                else
+                {
+                    path = GarageUtil::getThumbnailPath2(car_label, car_image_size, car_color);
+                }
+
+                if (pdistd::Exist(path))
+                {
+                    item_w.car.cache = false;
+                    item_w.car.from_disk = true;
+                    item_w.car.block = false;
+                    item_w.car.image_path = path;
+                }
+                else
+                {
+                    item_w.car.cache = false;
+                    item_w.car.from_disk = true;
+                    item_w.car.block = false;
+                    item_w.car.image_path = "car/thumbnail_%s/%s_%02d".format(car_image_size, car_label, car_color);
+                }
+            }
+
+            {
+                var manufacturer = cpp != nil ? cpp.tuner_label : main::gtengine::MSpecDB::getTunerLabel(car_code);
+
+                if (item_w["manufacturer_logo"] != nil && item_w["manufacturer_logo"].visible)
+                {
+                    item_w.manufacturer_logo.cache = true;
+                    item_w.manufacturer_logo.image_path = "piece/tunner_logo_%{tuner_logo_size}/%{manufacturer}.img";
+                }
+                if (item_w["manufacturer_name"] != nil && item_w["manufacturer_name"].visible)
+                {
+                    item_w.manufacturer_name.text = context.translate(context.getRootWindow(), "TunerName", manufacturer);
+                }
+            }
+
+            if (item_w["car_name"] != nil && item_w["car_name"].visible)
+            {
+                if (car_label == "x1_p_10" || car_label == "x1_f_10" || car_label == "x1_10")
+                {
+                    item_w.car_name.text = main::gtengine::MSpecDB::getCarShortName(car_code);
+                }
+                else
+                {
+                    item_w.car_name.text = cpp != nil ? cpp.short_name : main::gtengine::MSpecDB::getCarShortName(car_code);
+                }
+            }
+
+            if (item_w["ps"] != nil && item_w["ps"].visible)
+            {
+                var max_power; var mass; var drivetrain; var pp;
+                if (cpp != nil)
+                {
+                    max_power = cpp.getPsRpmString();
+                    mass = cpp.getMassString();
+                    drivetrain = context.translate(context.getRootWindow(), "DriveTrainName", cpp.drive_train);
+                    pp = "%s %d".format(context.translate(context.getRootWindow(), "Unit", "PERFORMANCE_POINT"), cpp.pp);
+                }
+                else
+                {
+                    max_power = SpecDatabaseUtil::getCarMaxPowerText(context, car_code);
+                    mass = SpecDatabaseUtil::getCarWeightText(context, car_code);
+                    drivetrain = SpecDatabaseUtil::getCarDrivetrainText(context, car_code);
+                    pp = "";
+                }
+
+                var format3 = context.translate(context.getRootWindow(), "SpecFormat", "FORMAT_3");
+                item_w.ps.text = format3.build(max_power, mass, drivetrain, pp);
+            }
+
+            if (item_w["Spec"] != nil && item_w["Spec"].visible)
+            {
+                var max_power; var max_torque; var drivetrain; var weight;
+                if (cpp != nil)
+                {
+                    max_power = cpp.getPsRpmString();
+                    max_torque = SpecDatabaseUtil::getCarMaxTorqueText(context, car_code);
+                    drivetrain = cpp.drive_train;
+                    weight = SpecDatabaseUtil::getCarWeightText(context, car_code);
+                } 
+                else 
+                {
+                    max_power = SpecDatabaseUtil::getCarMaxPowerText(context, car_code);
+                    max_torque = SpecDatabaseUtil::getCarMaxTorqueText(context, car_code);
+                    drivetrain = SpecDatabaseUtil::getCarDrivetrainText(context, car_code);
+                    weight = SpecDatabaseUtil::getCarWeightText(context, car_code);
+                }
+
+                var spec_format = context.translate(context.getRootWindow(), "SpecFormat", "car_spec_line_feed");
+                item_w.Spec::label.text = spec_format.build(max_power, max_torque, drivetrain, weight);
+            }
+
+            if (item_w["ColorTip"] != nil && item_w["ColorTip"].visible)
+            {
+                if (item_w.ColorTip["ColorFace"] != nil)
+                {
+                    if (nil != cpp && cpp.paint_color >= 0)
+                    {
+                        item_w.ColorTip.ColorFace.setPaintColor(cpp.paint_color);
+                    }
+                    else
+                    {
+                        item_w.ColorTip.ColorFace.setCarColor(car_code, car_color);
+                    }
+                }
+            }
+
+            if (nil != item_w["type"] && item_w["type"].visible)
+            {
+                var is_premium = cpp != nil ? cpp.has_premium : gtengine::MSpecDB::checkGenericFlag("has_premium_model", car_code);
+
+                item_w.type.Icon.TextFace.text = context.translate(context.getRootWindow(), "SpecFormat", is_premium ? "car_premium_short" : "car_standard_short");
+                if (nil != item_w.type["TextFace"])
+                {
+                    item_w.type.TextFace.text = context.translate(context.getRootWindow(), "SpecFormat", is_premium ? "car_premium" : "car_standard");
+                }
+                item_w.type.visible = true;
+            }
+        }
+    }
+
+    method _reset_car_info(context, item_w)
+    {
+        if (item_w["car"] != nil)
+            item_w.car.image_path = "";
+        if (item_w["manufacturer_logo"] != nil)
+            item_w.manufacturer_logo.image_path = "";
+        if (item_w["car_name"] != nil)
+            item_w.car_name.text = "";
+        if (item_w["manufacturer_name"] != nil)
+            item_w.manufacturer_name.text = "";
+        if (item_w["ps"] != nil)
+            item_w.ps.text = "";
+        if (item_w["Spec"] != nil)
+            item_w.Spec::label.text = "";
+    }
+
+    method _set_course_info(context, item_w, course, course_map_size, course_logo_size)
+    {
+        var course_code = main::gtengine::MSpecDB::getCourseCode(course);
+
+        if (course_code != nil && course_code != main::gtengine::MSpecDB::NO_CODE64)
+        {
+            var course_info = CourseData::getCourseInfo(course_code);
+
+            if (item_w["logo"] != nil)
+                item_w.logo.image_path = "piece/course_logo_%{course_logo_size}/%{course_info.logo}.img";
+
+            if (item_w["map"] != nil)
+                item_w.map.image_path = "piece/course_map_%{course_map_size}/%{course_info.map}.img";
+        }
+    }
+
+    method _set_weather_and_datetime(context, item_w, decisive_weather, datetime_hour)
+    {
+        if (item_w["weather"] != nil)
+        {
+            var is_day = true;
+            if (datetime_hour != nil && datetime_hour > -1)
+                is_day = 6 <= datetime_hour && datetime_hour < 18;
+
+            var weather;
+            switch (decisive_weather)
+            {
+                case gtengine::DecisiveWeather::RAINY:
+                    weather = "rain";
+                    break;
+                case gtengine::DecisiveWeather::SNOWY:
+                    weather = "snow";
+                    break;
+                case gtengine::DecisiveWeather::SUNNY:
+                default:
+                    weather = "fine";
+                    break;
+            }
+
+            var weather_name = is_day ? "" : "night_";
+            weather_name += weather;
+
+            for (var it = item_w.weather.first; it != nil; it = it.next_widget)
+            {
+                it.visible = it.name == weather_name;
+            }
+
+            item_w.weather.visible = true;
+        }
+
+
+
+
+
+
+
+
+
+
+    }
+
+    method _set_edit_course_info(context, item_w, edit_course_data)
+    {
+        if (edit_course_data == nil)
+        {
+            return;
+        }
+
+        if (item_w["map"] != nil)
+        {
+            item_w.map.image_path = edit_course_data.thumbnail_filename;
+        }
+
+
+        if (item_w["keyword1"] != nil)
+        {
+            var start_datetime = pdistd::MTime();
+            start_datetime.setBySecond(edit_course_data.start_datetime);
+
+            item_w.keyword1.visible = true;
+            item_w.keyword1.TextFace.text = "%.02d:%02d".format(start_datetime.hour, start_datetime.minute);
+        }
+    }
+
+    method _reset_course_info(context, item_w)
+    {
+        if (item_w["logo"] != nil)
+            item_w.logo.image_path = "";
+        if (item_w["map"] != nil)
+            item_w.map.image_path = "";
+    }
+
+    method _set_info(item_w, header_text, title_text, body_text)
+    {
+        if (nil != header_text)
+        {
+            item_w.header.text = header_text;
+        }
+        if (nil != title_text)
+        {
+            item_w.title.text = title_text;
+        }
+        if (nil != body_text)
+        {
+            item_w.body.text = body_text;
+        }
+    }
+
+    method _reset_info(item_w)
+    {
+        item_w.header.text = "";
+        item_w.title.text = "";
+        item_w.body.text = "";
+    }
+}
+
+module DialogProjectComponent::FinderItem::BspecDriver
+{
+    attribute dp_;
+    attribute residence_id_;
+
+    method getDP()
+    {
+        return self.dp_;
+    }
+
+    method getResidenceId()
+    {
+        return self.residence_id_;
+    }
+
+    method isOnline()
+    {
+        return self.online.visible;
+    }
+
+    method setDummy()
+    {
+        self.dummy.visible = true;
+        self.TextFace.visible = true;
+        self.ImageFace.visible = false;
+        self.Bar.visible = false;
+        self.Condition.visible = false;
+        self.Performance.visible = false;
+        self.online.visible = false;
+    }
+
+    method setInfo(residence_id, dp, online_driver = false, entried = false, and_apply = false, prize_exp = 0)
+    {
+
+    }
+
+    method onFinalize(context)
+    {
+        self.dp_ = nil;
+    }
+
+    method onFocusEnter(context)
+    {
+        if (self.dp_ != nil)
+        {
+            var root = context.getRootWindow();
+            if (root["BalloonTip"] != nil)
+                root["BalloonTip"].set_value(context, self, self.dp_.display_name, 38);
+        }
+
+        return EVENTRESULT_FILTER;
+    }
+
+    method onFocusLeave(context)
+    {
+        if (self.dp_ != nil)
+        {
+            var root = context.getRootWindow();
+            if (root["BalloonTip"] != nil)
+                root["BalloonTip"].reset_value();
+        }
+
+        return EVENTRESULT_FILTER;
+    }
+}
+
+module DialogProjectComponent::MyHome::Popup::Pane::Header
+{
+    method setText(context, text_list)
+    {
+        |var text, var count, var show_capacity| = text_list;
+        HBox::TextFace.text = text;
+        HBox::TextFaceCount.text = count;
+        HBox::TextFace0.visible = show_capacity;
+        HBox::TextFaceRemain.visible = show_capacity;
+        HBox::TextFaceRemain.text = UnitUtil::getDiskSizeString(context, pdistd::GetDiskFreeSize("/APP_DATA"));
+    }
+}

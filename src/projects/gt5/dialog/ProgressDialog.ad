@@ -1,0 +1,381 @@
+module ROOT
+{
+    static sInstance = nil;
+    static sCancelCB = nil;
+    static sProgress = nil;
+    static sMessage = nil;
+    static sRawMode = nil;
+    static sOKButton = nil;
+
+    attribute cancelCB;
+    attribute eventLoop;
+
+    function onRealize(manager)
+    {
+        ROOT.display_priority = 50;
+        var rcc = manager.getUpdateContext().getRenderContextCount();
+        sInstance = Array(rcc);
+    }
+
+    SCALE_WIDGET_SDTV(Dialog::Message::message, 2.6);
+
+    function onDestroy(manager)
+    {
+        sInstance = nil;
+    }
+
+    method onFinalize(context)
+    {
+        if (self.eventLoop != nil)
+        {
+            self.eventLoop.leave();
+            self.eventLoop = nil;
+        }
+
+        self.Dialog::Button::remain.text = "";
+        self.Dialog::Message::message.text = "";
+        self.Dialog::Message::icon.bg.image_path = "";
+        self.cancelCB = nil;
+    }
+
+    method appear()
+    {
+        self.Dialog.actor.out = false;
+        self.actor.out = false;
+    }
+
+    method disappear()
+    {
+        self.Dialog.actor.out = true;
+        self.actor.out = true;
+    }
+
+    method open(context, message_begin, message_success, message_failed, func, args, icon_path, hide_start, message_aborted)
+    {
+        PROJECT::clearBalloonTip(context);
+        sInstance[self.context_number] = self;
+        setMoveActor(self.Dialog);
+        setFadeActorRoot(self);
+
+        if (sCancelCB != nil)
+        {
+            self.cancelCB = sCancelCB;
+            sCancelCB = nil;
+        }
+
+        if (sProgress != nil)
+        {
+            self.Dialog::Progress::Bar::progress.progress = sProgress;
+            sProgress = nil;
+        }
+
+        if (sMessage != nil)
+        {
+            self.Dialog::Message::message.text = sMessage;
+            sMessage = nil;
+        }
+
+        if (sRawMode != nil)
+        {
+            self.Dialog::Progress::Bar::progress.raw_mode = sRawMode;
+            sRawMode = nil;
+        }
+
+        if (sOKButton != nil)
+        {
+            self.Dialog::Button.visible = true;
+            self.Dialog::Footer.visible = false;
+            sOKButton = nil;
+        }
+
+        else
+        {
+            self.Dialog::Button.visible = false;
+            self.Dialog::Footer.visible = true;
+        }
+
+        var prev_cursor_visible = context.cursor_visible;
+        context.cursor_visible = false;
+
+        var ratio = 1.0;
+        self.Dialog.actor.ratio = 0.2 * ratio;
+
+        self.Dialog.actor.destinationY = ((main
+            ::menu::ScreenHeight - self.Dialog.h) / 2) + 100;
+
+        self.Dialog.actor.out = true;
+        self.Dialog.actor.warp();
+        self.actor.out = true;
+        self.actor.warp();
+
+        self.Dialog::Progress::Bar::progress.final_width = self.Dialog::Progress::Bar::bg.w;
+        self.Dialog::Message::message.text = message_begin;
+        self.Dialog::Button::OK.insensitive = true;
+        self.Dialog::Button::OK.visible = false;
+        self.Dialog::Button::remain.text = "";
+        self.Dialog::Button::remain.visible = true;
+        self.Dialog::Message::icon.visible = false;
+
+        if (nil != icon_path)
+        {
+            self.Dialog::Message::icon.visible = true;
+            self.Dialog::Message::icon.bg.image_path = icon_path;
+            self.Dialog::Message::icon.bg.doInitialize(context);
+        }
+
+        context.pushPage(self);
+        self.setFocus(nil);
+
+        if (hide_start == nil)
+            self.appear();
+
+        var func_res = func(context, args);
+        var res;
+        var skip = false;
+        var success = true;
+        var complete_callback = nil;
+        var aborted = false;
+
+        if (func_res == nil)
+        {
+            success = false;
+            aborted = true;
+        }
+
+        else if (func_res.isInstanceOf(Array))
+        {
+            if (func_res.size > 0)
+            {
+                res = func_res[0];
+                success = func_res[0];
+            }
+
+            if (func_res.size > 1)
+            {
+                if (func_res[1].isInstanceOf(Int) || func_res[1].isInstanceOf(Bool))
+                    skip = func_res[1];
+
+                else
+                {
+                    if (func_res[1].isInstanceOf(FunctionObject))
+                        complete_callback = func_res[1];
+                }
+            }
+
+            if (func_res.size > 2)
+                res = func_res;
+        }
+
+        else
+        {
+            res = func_res;
+            success = res;
+        }
+
+        if (success)
+        {
+            if (self.Dialog::Progress::Bar::progress.progress != nil)
+                self.Dialog::Progress::Bar::progress.progress.complete();
+        }
+
+        else
+        {
+            self.Dialog::Progress::Bar::progress.raw_mode = true;
+        }
+
+        var message = success ? message_success : (aborted ? message_aborted : message_failed);
+        if (message != nil)
+        {
+            if (message.hasFunctionInterface())
+                self.Dialog::Message::message.text = message(context);
+            else
+                self.Dialog::Message::message.text = message;
+        }
+
+        if (complete_callback != nil)
+        {
+            var cb_result = complete_callback(context, success);
+            if (cb_result != nil)
+                skip = cb_result;
+        }
+
+        self.Dialog::Button::remain.visible = false;
+
+        if (!skip)
+        {
+            self.Dialog::Button::OK.insensitive = false;
+            self.Dialog::Button::OK.visible = true;
+        }
+
+        self.setFocus(Dialog::Button::OK);
+
+        if (skip)
+        {
+            context.sync(1.0);
+            self.close(context, true);
+        }
+        else
+        {
+            self.eventLoop = main::menu::EventLoop(context);
+            self.eventLoop.enter();
+        }
+
+        context.cursor_visible = prev_cursor_visible;
+        sInstance[self.context_number] = nil;
+
+        return res;
+    }
+
+    method close(context, no_enter)
+    {
+        if (no_enter == nil)
+        {
+            if (self.eventLoop != nil)
+            {
+                self.eventLoop.leave();
+                self.eventLoop = nil;
+            }
+        }
+
+        self.Dialog.actor.destinationY = ((main
+            ::menu::ScreenHeight - self.Dialog.h) / 2) - 200;
+
+        self.disappear();
+        context.closePage(self, self.actor.period);
+
+        self.Dialog::Progress::Bar::progress.progress = nil;
+        self.cancelCB = nil;
+        self.Dialog::Progress::Bar::progress.raw_mode = false;
+    }
+
+    method onCancel(context)
+    {
+        if (self.cancelCB != nil)
+        {
+            main::sound.play("cancel");
+            self.cancelCB(context);
+        }
+
+        return EVENTRESULT_FILTER;
+    }
+
+    method onActivate(context)
+    {
+        return EVENTRESULT_FILTER;
+    }
+
+    function OpenDialog(context, message_begin, message_success, message_failed, func, args, icon_path, hide_start, message_aborted)
+    {
+        var dialog = ROOT.doCopy();
+        dialog.context_number = context.context_number;
+
+        return dialog.open(context, message_begin, message_success, message_failed, func, args, icon_path, hide_start, message_aborted)
+    }
+
+    function CloseDialog(context, no_enter)
+    {
+        var dialog = sInstance[context.context_number];
+
+        if (dialog != nil)
+            dialog.close(context, no_enter);
+    }
+
+    function GetProgress(context)
+    {
+        var ret = nil;
+        var dialog = sInstance[context.context_number];
+
+        if (dialog != nil)
+            ret = dialog.Dialog::Progress::Bar::progress.progress;
+
+        return ret;
+    }
+
+    function SetProgress(context, progress)
+    {
+        var dialog = sInstance[context.context_number];
+        if (dialog != nil)
+            dialog.Dialog::Progress::Bar::progress.progress = progress;
+        else
+            sProgress = progress;
+    }
+
+    function SetMessage(context, message)
+    {
+        var dialog = sInstance[context.context_number];
+        if (dialog != nil)
+            dialog.Dialog::Message::message.text = message;
+        else
+            sMessage = message;
+    }
+
+    function SetRawMode(context, mode)
+    {
+        var dialog = sInstance[context.context_number];
+        if (dialog != nil)
+            dialog.Dialog::Message::message.raw_mode = mode;
+        else
+            sRawMode = mode;
+    }
+
+    function SetCancelCB(context, func)
+    {
+        var dialog = sInstance[context.context_number];
+        if (dialog != nil)
+            dialog.cancelCB = func;
+        else
+            sCancelCB = func;
+    }
+
+    function SetRemainSecond(context, second)
+    {
+        var dialog = sInstance[context.context_number];
+        if (dialog != nil)
+        {
+            if (second < 1.0)
+            {
+                dialog.Dialog::Button::remain.text = "";
+            }
+            else
+            {
+                var remain_text;
+                if (second >= 120)
+                    remain_text = context.translate(ROOT, "REMAIN_MINUTE").build("%2d".format(second / 60));
+                else if (second >= 60)
+                    remain_text = context.translate(ROOT, "REMAIN_MINUTE_SECOND").build("%2d".format(second / 60), "%2d".format(second % 60));
+                else
+                    remain_text = context.translate(ROOT, "REMAIN_SECOND").build("%2d".format(second));
+
+                dialog.Dialog::Button::remain.text = remain_text;
+            }
+        }
+    }
+
+    function AppearDialog(context)
+    {
+        var dialog = sInstance[context.context_number];
+        if (dialog != nil)
+            dialog.appear();
+    }
+
+    function SetOKButton(context)
+    {
+        sOKButton = true;
+    }
+}
+
+module ROOT::Dialog::Button::OK
+{
+    method onActivate(context)
+    {
+        main::sound.play("ok");
+        self.ROOT.close(context);
+        return EVENTRESULT_FILTER;
+    }
+
+    method onFocusEnter(context)
+    {
+        context.cursor_visible = true;
+        return EVENTRESULT_FILTER;
+    }
+}

@@ -1,0 +1,23 @@
+module ROOT
+{
+    method onRealize(context)
+    {
+        ROOT.display_priority = 50;
+        setFadeActorRoot(ROOT);
+    }
+
+    function open(context)
+    {
+        PROJECT::clearBalloonTip(context);
+        ROOT.actor.out = true;
+        ROOT.actor.warp();
+        context.pushPage(ROOT);
+        ROOT.actor.out = false;
+    }
+
+    function close(context)
+    {
+        ROOT.actor.out = true;
+        context.closePage(ROOT, ROOT.actor.period);
+    }
+}
