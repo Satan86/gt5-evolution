@@ -34,12 +34,7 @@ module PROJECT
         {
             event_root["BalloonTip"].reset_value();
             var function_event = main::menu::MFunctionEvent(event_root["BalloonTip"].reset_value);
-            context.pushEvent(function_event);  //VSCODE EXTENSION BUG: Something to do with Functions as a variable. re-named to prevent bug for now.
+            context.pushEvent(function_event);  // VSCODE EXTENSION BUG: Something to do with Functions as a variable. re-named to prevent bug for now.
         }
     }
-}
-
-module PROJECT
-{
-    #include "projects/gt5/dialog/ConfirmDialog.ad"
 }

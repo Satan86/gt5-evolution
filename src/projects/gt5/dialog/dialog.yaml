@@ -12,6 +12,7 @@ files_to_compile:
     project_component: true
   - name: dialog.ad
     is_main: true
+  - name: ConfirmDialog.ad
   - name: ConfirmExecDialog.ad
   - name: ProgressDialog.ad
   - name: ServerSelectDialog.ad

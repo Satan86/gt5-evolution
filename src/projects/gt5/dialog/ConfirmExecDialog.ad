@@ -158,11 +158,11 @@ module ROOT
         if (wait_second != nil)
             context.wait(wait_second);
 
-        var result = self.func_(context, self.arg_, self);
-        self.Dialog::Title::label.text = context.translate(ROOT, "Done");
-        self.Dialog::Message::Progress.visible = false;
-
         {
+            var result = self.func_(context, self.arg_, self);
+            self.Dialog::Title::label.text = context.translate(ROOT, "Done");
+            self.Dialog::Message::Progress.visible = false;
+
             if (result == nil)
                 result = false;
 

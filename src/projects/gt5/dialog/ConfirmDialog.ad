@@ -1,5 +1,9 @@
 module ConfirmDialog
 {
+    // COMPILER NOTE: Dialog values are carried over from PS2 GTs, 
+    // but this one with value 5 isn't defined in the compiler yet.
+    #define DIALOG_YESNOCLOSE 5
+
     attribute result;
     attribute current_type = 0;
     attribute cancel_disable;
@@ -85,12 +89,11 @@ module ConfirmDialog
 
         if (yes_text == nil)
         {
-            if (type != 4 && type != 3)
+            if (type != DIALOG_YESNO && type != DIALOG_DEFAULT_NO)
                 yes_text = context.translate(ConfirmDialog, "OK");
             else
                 yes_text = context.translate(ConfirmDialog, "Yes");
         }
-
         else
         {
             if (root != nil)
@@ -101,12 +104,11 @@ module ConfirmDialog
 
         if (no_text == nil)
         {
-            if (type != 4 && type != 3)
+            if (type != DIALOG_YESNO && type != DIALOG_DEFAULT_NO)
                 no_text = context.translate(ConfirmDialog, "Cancel");
             else
                 no_text = context.translate(ConfirmDialog, "No");
         }
-
         else
         {
             if (root != nil)
@@ -116,13 +118,11 @@ module ConfirmDialog
         }
 
         var mf = self.Dialog::Message::message;
-
         if (equalized != nil && equalized)
         {
             mf.align = -1;
             mf.equalized = true;
         }
-
         else
         {
             mf.align = 4;
@@ -139,7 +139,7 @@ module ConfirmDialog
 
         switch (type)
         {
-            case 0:
+            case DIALOG_OK:
                 self.Dialog::Buttons::YesNoClose.visible = false;
                 self.Dialog::Buttons::YesNo.visible = false;
                 self.Dialog::Buttons::OK.visible = true;
@@ -156,12 +156,12 @@ module ConfirmDialog
                 self.Dialog::Message::caution.visible = false;
                 break;
 
-            case 1:
-            case 3:
-            case 4:
-            case 5:
-                self.Dialog::Buttons::YesNoClose.visible = type == 5;
-                self.Dialog::Buttons::YesNo.visible = type != 5;
+            case DIALOG_QUERY:
+            case DIALOG_DEFAULT_NO:
+            case DIALOG_YESNO:
+            case DIALOG_YESNOCLOSE:
+                self.Dialog::Buttons::YesNoClose.visible = type == DIALOG_YESNOCLOSE;
+                self.Dialog::Buttons::YesNo.visible = type != DIALOG_YESNOCLOSE;
                 self.Dialog::Buttons::OK.visible = false;
 
                 if (title == nil)
@@ -176,7 +176,7 @@ module ConfirmDialog
                 self.Dialog::Message::caution.visible = false;
                 break;
 
-            case 2:
+            case DIALOG_ERROR:
                 self.Dialog::Buttons::YesNoClose.visible = false;
                 self.Dialog::Buttons::YesNo.visible = false;
                 self.Dialog::Buttons::OK.visible = true;
@@ -192,40 +192,34 @@ module ConfirmDialog
                 self.Dialog::Title::bgE.visible = true;
                 self.Dialog::Message::caution.visible = true;
                 break;
-
-            default:
-                ;
         }
 
         self.Dialog::Message::message.text = message;
 
         switch (type)
         {
-            case 0:
+            case DIALOG_OK:
                 self.setFocus(self.Dialog::Buttons::OK);
                 break;
-            case 1:
-            case 4:
+            case DIALOG_QUERY:
+            case DIALOG_YESNO:
                 self.setFocus(self.Dialog::Buttons::YesNo::Yes);
                 break;
-            case 3:
+            case DIALOG_DEFAULT_NO:
                 self.setFocus(self.Dialog::Buttons::YesNo::No);
                 break;
-            case 2:
+            case DIALOG_ERROR:
                 self.setFocus(self.Dialog::Buttons::OK);
                 break;
-            case 5:
+            case DIALOG_YESNOCLOSE:
                 self.setFocus(self.Dialog::Buttons::YesNoClose::Close);
                 break;
-            default:
-                ;
         }
 
         var auto_close_mode = false;
-
-        if (nil != auto_close && auto_close)
+        if (auto_close != nil && auto_close)
         {
-            if (0 == type || 2 == type)
+            if (type == DIALOG_OK || type == DIALOG_ERROR)
                 auto_close_mode = true;
         }
 
@@ -238,7 +232,6 @@ module ConfirmDialog
                 self.Dialog::Footer.visible = true;
             }
         }
-
         else
         {
             if (!self.Dialog::Buttons.visible)
@@ -261,8 +254,8 @@ module ConfirmDialog
 
         self.event_loop = main::menu::EventLoop(context);
         self.event_loop.enter();
-        var r = self.result;
 
+        var r = self.result;
         if (r == nil)
             r = false;
 
@@ -289,7 +282,7 @@ module ConfirmDialog
 
     method onCancel(context)
     {
-        if (true == self.cancel_disable)
+        if (self.cancel_disable == true)
             return EVENTRESULT_FILTER;
 
         main::sound.play("cancel");
@@ -309,7 +302,6 @@ module ConfirmDialog
     function ForceCancel(context)
     {
         var dialog = sInstance[context.context_number];
-
         if (dialog != nil)
         {
             if (dialog.event_loop != nil && dialog.result == nil)
@@ -334,7 +326,6 @@ module ConfirmDialog
     function ActivateOKButton(context)
     {
         var dialog = sInstance[context.context_number];
-
         if (dialog != nil)
             dialog.Dialog::Buttons::OK.onActivate(context);
     }
@@ -344,7 +335,7 @@ module ConfirmDialog::Dialog::Buttons::OK
 {
     method onActivate(context, event, item)
     {
-        main::sound.play((self.ConfirmDialog.activate_sound != nil) ? self.ConfirmDialog.activate_sound : "ok");
+        main::sound.play(self.ConfirmDialog.activate_sound != nil ? self.ConfirmDialog.activate_sound : "ok");
         self.ConfirmDialog.result = true;
         self.ConfirmDialog.close(context);
         return EVENTRESULT_FILTER;
@@ -355,7 +346,7 @@ module ConfirmDialog::Dialog::Buttons::YesNo::Yes
 {
     method onActivate(context, event, item)
     {
-        main::sound.play((self.ConfirmDialog.activate_sound != nil) ? self.ConfirmDialog.activate_sound : "ok");
+        main::sound.play(self.ConfirmDialog.activate_sound != nil ? self.ConfirmDialog.activate_sound : "ok");
         self.ConfirmDialog.result = true;
         self.ConfirmDialog.close(context);
         return EVENTRESULT_FILTER;
@@ -377,7 +368,7 @@ module ConfirmDialog::Dialog::Buttons::YesNoClose::Yes
 {
     method onActivate(context, event, item)
     {
-        main::sound.play((self.ConfirmDialog.activate_sound != nil) ? self.ConfirmDialog.activate_sound : "ok");
+        main::sound.play(self.ConfirmDialog.activate_sound != nil ? self.ConfirmDialog.activate_sound : "ok");
         self.ConfirmDialog.result = 1;
         self.ConfirmDialog.close(context);
         return EVENTRESULT_FILTER;

@@ -96,8 +96,10 @@ module ROOT
 
         var prev_cursor_visible = context.cursor_visible;
         context.cursor_visible = false;
+
         var ratio = 1.0;
         self.Dialog.actor.ratio = 0.2 * ratio;
+
         self.Dialog.actor.destinationY = ((main
             ::menu::ScreenHeight - self.Dialog.h) / 2) + 100;
 
@@ -182,7 +184,6 @@ module ROOT
         }
 
         var message = success ? message_success : (aborted ? message_aborted : message_failed);
-
         if (message != nil)
         {
             if (message.hasFunctionInterface())
@@ -194,7 +195,6 @@ module ROOT
         if (complete_callback != nil)
         {
             var cb_result = complete_callback(context, success);
-
             if (cb_result != nil)
                 skip = cb_result;
         }
@@ -214,7 +214,6 @@ module ROOT
             context.sync(1.0);
             self.close(context, true);
         }
-
         else
         {
             self.eventLoop = main::menu::EventLoop(context);
@@ -295,7 +294,6 @@ module ROOT
     function SetProgress(context, progress)
     {
         var dialog = sInstance[context.context_number];
-
         if (dialog != nil)
             dialog.Dialog::Progress::Bar::progress.progress = progress;
         else
@@ -305,7 +303,6 @@ module ROOT
     function SetMessage(context, message)
     {
         var dialog = sInstance[context.context_number];
-
         if (dialog != nil)
             dialog.Dialog::Message::message.text = message;
         else
@@ -315,7 +312,6 @@ module ROOT
     function SetRawMode(context, mode)
     {
         var dialog = sInstance[context.context_number];
-
         if (dialog != nil)
             dialog.Dialog::Message::message.raw_mode = mode;
         else
@@ -325,7 +321,6 @@ module ROOT
     function SetCancelCB(context, func)
     {
         var dialog = sInstance[context.context_number];
-
         if (dialog != nil)
             dialog.cancelCB = func;
         else
@@ -341,16 +336,13 @@ module ROOT
             {
                 dialog.Dialog::Button::remain.text = "";
             }
-
             else
             {
                 var remain_text;
                 if (second >= 120)
                     remain_text = context.translate(ROOT, "REMAIN_MINUTE").build("%2d".format(second / 60));
-
                 else if (second >= 60)
                     remain_text = context.translate(ROOT, "REMAIN_MINUTE_SECOND").build("%2d".format(second / 60), "%2d".format(second % 60));
-
                 else
                     remain_text = context.translate(ROOT, "REMAIN_SECOND").build("%2d".format(second));
 
@@ -362,7 +354,6 @@ module ROOT
     function AppearDialog(context)
     {
         var dialog = sInstance[context.context_number];
-
         if (dialog != nil)
             dialog.appear();
     }

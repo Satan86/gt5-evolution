@@ -104,7 +104,6 @@ module ROOT
         self.event_loop.enter();
 
         var res = self.result;
-
         if (res == nil)
             res = false;
 
@@ -451,7 +450,7 @@ module ROOT::AspecExp
 
         var width = self.Body::Bar::bar::ColorFace.w;
         
-        if (0 < need_exp_for_next)
+        if (need_exp_for_next > 0)
         {
             self.Body::LevelAndPoint::Exp::value.text = exp;
             self.Body::LevelAndPoint::Exp::next.text = need_exp_for_next;
@@ -586,7 +585,7 @@ module ROOT::BspecExp
 
         var width = self.Body::Bar::bar::ColorFace.w;
         
-        if (0 < need_exp_for_next)
+        if (need_exp_for_next > 0)
         {
             self.Body::LevelAndPoint::Exp::value.text = exp;
             self.Body::LevelAndPoint::Exp::next.text = need_exp_for_next;
