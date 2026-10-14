@@ -15666,7 +15666,7 @@ Project {
         Composite {
           name string{"BComfort"}
           has_script digit{1}
-          geometry rectangle{414 590 440 342}
+          geometry rectangle{414 538 440 342}
           children[5] {
             ImageFace {
               name string{"ImageFace"}
@@ -16190,8 +16190,8 @@ Project {
         Composite {
           name string{"BSport"}
           has_script digit{1}
-          geometry rectangle{874 590 440 342}
-          children[5] {
+          geometry rectangle{874 538 440 432}
+          children[6] {
             ImageFace {
               name string{"ImageFace"}
               geometry rectangle{116 -206 296 212}
@@ -16708,13 +16708,163 @@ Project {
                 }
               }
             }
+            HBox {
+              name string{"s_super_soft"}
+              can_focus digit{1}
+              packable digit{0}
+              geometry rectangle{0 342 440 90}
+              clip digit{0}
+              children[4] {
+                Composite {
+                  name string{"bg"}
+                  is_face digit{1}
+                  geometry rectangle{0 0 440 90}
+                  children[4] {
+                    ColorFace {
+                      name string{"ColorFace"}
+                      color[4] {
+                        RGBA{38 35 38 178}
+                        RGBA{38 35 38 178}
+                        RGBA{38 35 38 0}
+                        RGBA{38 35 38 0}
+                      }
+                    }
+                    FrameImageFace {
+                      name string{"FrameImageFace"}
+                      geometry rectangle{-7.56 -8 464 114}
+                      color[4] {
+                        RGBA{255 255 255 255}
+                        RGBA{255 255 255 255}
+                        RGBA{255 255 255 0}
+                        RGBA{255 255 255 0}
+                      }
+                      tl_image_path string{"image/gt5/gtauto/shop/frame_shadow.dds"}
+                      frame_width digit{24}
+                      frame_height digit{24}
+                    }
+                    FrameImageFace {
+                      name string{"frame"}
+                      color[4] {
+                        RGBA{73 73 73 255}
+                        RGBA{73 73 73 255}
+                        RGBA{73 73 73 0}
+                        RGBA{73 73 73 0}
+                      }
+                      tl_image_path string{"image/gt5/gtauto/shop/frame_4.dds"}
+                      frame_width digit{8}
+                      frame_height digit{8}
+                    }
+                    FrameImageFace {
+                      name string{"frame2"}
+                      visible_condition digit{2}
+                      visible_compare digit{2}
+                      cursor_target digit{0}
+                      actor_list[1] {
+                        ScalarInterpolator {
+                          name string{"ScalarInterpolator"}
+                          focus_enter_action_name string{"restart"}
+                          focus_leave_action_name string{"reset"}
+                          attribute_name string{"MWidget::opacity"}
+                          loop_count digit{1}
+                          section[1] {
+                            MScalarSection {
+                              ease_type_name string{"easeOutCirc"}
+                              interpolation_period digit{0.5}
+                              end_value digit{1}
+                            }
+                          }
+                        }
+                      }
+                      effect_list[1] {
+                        EffectEdgeBlur {
+                          name string{"EffectEdgeBlur"}
+                          left digit{120}
+                          right digit{120}
+                        }
+                      }
+                      color[4] {
+                        RGBA{110 110 110 255}
+                        RGBA{110 110 110 255}
+                        RGBA{0 0 0 0}
+                        RGBA{0 0 0 0}
+                      }
+                      blend_func_name string{"add"}
+                      tl_image_path string{"image/gt5/gtauto/shop/frame_4.dds"}
+                      frame_width digit{8}
+                      frame_height digit{8}
+                    }
+                  }
+                }
+                TextFace {
+                  name string{"label"}
+                  has_script digit{1}
+                  packable digit{1}
+                  pack_pad_left digit{20}
+                  geometry rectangle{20 21.91 198 46.19}
+                  text_color RGBA{166 166 166 255}
+                  align digit{3}
+                  scale_x digit{1.57143}
+                  scale_y digit{1.57143}
+                  shadow_value digit{2}
+                  localized_text_page string{"GameItem"}
+                  key string{"tire_a_07"}
+                  max_text_width digit{198}
+                  adjust_scale digit{1}
+                }
+                HBox {
+                  name string{"Cr"}
+                  pack_pad_right digit{20}
+                  pack_expand_x digit{1}
+                  pack_shrink_x digit{1}
+                  pack_alignment_x digit{1}
+                  geometry rectangle{248.61 5.5 171.39 79}
+                  clip digit{0}
+                  children[2] {
+                    TextFace {
+                      name string{"Cr"}
+                      packable digit{1}
+                      pack_pad_right digit{8}
+                      pack_expand_x digit{1}
+                      pack_shrink_x digit{1}
+                      pack_alignment_x digit{0}
+                      geometry rectangle{0 0 32.91 79}
+                      text_color RGBA{166 166 166 255}
+                      align digit{5}
+                      scale_x digit{2}
+                      scale_y digit{2}
+                      shadow_value digit{2}
+                      text string{"Cr."}
+                    }
+                    TextFace {
+                      name string{"CrText"}
+                      packable digit{1}
+                      pack_expand_x digit{1}
+                      pack_shrink_x digit{1}
+                      pack_alignment_x digit{1}
+                      geometry rectangle{40.91 2 130.49 72}
+                      text_color RGBA{0 180 220 255}
+                      font string{"IwataSet_4"}
+                      align digit{5}
+                      scale_x digit{2.42857}
+                      scale_y digit{2.42857}
+                      shadow_value digit{2}
+                      text string{"500,000"}
+                    }
+                  }
+                }
+                ImageFace {
+                  name string{"ItemStatus"}
+                  geometry rectangle{414 18 48 48}
+                }
+              }
+            }
           }
         }
         Composite {
           name string{"BRacing"}
           has_script digit{1}
-          geometry rectangle{1334 590 440 342}
-          children[5] {
+          geometry rectangle{1334 538 440 432}
+          children[6] {
             ImageFace {
               name string{"ImageFace"}
               geometry rectangle{116 -206 296 212}
@@ -17183,6 +17333,156 @@ Project {
                   shadow_value digit{2}
                   localized_text_page string{"GameItem"}
                   key string{"tire_a_10"}
+                  max_text_width digit{206}
+                  adjust_scale digit{1}
+                }
+                HBox {
+                  name string{"Cr"}
+                  pack_pad_right digit{20}
+                  pack_expand_x digit{1}
+                  pack_shrink_x digit{1}
+                  pack_alignment_x digit{1}
+                  geometry rectangle{248.61 5.5 171.39 79}
+                  clip digit{0}
+                  children[2] {
+                    TextFace {
+                      name string{"Cr"}
+                      packable digit{1}
+                      pack_pad_right digit{8}
+                      pack_expand_x digit{1}
+                      pack_shrink_x digit{1}
+                      pack_alignment_x digit{0}
+                      geometry rectangle{0 0 32.91 79}
+                      text_color RGBA{166 166 166 255}
+                      align digit{5}
+                      scale_x digit{2}
+                      scale_y digit{2}
+                      shadow_value digit{2}
+                      text string{"Cr."}
+                    }
+                    TextFace {
+                      name string{"CrText"}
+                      packable digit{1}
+                      pack_expand_x digit{1}
+                      pack_shrink_x digit{1}
+                      pack_alignment_x digit{1}
+                      geometry rectangle{40.91 2 130.49 72}
+                      text_color RGBA{0 180 220 255}
+                      font string{"IwataSet_4"}
+                      align digit{5}
+                      scale_x digit{2.42857}
+                      scale_y digit{2.42857}
+                      shadow_value digit{2}
+                      text string{"500,000"}
+                    }
+                  }
+                }
+                ImageFace {
+                  name string{"ItemStatus"}
+                  geometry rectangle{414 18 48 48}
+                }
+              }
+            }
+            HBox {
+              name string{"r_super_soft"}
+              can_focus digit{1}
+              packable digit{0}
+              geometry rectangle{0 342 440 90}
+              clip digit{0}
+              children[4] {
+                Composite {
+                  name string{"bg"}
+                  is_face digit{1}
+                  geometry rectangle{0 0 440 90}
+                  children[4] {
+                    ColorFace {
+                      name string{"ColorFace"}
+                      color[4] {
+                        RGBA{38 35 38 178}
+                        RGBA{38 35 38 178}
+                        RGBA{38 35 38 0}
+                        RGBA{38 35 38 0}
+                      }
+                    }
+                    FrameImageFace {
+                      name string{"FrameImageFace"}
+                      geometry rectangle{-7.56 -8 464 114}
+                      color[4] {
+                        RGBA{255 255 255 255}
+                        RGBA{255 255 255 255}
+                        RGBA{255 255 255 0}
+                        RGBA{255 255 255 0}
+                      }
+                      tl_image_path string{"image/gt5/gtauto/shop/frame_shadow.dds"}
+                      frame_width digit{24}
+                      frame_height digit{24}
+                    }
+                    FrameImageFace {
+                      name string{"frame"}
+                      color[4] {
+                        RGBA{73 73 73 255}
+                        RGBA{73 73 73 255}
+                        RGBA{73 73 73 0}
+                        RGBA{73 73 73 0}
+                      }
+                      tl_image_path string{"image/gt5/gtauto/shop/frame_4.dds"}
+                      frame_width digit{8}
+                      frame_height digit{8}
+                    }
+                    FrameImageFace {
+                      name string{"frame2"}
+                      visible_condition digit{2}
+                      visible_compare digit{2}
+                      cursor_target digit{0}
+                      actor_list[1] {
+                        ScalarInterpolator {
+                          name string{"ScalarInterpolator"}
+                          focus_enter_action_name string{"restart"}
+                          focus_leave_action_name string{"reset"}
+                          attribute_name string{"MWidget::opacity"}
+                          loop_count digit{1}
+                          section[1] {
+                            MScalarSection {
+                              ease_type_name string{"easeOutCirc"}
+                              interpolation_period digit{0.5}
+                              end_value digit{1}
+                            }
+                          }
+                        }
+                      }
+                      effect_list[1] {
+                        EffectEdgeBlur {
+                          name string{"EffectEdgeBlur"}
+                          left digit{120}
+                          right digit{120}
+                        }
+                      }
+                      color[4] {
+                        RGBA{110 110 110 255}
+                        RGBA{110 110 110 255}
+                        RGBA{0 0 0 0}
+                        RGBA{0 0 0 0}
+                      }
+                      blend_func_name string{"add"}
+                      tl_image_path string{"image/gt5/gtauto/shop/frame_4.dds"}
+                      frame_width digit{8}
+                      frame_height digit{8}
+                    }
+                  }
+                }
+                TextFace {
+                  name string{"label"}
+                  has_script digit{1}
+                  packable digit{1}
+                  pack_pad_left digit{20}
+                  geometry rectangle{20 21.91 198 46.19}
+                  text_color RGBA{166 166 166 255}
+                  align digit{3}
+                  scale_x digit{1.57143}
+                  scale_y digit{1.57143}
+                  shadow_value digit{2}
+                  localized_text_page string{"GameItem"}
+                  key string{"tire_a_11"}
                   max_text_width digit{206}
                   adjust_scale digit{1}
                 }
