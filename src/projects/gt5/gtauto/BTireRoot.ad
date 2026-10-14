@@ -13,9 +13,11 @@ module ROOT
             ["s_hard",         "tire_a_04"], 
             ["s_medium",       "tire_a_05"], 
             ["s_soft",         "tire_a_06"], 
+            ["s_super_soft",   "tire_a_07"],
             ["r_hard",         "tire_a_08"], 
             ["r_medium",       "tire_a_09"], 
             ["r_soft",         "tire_a_10"], 
+            ["r_super_soft",   "tire_a_11"],
             ["dirt_tire",      "tire___14"], 
             ["snow_tire",      "tire___15"]
         ]);
@@ -29,9 +31,11 @@ module ROOT
         BSport::s_hard::Cr::CrText.text = getPriceText(code_map_.find("s_hard")[1]);
         BSport::s_medium::Cr::CrText.text = getPriceText(code_map_.find("s_medium")[1]);
         BSport::s_soft::Cr::CrText.text = getPriceText(code_map_.find("s_soft")[1]);
+		BSport::s_super_soft::Cr::CrText.text = getPriceText(code_map_.find("s_super_soft")[1]);
         BRacing::r_hard::Cr::CrText.text = getPriceText(code_map_.find("r_hard")[1]);
         BRacing::r_medium::Cr::CrText.text = getPriceText(code_map_.find("r_medium")[1]);
         BRacing::r_soft::Cr::CrText.text = getPriceText(code_map_.find("r_soft")[1]);
+		BRacing::r_super_soft::Cr::CrText.text = getPriceText(code_map_.find("r_super_soft")[1]);
         dirt_tire::info::Cr::CrText.text = getPriceText(code_map_.find("dirt_tire")[1]);
         snow_tire::info::Cr::CrText.text = getPriceText(code_map_.find("snow_tire")[1]);
 
@@ -41,9 +45,11 @@ module ROOT
         checkPartsStatus(BSport::s_hard);
         checkPartsStatus(BSport::s_medium);
         checkPartsStatus(BSport::s_soft);
+		checkPartsStatus(BSport::s_super_soft);
         checkPartsStatus(BRacing::r_hard);
         checkPartsStatus(BRacing::r_medium);
         checkPartsStatus(BRacing::r_soft);
+		checkPartsStatus(BRacing::r_super_soft);
         checkPartsStatus(dirt_tire);
         checkPartsStatus(snow_tire);
     }
