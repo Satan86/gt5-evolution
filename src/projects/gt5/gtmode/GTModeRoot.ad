@@ -2325,13 +2325,13 @@ module GTModeRoot
                 {
                     CHECK_GARAGE_NOT_EMPTY();
 
-                    var cp = main::GAME_STATUS.user_profile.garage.getRidingCar();
+                    /*var cp = main::GAME_STATUS.user_profile.garage.getRidingCar();
                     if (gtengine::MSpecDB::isStandardModel(cp.getCarCode()))
                     {
                         main::sound.play("disable");
                         DialogUtil::openConfirmDialog(context, DialogUtil::ERROR, context.translate(ROOT, "MESSAGE_CAN_NOT_ENTER_PHOTO_MODE_BY_STANDARD_CAR"));
                         return EVENTRESULT_FILTER;
-                    }
+                    }*/
 
                     main::sound.play("ok");
 
