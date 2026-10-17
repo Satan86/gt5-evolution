@@ -93,7 +93,7 @@ module ROOT
                 foreach (event in event_list)
                 {
                     if (online_event_id == event["id"])
-                        continue;
+                        break;
                     
                     event_index++;
                 }
