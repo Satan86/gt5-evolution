@@ -1087,7 +1087,6 @@ module ROOT
                     else
                         self.setEntityRotateY("CAR", "car1", ROOT::hidden::CaptureCarAngleValue.text.toInt());
 
-                    self.setEntityRotateVelocityY("CAR", "car1", SceneActor.rotate);
                 }
 
                 self.scene_fade = SceneActor.opacity;
