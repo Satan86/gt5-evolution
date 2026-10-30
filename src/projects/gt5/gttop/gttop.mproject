@@ -3380,7 +3380,7 @@ Project {
                 }
                 TextFace {
                   name string{"c_sony"}
-                  geometry rectangle{136 36 400 60}
+                  geometry rectangle{136 60 400 60}
                   text_color RGBA{120 120 120 255}
                   multiline digit{1}
                   align digit{3}
