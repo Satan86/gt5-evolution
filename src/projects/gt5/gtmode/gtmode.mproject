@@ -18015,13 +18015,78 @@ Project {
                   }
                 }
               }
-              children[6] {
+              children[7] {
+                SBox {
+                  name string{"EventSettings"}
+                  can_focus digit{1}
+                  pack_pad_bottom digit{16}
+                  pack_expand_x digit{1}
+                  pack_expand_y digit{1}
+                  pack_alignment_y digit{1}
+                  geometry rectangle{18 572 60 60}
+                  children[3] {
+                    ColorFace {
+                      name string{"ColorFace"}
+                      visible digit{0}
+                      color[1] {
+                        RGBA{24 24 24 255}
+                      }
+                    }
+                    ColorFace {
+                      name string{"ColorFaceA"}
+                      visible digit{0}
+                      visible_condition digit{2}
+                      visible_compare digit{2}
+                      color_type_name string{"divide_color"}
+                      color_divide[9] {
+                        [1] {
+                          RGBA{94 150 192 255}
+                        }
+                        [1] {
+                          RGBA{94 150 192 255}
+                        }
+                        [1] {
+                          RGBA{94 150 192 255}
+                        }
+                        [1] {
+                          RGBA{94 150 192 255}
+                        }
+                        [1] {
+                          RGBA{94 150 192 0}
+                        }
+                        [1] {
+                          RGBA{94 150 192 255}
+                        }
+                        [1] {
+                          RGBA{94 150 192 255}
+                        }
+                        [1] {
+                          RGBA{94 150 192 255}
+                        }
+                        [1] {
+                          RGBA{94 150 192 255}
+                        }
+                      }
+                      x_divide[2] {
+                         digit{0.0555556}
+                         digit{0.944444}
+                      }
+                      y_divide[2] {
+                         digit{0.0555556}
+                         digit{0.944444}
+                      }
+                    }
+                    ImageFace {
+                      name string{"ImageFace"}
+                      image_path string{"image/gt5/icon/icon_option.dds"}
+                    }
+                  }
+                }
                 SBox {
                   name string{"News"}
                   can_focus digit{1}
                   pack_pad_bottom digit{16}
                   pack_expand_x digit{1}
-                  pack_expand_y digit{1}
                   pack_alignment_y digit{1}
                   geometry rectangle{18 648 60 60}
                   children[3] {
