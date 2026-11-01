@@ -52063,8 +52063,7 @@ Project {
           name string{"SpecialLogo"}
           is_face digit{0}
           packable digit{1}
-          geometry rectangle{1034 141 307 172.69}
-          scale vector{0.8 0.8}
+          geometry rectangle{1034 185 256 90}
           actor_list[1] {
             ScalarInterpolator {
               name string{"FadeActor"}
