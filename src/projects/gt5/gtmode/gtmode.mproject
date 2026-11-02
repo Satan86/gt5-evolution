@@ -52064,6 +52064,7 @@ Project {
           is_face digit{0}
           packable digit{1}
           geometry rectangle{1034 185 256 90}
+		  scale vector{1.1 1.1}
           actor_list[1] {
             ScalarInterpolator {
               name string{"FadeActor"}
@@ -52151,13 +52152,12 @@ Project {
                 TextFace {
                   name string{"label"}
                   geometry rectangle{2 0 255.56 42}
-				  text_color RGBA{25 25 25 255}
                   font string{"IwataSet_3"}
                   align digit{0}
                   scale_x digit{1.71429}
                   scale_y digit{1.71429}
                   shadow_value digit{1}
-                  shadow_color RGBA{255 255 255 204}
+                  shadow_color RGBA{0 0 0 204}
                   TSTmode digit{1}
                   TSTparam[8] {
                      digit{5.8}
@@ -52178,10 +52178,10 @@ Project {
                   name string{"line"}
                   geometry rectangle{0 40 460 2}
                   color[4] {
-                    RGBA{127 127 127 255}
-                    RGBA{127 127 127 255}
-                    RGBA{25 25 25 255}
-                    RGBA{25 25 25 255}
+                    RGBA{255 255 255 127}
+                    RGBA{255 255 255 127}
+                    RGBA{255 255 255 25}
+                    RGBA{255 255 255 25}
                   }
                 }
               }
@@ -52194,12 +52194,11 @@ Project {
                 TextFace {
                   name string{"label"}
                   geometry rectangle{2 0 255.56 34}
-				  text_color RGBA{25 25 25 255}
                   align digit{3}
                   scale_x digit{1.5}
                   scale_y digit{1.5}
                   shadow_value digit{1}
-                  shadow_color RGBA{255 255 255 204}
+                  shadow_color RGBA{0 0 0 204}
                   localized_text_page string{"CarSpec"}
                   key string{"DISPLACEMENT"}
                   adjust_scale digit{1}
@@ -52207,12 +52206,11 @@ Project {
                 TextFace {
                   name string{"value"}
                   geometry rectangle{275 0 183.15 34}
-				  text_color RGBA{25 25 25 255}
                   align digit{5}
                   scale_x digit{1.5}
                   scale_y digit{1.5}
                   shadow_value digit{1}
-                  shadow_color RGBA{255 255 255 204}
+                  shadow_color RGBA{0 0 0 204}
                   TSTmode digit{1}
                   TSTparam[8] {
                      digit{0.5}
@@ -52230,10 +52228,10 @@ Project {
                   name string{"line"}
                   geometry rectangle{0 34.29 460 1.71}
                   color[4] {
-                    RGBA{127 127 127 255}
-                    RGBA{127 127 127 255}
-                    RGBA{25 25 25 255}
-                    RGBA{25 25 25 255}
+                    RGBA{255 255 255 127}
+                    RGBA{255 255 255 127}
+                    RGBA{255 255 255 25}
+                    RGBA{255 255 255 25}
                   }
                 }
               }
@@ -52246,12 +52244,11 @@ Project {
                 TextFace {
                   name string{"label"}
                   geometry rectangle{2 0 255.56 34}
-				  text_color RGBA{25 25 25 255}
                   align digit{3}
                   scale_x digit{1.5}
                   scale_y digit{1.5}
                   shadow_value digit{1}
-                  shadow_color RGBA{255 255 255 204}
+                  shadow_color RGBA{0 0 0 204}
                   localized_text_page string{"CarSpec"}
                   key string{"PS"}
                   adjust_scale digit{1}
@@ -52259,12 +52256,11 @@ Project {
                 TextFace {
                   name string{"value"}
                   geometry rectangle{275 0 183.15 34}
-				  text_color RGBA{25 25 25 255}
                   align digit{5}
                   scale_x digit{1.5}
                   scale_y digit{1.5}
                   shadow_value digit{1}
-                  shadow_color RGBA{255 255 255 204}
+                  shadow_color RGBA{0 0 0 204}
                   TSTmode digit{1}
                   TSTparam[8] {
                      digit{0.6}
@@ -52282,10 +52278,10 @@ Project {
                   name string{"line"}
                   geometry rectangle{0 34.29 460 1.71}
                   color[4] {
-                    RGBA{127 127 127 255}
-                    RGBA{127 127 127 255}
-                    RGBA{25 25 25 255}
-                    RGBA{25 25 25 255}
+                    RGBA{255 255 255 127}
+                    RGBA{255 255 255 127}
+                    RGBA{255 255 255 25}
+                    RGBA{255 255 255 25}
                   }
                 }
               }
@@ -52298,12 +52294,11 @@ Project {
                 TextFace {
                   name string{"label"}
                   geometry rectangle{2 0 183.15 34}
-				  text_color RGBA{25 25 25 255}
                   align digit{3}
                   scale_x digit{1.5}
                   scale_y digit{1.5}
                   shadow_value digit{1}
-                  shadow_color RGBA{255 255 255 204}
+                  shadow_color RGBA{0 0 0 204}
                   localized_text_page string{"CarSpec"}
                   key string{"TORQUE"}
                   adjust_scale digit{1}
@@ -52311,12 +52306,11 @@ Project {
                 TextFace {
                   name string{"value"}
                   geometry rectangle{202 0 255.56 34}
-				  text_color RGBA{25 25 25 255}
                   align digit{5}
                   scale_x digit{1.5}
                   scale_y digit{1.5}
                   shadow_value digit{1}
-                  shadow_color RGBA{255 255 255 204}
+                  shadow_color RGBA{0 0 0 204}
                   TSTmode digit{1}
                   TSTparam[8] {
                      digit{0.7}
@@ -52334,10 +52328,10 @@ Project {
                   name string{"line"}
                   geometry rectangle{0 34.29 460 1.71}
                   color[4] {
-                    RGBA{127 127 127 255}
-                    RGBA{127 127 127 255}
-                    RGBA{25 25 25 255}
-                    RGBA{25 25 25 255}
+                    RGBA{255 255 255 127}
+                    RGBA{255 255 255 127}
+                    RGBA{255 255 255 25}
+                    RGBA{255 255 255 25}
                   }
                 }
               }
@@ -52350,12 +52344,11 @@ Project {
                 TextFace {
                   name string{"label"}
                   geometry rectangle{2 0 255.56 34}
-				  text_color RGBA{25 25 25 255}
                   align digit{3}
                   scale_x digit{1.5}
                   scale_y digit{1.5}
                   shadow_value digit{1}
-                  shadow_color RGBA{255 255 255 204}
+                  shadow_color RGBA{0 0 0 204}
                   localized_text_page string{"CarSpec"}
                   key string{"DRIVE_TRAIN"}
                   adjust_scale digit{1}
@@ -52363,12 +52356,11 @@ Project {
                 TextFace {
                   name string{"value"}
                   geometry rectangle{275 0 183.15 34}
-				  text_color RGBA{25 25 25 255}
                   align digit{5}
                   scale_x digit{1.42857}
                   scale_y digit{1.42857}
                   shadow_value digit{1}
-                  shadow_color RGBA{255 255 255 204}
+                  shadow_color RGBA{0 0 0 204}
                   TSTmode digit{1}
                   TSTparam[8] {
                      digit{0.8}
@@ -52386,10 +52378,10 @@ Project {
                   name string{"line"}
                   geometry rectangle{0 34.29 460 1.71}
                   color[4] {
-                    RGBA{127 127 127 255}
-                    RGBA{127 127 127 255}
-                    RGBA{25 25 25 255}
-                    RGBA{25 25 25 255}
+                    RGBA{255 255 255 127}
+                    RGBA{255 255 255 127}
+                    RGBA{255 255 255 25}
+                    RGBA{255 255 255 25}
                   }
                 }
               }
@@ -52402,12 +52394,11 @@ Project {
                 TextFace {
                   name string{"label"}
                   geometry rectangle{2 0 255.56 34}
-				  text_color RGBA{25 25 25 255}
                   align digit{3}
                   scale_x digit{1.5}
                   scale_y digit{1.5}
                   shadow_value digit{1}
-                  shadow_color RGBA{255 255 255 204}
+                  shadow_color RGBA{0 0 0 204}
                   localized_text_page string{"CarSpec"}
                   key string{"LENGTH"}
                   adjust_scale digit{1}
@@ -52415,12 +52406,11 @@ Project {
                 TextFace {
                   name string{"value"}
                   geometry rectangle{275 0 183.15 34}
-				  text_color RGBA{25 25 25 255}
                   align digit{5}
                   scale_x digit{1.42857}
                   scale_y digit{1.42857}
                   shadow_value digit{1}
-                  shadow_color RGBA{255 255 255 204}
+                  shadow_color RGBA{0 0 0 204}
                   TSTmode digit{1}
                   TSTparam[8] {
                      digit{0.9}
@@ -52438,10 +52428,10 @@ Project {
                   name string{"line"}
                   geometry rectangle{0 34.29 460 1.71}
                   color[4] {
-                    RGBA{127 127 127 255}
-                    RGBA{127 127 127 255}
-                    RGBA{25 25 25 255}
-                    RGBA{25 25 25 255}
+                    RGBA{255 255 255 127}
+                    RGBA{255 255 255 127}
+                    RGBA{255 255 255 25}
+                    RGBA{255 255 255 25}
                   }
                 }
               }
@@ -52454,12 +52444,11 @@ Project {
                 TextFace {
                   name string{"label"}
                   geometry rectangle{2 0 255.56 34}
-				  text_color RGBA{25 25 25 255}
                   align digit{3}
                   scale_x digit{1.5}
                   scale_y digit{1.5}
                   shadow_value digit{1}
-                  shadow_color RGBA{255 255 255 204}
+                  shadow_color RGBA{0 0 0 204}
                   localized_text_page string{"CarSpec"}
                   key string{"WIDTH"}
                   adjust_scale digit{1}
@@ -52467,12 +52456,11 @@ Project {
                 TextFace {
                   name string{"value"}
                   geometry rectangle{275 0 183 34}
-				  text_color RGBA{25 25 25 255}
                   align digit{5}
                   scale_x digit{1.42857}
                   scale_y digit{1.42857}
                   shadow_value digit{1}
-                  shadow_color RGBA{255 255 255 204}
+                  shadow_color RGBA{0 0 0 204}
                   TSTmode digit{1}
                   TSTparam[8] {
                      digit{1}
@@ -52490,10 +52478,10 @@ Project {
                   name string{"line"}
                   geometry rectangle{0 34.29 460 1.71}
                   color[4] {
-                    RGBA{127 127 127 255}
-                    RGBA{127 127 127 255}
-                    RGBA{25 25 25 255}
-                    RGBA{25 25 25 255}
+                    RGBA{255 255 255 127}
+                    RGBA{255 255 255 127}
+                    RGBA{255 255 255 25}
+                    RGBA{255 255 255 25}
                   }
                 }
               }
@@ -52506,12 +52494,11 @@ Project {
                 TextFace {
                   name string{"label"}
                   geometry rectangle{2 0 255.56 34}
-				  text_color RGBA{25 25 25 255}
                   align digit{3}
                   scale_x digit{1.5}
                   scale_y digit{1.5}
                   shadow_value digit{1}
-                  shadow_color RGBA{255 255 255 204}
+                  shadow_color RGBA{0 0 0 204}
                   localized_text_page string{"CarSpec"}
                   key string{"HEIGHT"}
                   adjust_scale digit{1}
@@ -52519,12 +52506,11 @@ Project {
                 TextFace {
                   name string{"value"}
                   geometry rectangle{275 0 183.15 34}
-				  text_color RGBA{25 25 25 255}
                   align digit{5}
                   scale_x digit{1.42857}
                   scale_y digit{1.42857}
                   shadow_value digit{1}
-                  shadow_color RGBA{255 255 255 204}
+                  shadow_color RGBA{0 0 0 204}
                   TSTmode digit{1}
                   TSTparam[8] {
                      digit{1.1}
@@ -52542,10 +52528,10 @@ Project {
                   name string{"line"}
                   geometry rectangle{0 34.29 460 1.71}
                   color[4] {
-                    RGBA{127 127 127 255}
-                    RGBA{127 127 127 255}
-                    RGBA{25 25 25 255}
-                    RGBA{25 25 25 255}
+                    RGBA{255 255 255 127}
+                    RGBA{255 255 255 127}
+                    RGBA{255 255 255 25}
+                    RGBA{255 255 255 25}
                   }
                 }
               }
@@ -52558,12 +52544,11 @@ Project {
                 TextFace {
                   name string{"label"}
                   geometry rectangle{2 0 255.56 34}
-				  text_color RGBA{25 25 25 255}
                   align digit{3}
                   scale_x digit{1.5}
                   scale_y digit{1.5}
                   shadow_value digit{1}
-                  shadow_color RGBA{255 255 255 204}
+                  shadow_color RGBA{0 0 0 204}
                   localized_text_page string{"CarSpec"}
                   key string{"MASS"}
                   adjust_scale digit{1}
@@ -52571,12 +52556,11 @@ Project {
                 TextFace {
                   name string{"value"}
                   geometry rectangle{275 0 183.15 34}
-				  text_color RGBA{25 25 25 255}
                   align digit{5}
                   scale_x digit{1.5}
                   scale_y digit{1.5}
                   shadow_value digit{1}
-                  shadow_color RGBA{255 255 255 204}
+                  shadow_color RGBA{0 0 0 204}
                   TSTmode digit{1}
                   TSTparam[8] {
                      digit{1.2}
@@ -52594,10 +52578,10 @@ Project {
                   name string{"line"}
                   geometry rectangle{0 34.29 460 1.71}
                   color[4] {
-                    RGBA{127 127 127 255}
-                    RGBA{127 127 127 255}
-                    RGBA{25 25 25 255}
-                    RGBA{25 25 25 255}
+                    RGBA{255 255 255 127}
+                    RGBA{255 255 255 127}
+                    RGBA{255 255 255 25}
+                    RGBA{255 255 255 25}
                   }
                 }
               }
@@ -52610,12 +52594,11 @@ Project {
                 TextFace {
                   name string{"label"}
                   geometry rectangle{2 0 255.56 34}
-				  text_color RGBA{25 25 25 255}
                   align digit{3}
                   scale_x digit{1.5}
                   scale_y digit{1.5}
                   shadow_value digit{1}
-                  shadow_color RGBA{255 255 255 204}
+                  shadow_color RGBA{0 0 0 204}
                   localized_text_page string{"CarSpec"}
                   key string{"LABEL_PERFORMANCE_POINT"}
                   adjust_scale digit{1}
@@ -52623,12 +52606,11 @@ Project {
                 TextFace {
                   name string{"value"}
                   geometry rectangle{275 0 183.15 34}
-				  text_color RGBA{25 25 25 255}
                   align digit{5}
                   scale_x digit{1.5}
                   scale_y digit{1.5}
                   shadow_value digit{1}
-                  shadow_color RGBA{255 255 255 204}
+                  shadow_color RGBA{0 0 0 204}
                   TSTmode digit{1}
                   TSTparam[8] {
                      digit{1.2}
@@ -52646,10 +52628,10 @@ Project {
                   name string{"line"}
                   geometry rectangle{0 34.29 460 1.71}
                   color[4] {
-                    RGBA{127 127 127 255}
-                    RGBA{127 127 127 255}
-                    RGBA{25 25 25 255}
-                    RGBA{25 25 25 255}
+                    RGBA{255 255 255 127}
+                    RGBA{255 255 255 127}
+                    RGBA{255 255 255 25}
+                    RGBA{255 255 255 25}
                   }
                 }
               }
@@ -52663,13 +52645,12 @@ Project {
                 TextFace {
                   name string{"label"}
                   geometry rectangle{2 0 255.56 42}
-				  text_color RGBA{25 25 25 255}
                   font string{"IwataSet_3"}
                   align digit{0}
                   scale_x digit{1.71429}
                   scale_y digit{1.71429}
                   shadow_value digit{1}
-                  shadow_color RGBA{255 255 255 204}
+                  shadow_color RGBA{0 0 0 204}
                   TSTmode digit{1}
                   TSTparam[8] {
                      digit{5.8}
@@ -52690,10 +52671,10 @@ Project {
                   name string{"line"}
                   geometry rectangle{0 40 460 2}
                   color[4] {
-                    RGBA{127 127 127 255}
-                    RGBA{127 127 127 255}
-                    RGBA{25 25 25 255}
-                    RGBA{25 25 25 255}
+                    RGBA{255 255 255 127}
+                    RGBA{255 255 255 127}
+                    RGBA{255 255 255 25}
+                    RGBA{255 255 255 25}
                   }
                 }
               }
@@ -52706,12 +52687,11 @@ Project {
                 TextFace {
                   name string{"label"}
                   geometry rectangle{2 0 255.56 34}
-				  text_color RGBA{25 25 25 255}
                   align digit{3}
                   scale_x digit{1.5}
                   scale_y digit{1.5}
                   shadow_value digit{1}
-                  shadow_color RGBA{255 255 255 204}
+                  shadow_color RGBA{0 0 0 204}
                   localized_text_page string{"CarSpec"}
                   key string{"LABEL_OBTAIN"}
                   adjust_scale digit{1}
@@ -52719,12 +52699,11 @@ Project {
                 TextFace {
                   name string{"value"}
                   geometry rectangle{275 0 183.15 34}
-				  text_color RGBA{25 25 25 255}
                   align digit{5}
                   scale_x digit{1.5}
                   scale_y digit{1.5}
                   shadow_value digit{1}
-                  shadow_color RGBA{255 255 255 204}
+                  shadow_color RGBA{0 0 0 204}
                   TSTmode digit{1}
                   TSTparam[8] {
                      digit{1.2}
@@ -52742,10 +52721,10 @@ Project {
                   name string{"line"}
                   geometry rectangle{0 34.29 460 1.71}
                   color[4] {
-                    RGBA{127 127 127 255}
-                    RGBA{127 127 127 255}
-                    RGBA{25 25 25 255}
-                    RGBA{25 25 25 255}
+                    RGBA{255 255 255 127}
+                    RGBA{255 255 255 127}
+                    RGBA{255 255 255 25}
+                    RGBA{255 255 255 25}
                   }
                 }
               }
@@ -52758,12 +52737,11 @@ Project {
                 TextFace {
                   name string{"label"}
                   geometry rectangle{2 0 255.56 34}
-				  text_color RGBA{25 25 25 255}
                   align digit{3}
                   scale_x digit{1.5}
                   scale_y digit{1.5}
                   shadow_value digit{1}
-                  shadow_color RGBA{255 255 255 204}
+                  shadow_color RGBA{0 0 0 204}
                   localized_text_page string{"CarSpec"}
                   key string{"LABEL_RIDE_COUNT"}
                   adjust_scale digit{1}
@@ -52771,12 +52749,11 @@ Project {
                 TextFace {
                   name string{"value"}
                   geometry rectangle{275 0 183.15 34}
-				  text_color RGBA{25 25 25 255}
                   align digit{5}
                   scale_x digit{1.5}
                   scale_y digit{1.5}
                   shadow_value digit{1}
-                  shadow_color RGBA{255 255 255 204}
+                  shadow_color RGBA{0 0 0 204}
                   TSTmode digit{1}
                   TSTparam[8] {
                      digit{1.2}
@@ -52794,10 +52771,10 @@ Project {
                   name string{"line"}
                   geometry rectangle{0 34.29 460 1.71}
                   color[4] {
-                    RGBA{127 127 127 255}
-                    RGBA{127 127 127 255}
-                    RGBA{25 25 25 255}
-                    RGBA{25 25 25 255}
+                    RGBA{255 255 255 127}
+                    RGBA{255 255 255 127}
+                    RGBA{255 255 255 25}
+                    RGBA{255 255 255 25}
                   }
                 }
               }
@@ -52810,12 +52787,11 @@ Project {
                 TextFace {
                   name string{"label"}
                   geometry rectangle{2 0 255.56 34}
-				  text_color RGBA{25 25 25 255}
                   align digit{3}
                   scale_x digit{1.5}
                   scale_y digit{1.5}
                   shadow_value digit{1}
-                  shadow_color RGBA{255 255 255 204}
+                  shadow_color RGBA{0 0 0 204}
                   localized_text_page string{"CarSpec"}
                   key string{"LABEL_DISTANCE"}
                   adjust_scale digit{1}
@@ -52823,12 +52799,11 @@ Project {
                 TextFace {
                   name string{"value"}
                   geometry rectangle{275 0 183.15 34}
-				  text_color RGBA{25 25 25 255}
                   align digit{5}
                   scale_x digit{1.5}
                   scale_y digit{1.5}
                   shadow_value digit{1}
-                  shadow_color RGBA{255 255 255 204}
+                  shadow_color RGBA{0 0 0 204}
                   TSTmode digit{1}
                   TSTparam[8] {
                      digit{1.2}
@@ -52846,10 +52821,10 @@ Project {
                   name string{"line"}
                   geometry rectangle{0 34.29 460 1.71}
                   color[4] {
-                    RGBA{127 127 127 255}
-                    RGBA{127 127 127 255}
-                    RGBA{25 25 25 255}
-                    RGBA{25 25 25 255}
+                    RGBA{255 255 255 127}
+                    RGBA{255 255 255 127}
+                    RGBA{255 255 255 25}
+                    RGBA{255 255 255 25}
                   }
                 }
               }
@@ -52862,12 +52837,11 @@ Project {
                 TextFace {
                   name string{"label"}
                   geometry rectangle{2 0 255.56 34}
-				  text_color RGBA{25 25 25 255}
                   align digit{3}
                   scale_x digit{1.5}
                   scale_y digit{1.5}
                   shadow_value digit{1}
-                  shadow_color RGBA{255 255 255 204}
+                  shadow_color RGBA{0 0 0 204}
                   localized_text_page string{"CarSpec"}
                   key string{"LABEL_WIN_COUNT"}
                   adjust_scale digit{1}
@@ -52875,12 +52849,11 @@ Project {
                 TextFace {
                   name string{"value"}
                   geometry rectangle{275 0 183.15 34}
-				  text_color RGBA{25 25 25 255}
                   align digit{5}
                   scale_x digit{1.5}
                   scale_y digit{1.5}
                   shadow_value digit{1}
-                  shadow_color RGBA{255 255 255 204}
+                  shadow_color RGBA{0 0 0 204}
                   TSTmode digit{1}
                   TSTparam[8] {
                      digit{1.2}
@@ -52898,10 +52871,10 @@ Project {
                   name string{"line"}
                   geometry rectangle{0 34.29 460 1.71}
                   color[4] {
-                    RGBA{127 127 127 255}
-                    RGBA{127 127 127 255}
-                    RGBA{25 25 25 255}
-                    RGBA{25 25 25 255}
+                    RGBA{255 255 255 127}
+                    RGBA{255 255 255 127}
+                    RGBA{255 255 255 25}
+                    RGBA{255 255 255 25}
                   }
                 }
               }
