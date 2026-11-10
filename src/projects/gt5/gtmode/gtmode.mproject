@@ -29894,7 +29894,7 @@ Project {
                 ImageFace {
                   name string{"SpecialLogo"}
                   is_face digit{0}
-                  geometry rectangle{1505 312 307 172.69}
+                  geometry rectangle{68 258 256 90}
                   actor_list[1] {
                     ScalarInterpolator {
                       name string{"FadeActor"}
@@ -30905,12 +30905,12 @@ Project {
                 }
                 ImageFace {
                   name string{"Award"}
-                  geometry rectangle{89 180 307 173}
+                  geometry rectangle{89 180 256 90}
                   image_path string{"image/gt5/other/award_pebblebeach.dds"}
                 }
                 ImageFace {
                   name string{"Maziora"}
-                  geometry rectangle{1678 952 192 108}
+                  geometry rectangle{1678 952 256 90}
                   actor_list[1] {
                     ScalarInterpolator {
                       name string{"FadeActor"}
@@ -52064,7 +52064,7 @@ Project {
           is_face digit{0}
           packable digit{1}
           geometry rectangle{1034 185 256 90}
-		  scale vector{1.1 1.1}
+		  scale vector{1.2 1.2}
           actor_list[1] {
             ScalarInterpolator {
               name string{"FadeActor"}
