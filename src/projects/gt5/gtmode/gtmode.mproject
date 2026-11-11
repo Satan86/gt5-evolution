@@ -8713,7 +8713,7 @@ Project {
                   }
                   Composite {
                     name string{"Debug"}
-                    visible digit{0}
+                    visible digit{1}
                     packable digit{1}
                     geometry rectangle{0 0 240 672}
                     children[2] {
@@ -10116,10 +10116,7 @@ Project {
                 shadow_value digit{2}
                 shadow_color RGBA{0 0 0 153}
                 nextline_offset digit{-0.2}
-                text string{"■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
-■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
-■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
-■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■"}
+                text string{"■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■"}
               }
               ColorFace {
                 name string{"hr0"}
@@ -10294,10 +10291,7 @@ Project {
                 shadow_value digit{2}
                 shadow_color RGBA{0 0 0 153}
                 nextline_offset digit{-0.2}
-                text string{"■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
-■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
-■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
-■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■"}
+                text string{"■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■"}
               }
               ColorFace {
                 name string{"hr0"}
@@ -11177,7 +11171,7 @@ Project {
   }
   name string{"GTModeProject"}
   has_script digit{1}
-  children[48] {
+  children[49] {
     RootWindow {
       name string{"GTModeRoot"}
       has_script digit{1}
@@ -22754,8 +22748,7 @@ Project {
                               align digit{7}
                               scale_x digit{2.85714}
                               scale_y digit{2.85714}
-                              text string{"0
-"}
+                              text string{"0"}
                             }
                           }
                         }
@@ -23097,8 +23090,7 @@ Project {
                               align digit{7}
                               scale_x digit{2.85714}
                               scale_y digit{2.85714}
-                              text string{"6
-"}
+                              text string{"6"}
                             }
                           }
                         }
@@ -23269,8 +23261,7 @@ Project {
                               align digit{7}
                               scale_x digit{2.85714}
                               scale_y digit{2.85714}
-                              text string{"9
-"}
+                              text string{"9"}
                             }
                           }
                         }
@@ -23441,8 +23432,7 @@ Project {
                               align digit{7}
                               scale_x digit{2.85714}
                               scale_y digit{2.85714}
-                              text string{"12
-"}
+                              text string{"12"}
                             }
                           }
                         }
@@ -26848,7 +26838,7 @@ Project {
                   pack_alignment_x digit{1}
                   geometry rectangle{1006 589 860 78}
                   clip digit{0}
-                  children[6] {
+                  children[7] {
                     HBox {
                       name string{"Regulation"}
                       can_focus digit{1}
@@ -26984,6 +26974,38 @@ Project {
                           penumbra_width digit{2}
                           umbra_color RGBA{0 0 0 255}
                           image_path string{"image/gt5/icon/icon_driver_s.dds"}
+                        }
+                      }
+                    }
+                    HBox {
+                      name string{"RaceSettings"}
+                      can_focus digit{1}
+                      pack_pad_top digit{2}
+                      pack_shrink_x digit{1}
+                      pack_alignment_y digit{0.51}
+                      geometry rectangle{336 5 80 68}
+                      clip digit{0}
+                      children[2] {
+                        FrameImageFace {
+                          name string{"ColorFace"}
+                          geometry rectangle{0 0 80.09 68}
+                          tl_image_path string{"image/gt5/button/h60-r8.dds"}
+                          frame_width digit{14}
+                          frame_height digit{34}
+                        }
+                        ImageFace {
+                          name string{"ImageFace"}
+                          packable digit{1}
+                          pack_pad_left digit{14}
+                          pack_pad_right digit{14}
+                          pack_expand_y digit{1}
+                          geometry rectangle{14 8 52 52}
+                          translate vector{0 2}
+                          shadow_enable digit{1}
+                          shadow_delta vector{1 1}
+                          penumbra_width digit{2}
+                          umbra_color RGBA{0 0 0 255}
+                          image_path string{"image/gt5/icon/icon_course_s.dds"}
                         }
                       }
                     }
@@ -29340,7 +29362,7 @@ Project {
                   }
                 }
               }
-              children[6] {
+              children[8] {
                 HScrollbar {
                   name string{"HScrollbar"}
                   visible digit{0}
@@ -30093,6 +30115,53 @@ Project {
                       text string{"256"}
                     }
                   }
+                }
+                TextFace {
+                  name string{"premium"}
+                  visible digit{0}
+                  geometry rectangle{100 732 1200 36}
+                  text_color RGBA{37 55 98 255}
+                  font string{"IwataSet_4"}
+                  align digit{3}
+                  scale_x digit{1.71429}
+                  scale_y digit{1.71429}
+                  type_spacing digit{0.5}
+                  TSTmode digit{0}
+                  REFmode digit{0}
+                  localized_text_page string{"CarSpec"}
+                  key string{"LABEL_PREMIUM"}
+                }
+                TextFace {
+                  name string{"standard"}
+                  visible digit{0}
+                  geometry rectangle{100 732 1200 36}
+                  text_color RGBA{98 38 37 255}
+                  font string{"IwataSet_4"}
+                  align digit{3}
+                  scale_x digit{1.71429}
+                  scale_y digit{1.71429}
+                  type_spacing digit{0.5}
+                  TSTmode digit{0}
+                  REFmode digit{0}
+                  localized_text_page string{"CarSpec"}
+                  key string{"LABEL_STANDARD"}
+                }
+                TextFace {
+                  name string{"racingmodification"}
+                  visible digit{0}
+                  geometry rectangle{1524 270 340 66}
+                  text_color RGBA{192 192 192 255}
+                  font string{"IwataSet_4"}
+                  shadow_value digit{1.5}
+                  shadow_color RGBA{0 0 0 153}
+                  align digit{3}
+                  scale_x digit{1.71429}
+                  scale_y digit{1.71429}
+                  type_spacing digit{0.5}
+                  TSTmode digit{0}
+                  REFmode digit{0}
+                  localized_text_page string{"CarSpec"}
+                  key string{"Supports Racing Modification"}
                 }
               }
             }
@@ -32207,13 +32276,29 @@ Project {
               name string{"CarDealerItem"}
               geometry rectangle{0 0 260 240}
               cursor_align_y digit{0.6}
-              children[13] {
+              children[15] {
                 ColorFace {
                   name string{"bg"}
                   color[1] {
                     RGBA{0 0 0 153}
                   }
                   round digit{6}
+                }
+                ColorFace {
+                  name string{"empty"}
+                  color[1] {
+                    RGBA{255 0 127 150}
+                  }
+                  round digit{6}
+                  visible digit{0}
+                }
+                ColorFace {
+                  name string{"unavailable"}
+                  color[1] {
+                    RGBA{255 0 0 25}
+                  }
+                  round digit{6}
+                  visible digit{0}
                 }
                 Composite {
                   name string{"Composite"}
@@ -33686,8 +33771,7 @@ Project {
                       }
                       REFmode digit{0}
                       localized_text_page string{"CarSpec"}
-                      text string{"
-"}
+                      text string{""}
                       adjust_scale digit{1}
                     }
                     ColorFace {
@@ -37918,8 +38002,7 @@ Project {
                   nextline_offset digit{-1.5}
                   type_spacing digit{-0.5}
                   localized_text_page string{"ArcadeProject::CarRoot"}
-                  text string{"
-"}
+                  text string{""}
                 }
               }
             }
@@ -56450,8 +56533,7 @@ Project {
                                   aligned digit{0}
                                   scale_x digit{1.60714}
                                   scale_y digit{1.60714}
-                                  text string{"
-"}
+                                  text string{""}
                                 }
                               }
                             }
@@ -57325,8 +57407,7 @@ Project {
                                   aligned digit{0}
                                   scale_x digit{1.60714}
                                   scale_y digit{1.60714}
-                                  text string{"
-"}
+                                  text string{""}
                                 }
                               }
                             }
@@ -58484,8 +58565,7 @@ Project {
                                   aligned digit{0}
                                   scale_x digit{1.78571}
                                   scale_y digit{1.78571}
-                                  text string{"
-"}
+                                  text string{""}
                                 }
                               }
                             }
@@ -58708,8 +58788,7 @@ Project {
                                   scale_x digit{1.57143}
                                   scale_y digit{1.57143}
                                   nextline_offset digit{-3}
-                                  text string{"pp
-"}
+                                  text string{"pp"}
                                 }
                                 TextFace {
                                   name string{"TextFace1"}
@@ -59577,8 +59656,7 @@ Project {
                   pack_alignment_y digit{0}
                   geometry rectangle{32 54 960 40.11}
                   abbreviate digit{0}
-                  text string{"
-"}
+                  text string{""}
                 }
                 'MyHome::VList::hr0' {
                   name string{"hr0"}
@@ -69488,8 +69566,7 @@ Project {
                   scale_y digit{1.57143}
                   shadow_value digit{1.5}
                   shadow_color RGBA{0 0 0 153}
-                  text string{"
-"}
+                  text string{""}
                   adjust_scale digit{1}
                 }
                 HBox {
@@ -74229,6 +74306,929 @@ Project {
       navigate_wraparound digit{0}
     }
     RootWindow {
+      name string{"RaceSettingsPopup"}
+      has_script digit{1}
+      pack_children digit{1}
+      children[2] {
+        VBox {
+          name string{"Pane"}
+          packable digit{0}
+          pack_expand_x digit{1}
+          pack_expand_y digit{1}
+          pack_shrink_y digit{1}
+          geometry rectangle{454 86 1012 808}
+          clip digit{0}
+          children[4] {
+            'HDSetupPanel::Bg' {
+              name string{"Bg"}
+            }
+            'HDSetupPanel::TitleRow' {
+              name string{"TitleRow"}
+              geometry rectangle{0 0 1012 64}
+              children[3] {
+                'HDSetupPanel::TitleRow::effect' {
+                  name string{"effect"}
+                  geometry rectangle{16 16 980 40}
+                }
+                'HDSetupPanel::TitleRow::label' {
+                  name string{"label"}
+                  geometry rectangle{34 16 944 40}
+                  localized_text_page string{"Regulation"}
+                  key string{"RACE_SETTINGS_TITLE"}
+                }
+                'HDSetupPanel::TitleRow::shadow' {
+                  name string{"shadow"}
+                  geometry rectangle{16 56 980 8}
+                }
+              }
+            }
+            'HDSetupPanel::BaseRow' {
+              name string{"EntryNum"}
+              pack_pad_left digit{48}
+              pack_pad_right digit{48}
+              geometry rectangle{48 64 916 80}
+              children[3] {
+                'HDSetupPanel::BaseRow::label' {
+                  name string{"label"}
+                  geometry rectangle{18 16 406 48}
+                  adjust_scale digit{1}
+                  localized_text_page string{"Regulation"}
+                  key string{"MAX_CARS"}
+                }
+                'HDSlider::slider' {
+                  name string{"slider"}
+                  pack_expand_x digit{1}
+                  pack_expand_y digit{1}
+                  pack_alignment_x digit{1}
+                  geometry rectangle{288 16 450 48}
+                  children[7] {
+                    'HDSlider::slider::Composite' {
+                      name string{"Composite"}
+                      geometry rectangle{0 0 450 48}
+                      children[2] {
+                        'HDSlider::slider::Composite::bg' {
+                          name string{"bg"}
+                        }
+                        'HDSlider::slider::Composite::bga' {
+                          name string{"bga"}
+                          actor_list[1] {
+                            'HDSlider::slider::Composite::bga::FaceColorInterpolator' {
+                              name string{"FaceColorInterpolator"}
+                            }
+                          }
+                        }
+                      }
+                    }
+                    'HDSlider::slider::ImageFace' {
+                      name string{"ImageFace"}
+                    }
+                    'HDSlider::slider::labeli' {
+                      name string{"labeli"}
+                      geometry rectangle{16 0 386 48}
+                    }
+                    'HDSlider::slider::label' {
+                      name string{"label"}
+                      geometry rectangle{16 0 386 48}
+                    }
+                    'HDSlider::slider::popup' {
+                      name string{"popup"}
+                      geometry rectangle{-168 52 618 80}
+                      children[6] {
+                        'HDSlider::slider::popup::shadow' {
+                          name string{"shadow"}
+                        }
+                        'HDSlider::slider::popup::bg' {
+                          name string{"bg"}
+                        }
+                        'HDSlider::slider::popup::Value' {
+                          name string{"Value"}
+                          children[2] {
+                            'HDSlider::slider::popup::Value::bg' {
+                              name string{"bg"}
+                            }
+                            'HDSlider::slider::popup::Value::label' {
+                              name string{"label"}
+                            }
+                          }
+                        }
+                        'HDSlider::slider::popup::min' {
+                          name string{"min"}
+                        }
+                        'HDSlider::slider::popup::max' {
+                          name string{"max"}
+                        }
+                        'HDSlider::slider::popup::base' {
+                          name string{"base"}
+                          children[2] {
+                            'HDSlider::slider::popup::base::bg' {
+                              name string{"bg"}
+                            }
+                            'HDSlider::slider::popup::base::bar' {
+                              name string{"bar"}
+                              children[3] {
+                                'HDSlider::slider::popup::base::bar::bar' {
+                                  name string{"bar"}
+                                }
+                                'HDSlider::slider::popup::base::bar::dot' {
+                                  name string{"dot"}
+                                }
+                                'HDSlider::slider::popup::base::bar::pinch' {
+                                  name string{"pinch"}
+                                  geometry rectangle{0 0 1 44}
+                                  children[2] {
+                                    'HDSlider::slider::popup::base::bar::pinch::value' {
+                                      name string{"value"}
+                                    }
+                                    'HDSlider::slider::popup::base::bar::pinch::bg' {
+                                      name string{"bg"}
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                    'HDSlider::slider::sign' {
+                      name string{"sign"}
+                      geometry rectangle{356 4 40 40}
+                    }
+                    'HDSlider::slider::signi' {
+                      name string{"signi"}
+                      geometry rectangle{356 4 40 40}
+                    }
+                  }
+                  value digit{0}
+                  min digit{0}
+                  max digit{16}
+                }
+                'HDSetupPanel::BaseRow::breakline' {
+                  name string{"breakline"}
+                  is_enable digit{0}
+                }
+              }
+            }
+            'HDSetupPanel::BaseRow' {
+              name string{"PlayerPos"}
+              pack_pad_left digit{48}
+              pack_pad_right digit{48}
+              geometry rectangle{48 64 916 80}
+              children[3] {
+                'HDSetupPanel::BaseRow::label' {
+                  name string{"label"}
+                  geometry rectangle{18 16 406 48}
+                  adjust_scale digit{1}
+                  localized_text_page string{"Regulation"}
+                  key string{"START_POSITION"}
+                }
+                'HDSlider::slider' {
+                  name string{"slider"}
+                  pack_expand_x digit{1}
+                  pack_expand_y digit{1}
+                  pack_alignment_x digit{1}
+                  geometry rectangle{288 16 450 48}
+                  children[7] {
+                    'HDSlider::slider::Composite' {
+                      name string{"Composite"}
+                      geometry rectangle{0 0 450 48}
+                      children[2] {
+                        'HDSlider::slider::Composite::bg' {
+                          name string{"bg"}
+                        }
+                        'HDSlider::slider::Composite::bga' {
+                          name string{"bga"}
+                          actor_list[1] {
+                            'HDSlider::slider::Composite::bga::FaceColorInterpolator' {
+                              name string{"FaceColorInterpolator"}
+                            }
+                          }
+                        }
+                      }
+                    }
+                    'HDSlider::slider::ImageFace' {
+                      name string{"ImageFace"}
+                    }
+                    'HDSlider::slider::labeli' {
+                      name string{"labeli"}
+                      geometry rectangle{16 0 386 48}
+                    }
+                    'HDSlider::slider::label' {
+                      name string{"label"}
+                      geometry rectangle{16 0 386 48}
+                    }
+                    'HDSlider::slider::popup' {
+                      name string{"popup"}
+                      geometry rectangle{-168 52 618 80}
+                      children[6] {
+                        'HDSlider::slider::popup::shadow' {
+                          name string{"shadow"}
+                        }
+                        'HDSlider::slider::popup::bg' {
+                          name string{"bg"}
+                        }
+                        'HDSlider::slider::popup::Value' {
+                          name string{"Value"}
+                          children[2] {
+                            'HDSlider::slider::popup::Value::bg' {
+                              name string{"bg"}
+                            }
+                            'HDSlider::slider::popup::Value::label' {
+                              name string{"label"}
+                            }
+                          }
+                        }
+                        'HDSlider::slider::popup::min' {
+                          name string{"min"}
+                        }
+                        'HDSlider::slider::popup::max' {
+                          name string{"max"}
+                        }
+                        'HDSlider::slider::popup::base' {
+                          name string{"base"}
+                          children[2] {
+                            'HDSlider::slider::popup::base::bg' {
+                              name string{"bg"}
+                            }
+                            'HDSlider::slider::popup::base::bar' {
+                              name string{"bar"}
+                              children[3] {
+                                'HDSlider::slider::popup::base::bar::bar' {
+                                  name string{"bar"}
+                                }
+                                'HDSlider::slider::popup::base::bar::dot' {
+                                  name string{"dot"}
+                                }
+                                'HDSlider::slider::popup::base::bar::pinch' {
+                                  name string{"pinch"}
+                                  geometry rectangle{0 0 1 44}
+                                  children[2] {
+                                    'HDSlider::slider::popup::base::bar::pinch::value' {
+                                      name string{"value"}
+                                    }
+                                    'HDSlider::slider::popup::base::bar::pinch::bg' {
+                                      name string{"bg"}
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                    'HDSlider::slider::sign' {
+                      name string{"sign"}
+                      geometry rectangle{356 4 40 40}
+                    }
+                    'HDSlider::slider::signi' {
+                      name string{"signi"}
+                      geometry rectangle{356 4 40 40}
+                    }
+                  }
+                  value digit{0}
+                  min digit{0}
+                  max digit{16}
+                }
+                'HDSetupPanel::BaseRow::breakline' {
+                  name string{"breakline"}
+                }
+              }
+            }
+            'HDSetupPanel::BaseRow' {
+              name string{"LapMult"}
+              pack_pad_left digit{48}
+              pack_pad_right digit{48}
+              geometry rectangle{48 64 916 80}
+              children[3] {
+                'HDSetupPanel::BaseRow::label' {
+                  name string{"label"}
+                  geometry rectangle{18 16 406 48}
+                  adjust_scale digit{1}
+                  localized_text_page string{"Regulation"}
+                  key string{"LAP_MULT"}
+                }
+                'HDPulldown::OptionMenu' {
+                  name string{"OptionMenu"}
+                  pack_expand_x digit{1}
+                  pack_expand_y digit{1}
+                  pack_alignment_x digit{1}
+                  geometry rectangle{288 16 450 48}
+                  children[6] {
+                    'HDPulldown::OptionMenu::Composite' {
+                      name string{"Composite"}
+                      geometry rectangle{0 0 450 48}
+                      children[2] {
+                        'HDPulldown::OptionMenu::Composite::bg' {
+                          name string{"bg"}
+                        }
+                        'HDPulldown::OptionMenu::Composite::bga' {
+                          name string{"bga"}
+                          actor_list[1] {
+                            'HDPulldown::OptionMenu::Composite::bga::FaceColorInterpolator' {
+                              name string{"FaceColorInterpolator"}
+                            }
+                          }
+                        }
+                      }
+                    }
+                    'HDPulldown::OptionMenu::labeli' {
+                      name string{"labeli"}
+                      geometry rectangle{16 0 386 48}
+                    }
+                    'HDPulldown::OptionMenu::label' {
+                      name string{"label"}
+                      geometry rectangle{16 0 386 48}
+                    }
+                    'HDPulldown::OptionMenu::sign' {
+                      name string{"sign"}
+                      geometry rectangle{356 4 40 40}
+                    }
+                    'HDPulldown::OptionMenu::signi' {
+                      name string{"signi"}
+                      geometry rectangle{356 4 40 40}
+                    }
+                    'HDPulldown::OptionMenu::popup' {
+                      name string{"popup"}
+                      geometry rectangle{0 -16 450 80}
+                      children[2] {
+                        'HDPulldown::OptionMenu::popup::shadow' {
+                          name string{"shadow"}
+                        }
+                        'HDPulldown::OptionMenu::popup::vbox' {
+                          name string{"vbox"}
+                          geometry rectangle{0 0 450 80}
+                        }
+                      }
+                    }
+                  }
+                }
+                'HDSetupPanel::BaseRow::breakline' {
+                  name string{"breakline"}
+                }
+              }
+            }
+            'HDSetupPanel::BaseRow' {
+              name string{"TimeMult"}
+              pack_pad_left digit{48}
+              pack_pad_right digit{48}
+              geometry rectangle{48 64 916 80}
+              children[3] {
+                'HDSetupPanel::BaseRow::label' {
+                  name string{"label"}
+                  geometry rectangle{18 16 406 48}
+                  adjust_scale digit{1}
+                  localized_text_page string{"Regulation"}
+                  key string{"DURATION_MULT"}
+                }
+                'HDPulldown::OptionMenu' {
+                  name string{"OptionMenu"}
+                  pack_expand_x digit{1}
+                  pack_expand_y digit{1}
+                  pack_alignment_x digit{1}
+                  geometry rectangle{288 16 450 48}
+                  children[6] {
+                    'HDPulldown::OptionMenu::Composite' {
+                      name string{"Composite"}
+                      geometry rectangle{0 0 450 48}
+                      children[2] {
+                        'HDPulldown::OptionMenu::Composite::bg' {
+                          name string{"bg"}
+                        }
+                        'HDPulldown::OptionMenu::Composite::bga' {
+                          name string{"bga"}
+                          actor_list[1] {
+                            'HDPulldown::OptionMenu::Composite::bga::FaceColorInterpolator' {
+                              name string{"FaceColorInterpolator"}
+                            }
+                          }
+                        }
+                      }
+                    }
+                    'HDPulldown::OptionMenu::labeli' {
+                      name string{"labeli"}
+                      geometry rectangle{16 0 386 48}
+                    }
+                    'HDPulldown::OptionMenu::label' {
+                      name string{"label"}
+                      geometry rectangle{16 0 386 48}
+                    }
+                    'HDPulldown::OptionMenu::sign' {
+                      name string{"sign"}
+                      geometry rectangle{356 4 40 40}
+                    }
+                    'HDPulldown::OptionMenu::signi' {
+                      name string{"signi"}
+                      geometry rectangle{356 4 40 40}
+                    }
+                    'HDPulldown::OptionMenu::popup' {
+                      name string{"popup"}
+                      geometry rectangle{0 -16 450 80}
+                      children[2] {
+                        'HDPulldown::OptionMenu::popup::shadow' {
+                          name string{"shadow"}
+                        }
+                        'HDPulldown::OptionMenu::popup::vbox' {
+                          name string{"vbox"}
+                          geometry rectangle{0 0 450 80}
+                        }
+                      }
+                    }
+                  }
+                }
+                'HDSetupPanel::BaseRow::breakline' {
+                  name string{"breakline"}
+                }
+              }
+            }
+            'HDSetupPanel::BaseRow' {
+              name string{"StartType"}
+              pack_pad_left digit{48}
+              pack_pad_right digit{48}
+              geometry rectangle{48 64 916 80}
+              children[3] {
+                'HDSetupPanel::BaseRow::label' {
+                  name string{"label"}
+                  geometry rectangle{18 16 406 48}
+                  adjust_scale digit{1}
+                  localized_text_page string{"Regulation"}
+                  key string{"START_TYPE"}
+                }
+                'HDPulldown::OptionMenu' {
+                  name string{"OptionMenu"}
+                  pack_expand_x digit{1}
+                  pack_expand_y digit{1}
+                  pack_alignment_x digit{1}
+                  geometry rectangle{288 16 450 48}
+                  children[6] {
+                    'HDPulldown::OptionMenu::Composite' {
+                      name string{"Composite"}
+                      geometry rectangle{0 0 450 48}
+                      children[2] {
+                        'HDPulldown::OptionMenu::Composite::bg' {
+                          name string{"bg"}
+                        }
+                        'HDPulldown::OptionMenu::Composite::bga' {
+                          name string{"bga"}
+                          actor_list[1] {
+                            'HDPulldown::OptionMenu::Composite::bga::FaceColorInterpolator' {
+                              name string{"FaceColorInterpolator"}
+                            }
+                          }
+                        }
+                      }
+                    }
+                    'HDPulldown::OptionMenu::labeli' {
+                      name string{"labeli"}
+                      geometry rectangle{16 0 386 48}
+                    }
+                    'HDPulldown::OptionMenu::label' {
+                      name string{"label"}
+                      geometry rectangle{16 0 386 48}
+                    }
+                    'HDPulldown::OptionMenu::sign' {
+                      name string{"sign"}
+                      geometry rectangle{356 4 40 40}
+                    }
+                    'HDPulldown::OptionMenu::signi' {
+                      name string{"signi"}
+                      geometry rectangle{356 4 40 40}
+                    }
+                    'HDPulldown::OptionMenu::popup' {
+                      name string{"popup"}
+                      geometry rectangle{0 -16 450 80}
+                      children[2] {
+                        'HDPulldown::OptionMenu::popup::shadow' {
+                          name string{"shadow"}
+                        }
+                        'HDPulldown::OptionMenu::popup::vbox' {
+                          name string{"vbox"}
+                          geometry rectangle{0 0 450 80}
+                        }
+                      }
+                    }
+                  }
+                }
+                'HDSetupPanel::BaseRow::breakline' {
+                  name string{"breakline"}
+                }
+              }
+            }
+            'HDSetupPanel::BaseRow' {
+              name string{"Consumption"}
+              pack_pad_left digit{48}
+              pack_pad_right digit{48}
+              geometry rectangle{48 64 916 80}
+              children[3] {
+                'HDSetupPanel::BaseRow::label' {
+                  name string{"label"}
+                  geometry rectangle{18 16 406 48}
+                  adjust_scale digit{1}
+                  localized_text_page string{"Regulation"}
+                  key string{"CONSUMPTION"}
+                }
+                'HDPulldown::OptionMenu' {
+                  name string{"OptionMenu"}
+                  pack_expand_x digit{1}
+                  pack_expand_y digit{1}
+                  pack_alignment_x digit{1}
+                  geometry rectangle{288 16 450 48}
+                  children[6] {
+                    'HDPulldown::OptionMenu::Composite' {
+                      name string{"Composite"}
+                      geometry rectangle{0 0 450 48}
+                      children[2] {
+                        'HDPulldown::OptionMenu::Composite::bg' {
+                          name string{"bg"}
+                        }
+                        'HDPulldown::OptionMenu::Composite::bga' {
+                          name string{"bga"}
+                          actor_list[1] {
+                            'HDPulldown::OptionMenu::Composite::bga::FaceColorInterpolator' {
+                              name string{"FaceColorInterpolator"}
+                            }
+                          }
+                        }
+                      }
+                    }
+                    'HDPulldown::OptionMenu::labeli' {
+                      name string{"labeli"}
+                      geometry rectangle{16 0 386 48}
+                    }
+                    'HDPulldown::OptionMenu::label' {
+                      name string{"label"}
+                      geometry rectangle{16 0 386 48}
+                    }
+                    'HDPulldown::OptionMenu::sign' {
+                      name string{"sign"}
+                      geometry rectangle{356 4 40 40}
+                    }
+                    'HDPulldown::OptionMenu::signi' {
+                      name string{"signi"}
+                      geometry rectangle{356 4 40 40}
+                    }
+                    'HDPulldown::OptionMenu::popup' {
+                      name string{"popup"}
+                      geometry rectangle{0 -16 450 80}
+                      children[2] {
+                        'HDPulldown::OptionMenu::popup::shadow' {
+                          name string{"shadow"}
+                        }
+                        'HDPulldown::OptionMenu::popup::vbox' {
+                          name string{"vbox"}
+                          geometry rectangle{0 0 450 80}
+                        }
+                      }
+                    }
+                  }
+                }
+                'HDSetupPanel::BaseRow::breakline' {
+                  name string{"breakline"}
+                }
+              }
+            }
+            'HDSetupPanel::BaseRow' {
+              name string{"LowMuType"}
+              pack_pad_left digit{48}
+              pack_pad_right digit{48}
+              geometry rectangle{48 64 916 80}
+              children[3] {
+                'HDSetupPanel::BaseRow::label' {
+                  name string{"label"}
+                  geometry rectangle{18 16 406 48}
+                  adjust_scale digit{1}
+                  localized_text_page string{"Regulation"}
+                  key string{"LOW_MU_TYPE"}
+                }
+                'HDPulldown::OptionMenu' {
+                  name string{"OptionMenu"}
+                  pack_expand_x digit{1}
+                  pack_expand_y digit{1}
+                  pack_alignment_x digit{1}
+                  geometry rectangle{288 16 450 48}
+                  children[6] {
+                    'HDPulldown::OptionMenu::Composite' {
+                      name string{"Composite"}
+                      geometry rectangle{0 0 450 48}
+                      children[2] {
+                        'HDPulldown::OptionMenu::Composite::bg' {
+                          name string{"bg"}
+                        }
+                        'HDPulldown::OptionMenu::Composite::bga' {
+                          name string{"bga"}
+                          actor_list[1] {
+                            'HDPulldown::OptionMenu::Composite::bga::FaceColorInterpolator' {
+                              name string{"FaceColorInterpolator"}
+                            }
+                          }
+                        }
+                      }
+                    }
+                    'HDPulldown::OptionMenu::labeli' {
+                      name string{"labeli"}
+                      geometry rectangle{16 0 386 48}
+                    }
+                    'HDPulldown::OptionMenu::label' {
+                      name string{"label"}
+                      geometry rectangle{16 0 386 48}
+                    }
+                    'HDPulldown::OptionMenu::sign' {
+                      name string{"sign"}
+                      geometry rectangle{356 4 40 40}
+                    }
+                    'HDPulldown::OptionMenu::signi' {
+                      name string{"signi"}
+                      geometry rectangle{356 4 40 40}
+                    }
+                    'HDPulldown::OptionMenu::popup' {
+                      name string{"popup"}
+                      geometry rectangle{0 -16 450 80}
+                      children[2] {
+                        'HDPulldown::OptionMenu::popup::shadow' {
+                          name string{"shadow"}
+                        }
+                        'HDPulldown::OptionMenu::popup::vbox' {
+                          name string{"vbox"}
+                          geometry rectangle{0 0 450 80}
+                        }
+                      }
+                    }
+                  }
+                }
+                'HDSetupPanel::BaseRow::breakline' {
+                  name string{"breakline"}
+                }
+              }
+            }
+            'HDSetupPanel::BaseRow' {
+              name string{"Damage"}
+              pack_pad_left digit{48}
+              pack_pad_right digit{48}
+              geometry rectangle{48 64 916 80}
+              children[3] {
+                'HDSetupPanel::BaseRow::label' {
+                  name string{"label"}
+                  geometry rectangle{18 16 406 48}
+                  adjust_scale digit{1}
+                  localized_text_page string{"Regulation"}
+                  key string{"DAMAGE_TYPE"}
+                }
+                'HDPulldown::OptionMenu' {
+                  name string{"OptionMenu"}
+                  pack_expand_x digit{1}
+                  pack_expand_y digit{1}
+                  pack_alignment_x digit{1}
+                  geometry rectangle{288 16 450 48}
+                  children[6] {
+                    'HDPulldown::OptionMenu::Composite' {
+                      name string{"Composite"}
+                      geometry rectangle{0 0 450 48}
+                      children[2] {
+                        'HDPulldown::OptionMenu::Composite::bg' {
+                          name string{"bg"}
+                        }
+                        'HDPulldown::OptionMenu::Composite::bga' {
+                          name string{"bga"}
+                          actor_list[1] {
+                            'HDPulldown::OptionMenu::Composite::bga::FaceColorInterpolator' {
+                              name string{"FaceColorInterpolator"}
+                            }
+                          }
+                        }
+                      }
+                    }
+                    'HDPulldown::OptionMenu::labeli' {
+                      name string{"labeli"}
+                      geometry rectangle{16 0 386 48}
+                    }
+                    'HDPulldown::OptionMenu::label' {
+                      name string{"label"}
+                      geometry rectangle{16 0 386 48}
+                    }
+                    'HDPulldown::OptionMenu::sign' {
+                      name string{"sign"}
+                      geometry rectangle{356 4 40 40}
+                    }
+                    'HDPulldown::OptionMenu::signi' {
+                      name string{"signi"}
+                      geometry rectangle{356 4 40 40}
+                    }
+                    'HDPulldown::OptionMenu::popup' {
+                      name string{"popup"}
+                      geometry rectangle{0 -16 450 80}
+                      children[2] {
+                        'HDPulldown::OptionMenu::popup::shadow' {
+                          name string{"shadow"}
+                        }
+                        'HDPulldown::OptionMenu::popup::vbox' {
+                          name string{"vbox"}
+                          geometry rectangle{0 0 450 80}
+                        }
+                      }
+                    }
+                  }
+                }
+                'HDSetupPanel::BaseRow::breakline' {
+                  name string{"breakline"}
+                }
+              }
+            }
+            'HDSetupPanel::BaseRow' {
+              name string{"AIPremium"}
+              pack_pad_left digit{48}
+              pack_pad_right digit{48}
+              geometry rectangle{48 64 916 80}
+              children[3] {
+                'HDSetupPanel::BaseRow::label' {
+                  name string{"label"}
+                  geometry rectangle{18 16 406 48}
+                  adjust_scale digit{1}
+                  localized_text_page string{"Regulation"}
+                  key string{"OPPONENT_TYPE"}
+                }
+                'HDPulldown::OptionMenu' {
+                  name string{"OptionMenu"}
+                  pack_expand_x digit{1}
+                  pack_expand_y digit{1}
+                  pack_alignment_x digit{1}
+                  geometry rectangle{288 16 450 48}
+                  children[6] {
+                    'HDPulldown::OptionMenu::Composite' {
+                      name string{"Composite"}
+                      geometry rectangle{0 0 450 48}
+                      children[2] {
+                        'HDPulldown::OptionMenu::Composite::bg' {
+                          name string{"bg"}
+                        }
+                        'HDPulldown::OptionMenu::Composite::bga' {
+                          name string{"bga"}
+                          actor_list[1] {
+                            'HDPulldown::OptionMenu::Composite::bga::FaceColorInterpolator' {
+                              name string{"FaceColorInterpolator"}
+                            }
+                          }
+                        }
+                      }
+                    }
+                    'HDPulldown::OptionMenu::labeli' {
+                      name string{"labeli"}
+                      geometry rectangle{16 0 386 48}
+                    }
+                    'HDPulldown::OptionMenu::label' {
+                      name string{"label"}
+                      geometry rectangle{16 0 386 48}
+                    }
+                    'HDPulldown::OptionMenu::sign' {
+                      name string{"sign"}
+                      geometry rectangle{356 4 40 40}
+                    }
+                    'HDPulldown::OptionMenu::signi' {
+                      name string{"signi"}
+                      geometry rectangle{356 4 40 40}
+                    }
+                    'HDPulldown::OptionMenu::popup' {
+                      name string{"popup"}
+                      geometry rectangle{0 -16 450 80}
+                      children[2] {
+                        'HDPulldown::OptionMenu::popup::shadow' {
+                          name string{"shadow"}
+                        }
+                        'HDPulldown::OptionMenu::popup::vbox' {
+                          name string{"vbox"}
+                          geometry rectangle{0 0 450 80}
+                        }
+                      }
+                    }
+                  }
+                }
+                'HDSetupPanel::BaseRow::breakline' {
+                  name string{"breakline"}
+                }
+              }
+            }
+            'HDSetupPanel::FootRow' {
+              name string{"Button"}
+              geometry rectangle{0 664 1012 144}
+              children[3] {
+                'Buttons::CancelOK' {
+                  name string{"OK"}
+                  pack_expand_x digit{1}
+                  pack_expand_y digit{1}
+                  geometry rectangle{263.04 38 485.92 48}
+                  children[2] {
+                    'Buttons::CancelOK::Cancel' {
+                      name string{"Reset"}
+                      pack_fill_x digit{0}
+                      geometry rectangle{248.96 0 236.96 48}
+                      children[5] {
+                        'Buttons::CancelOK::Cancel::bg' {
+                          name string{"bg"}
+                        }
+                        'Buttons::CancelOK::Cancel::bgf' {
+                          name string{"bgf"}
+                          actor_list[1] {
+                            'Buttons::CancelOK::Cancel::bgf::FaceColorInterpolator' {
+                              name string{"FaceColorInterpolator"}
+                            }
+                          }
+                        }
+                        'Buttons::CancelOK::Cancel::bgi' {
+                          name string{"bgi"}
+                        }
+                        'Buttons::CancelOK::Cancel::label' {
+                          name string{"label"}
+                          geometry rectangle{32 0 172.96 48}
+                          localized_text_page string{"Regulation"}
+                          key string{"Reset"}
+                        }
+                        'Buttons::CancelOK::Cancel::labeli' {
+                          name string{"labeli"}
+                          geometry rectangle{32 0 172.96 48}
+                          localized_text_page string{"Regulation"}
+                          key string{"Reset"}
+                        }
+                      }
+                    }
+                    'Buttons::CancelOK::OK' {
+                      name string{"OK"}
+                      pack_fill_x digit{0}
+                      geometry rectangle{0 0 236.96 48}
+                      navigate_target region{0 -24 293.832 56}
+                      children[5] {
+                        'Buttons::CancelOK::OK::bg' {
+                          name string{"bg"}
+                        }
+                        'Buttons::CancelOK::OK::bgf' {
+                          name string{"bgf"}
+                          actor_list[1] {
+                            'Buttons::CancelOK::OK::bgf::FaceColorInterpolator' {
+                              name string{"FaceColorInterpolator"}
+                            }
+                          }
+                        }
+                        'Buttons::CancelOK::OK::bgi' {
+                          name string{"bgi"}
+                        }
+                        'Buttons::CancelOK::OK::label' {
+                          name string{"label"}
+                          geometry rectangle{32 0 172.96 48}
+                          localized_text_page string{"Component"}
+                          key string{"LABEL_CLOSE"}
+                        }
+                        'Buttons::CancelOK::OK::labeli' {
+                          name string{"labeli"}
+                          geometry rectangle{32 0 172.96 48}
+                          localized_text_page string{"Component"}
+                          key string{"LABEL_CLOSE"}
+                        }
+                      }
+                    }
+                  }
+                }
+                'HDSetupPanel::FootRow::highlight' {
+                  name string{"highlight"}
+                  geometry rectangle{16 0 980 8}
+                }
+                'HDSetupPanel::FootRow::effect' {
+                  name string{"effect"}
+                  geometry rectangle{16 8 980 120}
+                }
+              }
+            }
+          }
+        }
+        Composite {
+          name string{"hidden"}
+          packable digit{1}
+          geometry rectangle{0 0 1920 1080}
+          clip digit{1}
+          children[1] {
+            'HDPulldown::Item' {
+              name string{"OptionMenuItem"}
+              geometry rectangle{0 68 480 48}
+              children[4] {
+                'HDPulldown::Item::bgf' {
+                  name string{"bgf"}
+                  geometry rectangle{0 3 480 42}
+                }
+                'HDPulldown::Item::dot' {
+                  name string{"dot"}
+                }
+                'HDPulldown::Item::label' {
+                  name string{"label"}
+                  geometry rectangle{32 -2 384 52}
+                }
+                'HDPulldown::Item::labeli' {
+                  name string{"labeli"}
+                  geometry rectangle{32 -2 384 52}
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+    RootWindow {
       name string{"RewardItemListPopup"}
       has_script digit{1}
       pack_children digit{1}
@@ -74492,8 +75492,7 @@ Project {
                   aligned digit{0}
                   shadow_value digit{0}
                   text_color_2 RGBA{80 80 80 255}
-                  text string{"XXXXXX XXX
-XXX XXXXXX"}
+                  text string{"XXXXXX XXXXXX XXXXXX"}
                 }
                 ColorFace {
                   name string{"Split"}
@@ -74614,8 +75613,7 @@ XXX XXXXXX"}
                   aligned digit{0}
                   shadow_value digit{0}
                   text_color_2 RGBA{80 80 80 255}
-                  text string{"XXXXXX XXX
-XXX XXXXXX"}
+                  text string{"XXXXXX XXXXXX XXXXXX"}
                 }
                 ColorFace {
                   name string{"Split"}
