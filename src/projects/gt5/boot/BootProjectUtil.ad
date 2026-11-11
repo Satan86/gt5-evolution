@@ -398,6 +398,34 @@ module BootProjectUtil
             case BOOT_PHASE_CHECK_STEP8:
             {
                 ++sPhase;
+
+                //mm: add DLC entitlements
+                var dlc_list = [
+                    DLCUtil::TYPE::CAR_001,
+                    DLCUtil::TYPE::COURSE_001,
+                    DLCUtil::TYPE::WEAR_001,
+                    DLCUtil::TYPE::PAINT_001,
+                    DLCUtil::TYPE::CAR_002,
+                    DLCUtil::TYPE::CAR_003,
+                    DLCUtil::TYPE::COURSE_002,
+                    DLCUtil::TYPE::CAR_004,
+                    DLCUtil::TYPE::COURSE_003,
+                    DLCUtil::TYPE::CAR_005,
+                    DLCUtil::TYPE::CAR_006,
+                    DLCUtil::TYPE::CAR_007,
+                    DLCUtil::TYPE::CAR_008,
+                    DLCUtil::TYPE::CAR_009
+                ];
+
+                foreach (var dlc in dlc_list)
+                {
+                    if (!GAME_STATUS.entitlement.has(gtengine::EntitlementType::DLC, dlc))
+                    {
+                        DLCUtil::install(dlc);
+                        GAME_STATUS.entitlement.add(gtengine::EntitlementType::DLC, dlc);
+                    }
+                }
+
                 DispatchNextSequence(context);
             }
             break;
@@ -409,6 +437,8 @@ module BootProjectUtil
                 {
                     var valid = true;
 
+                    //mm: don't validate that DLC cars are player owned in suspended race
+                    /*
                     {
                         var garage = GAME_STATUS.user_profile.garage;
                         var entry_set = GAME_STATUS.user_profile.suspender.gp.event.entry_set;
@@ -428,6 +458,7 @@ module BootProjectUtil
                             }
                         }
                     }
+                    */
 
 
                     if (valid)

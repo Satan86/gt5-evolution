@@ -42,11 +42,41 @@ module ROOT
         return self.gp_list_[idx];
     }
 
+    method loadGP(file)
+    {
+        var fst = main::pdistd::ReadFile(file);
+        var buf = fst["buffer"];
+        if (buf != nil)
+        {
+            var gp_list = GameParameterUtil::parseXML(buf);
+            //foreach (var gp in gp_list)
+            //{
+                self.gp_list_.push(gp_list[0]);
+            //}
+        }
+    }
+
     method onInitialize(context)
     {
         ModeName.text = "";
         EventTitle.text = "";
         self.gp_list_ = Array();
+
+        loadGP("textdata/gt5/event_race/race_edit.xml");
+        loadGP("textdata/gt5/event_race/mygame_000.xml");
+        loadGP("textdata/gt5/event_race/mygame_001.xml");
+        loadGP("textdata/gt5/event_race/mygame_002.xml");
+        loadGP("textdata/gt5/event_race/mygame_003.xml");
+
+        var filepath = "";
+        for (var i = 0; i < 1000; i++)
+        {
+            filepath = "/APP_DATA_RAW/mygame/%03d.xml".format(i);
+            if (pdistd::Exist(filepath))
+            {
+                loadGP(filepath);
+            }
+        }
 
         EventSelector.initialize(context, self.gp_list_);
 
@@ -63,6 +93,8 @@ module ROOT
 
     method postInitialize(context)
     {
+        OverLapRoot.onRaceModeSelect(context);
+
         self.FadeEffect.start();
         self.insensitive = false;
 
@@ -175,6 +207,18 @@ module ROOT::EventSelector
                         main::GAME_STATUS.user_profile.context.arcade_difficulty = pair[1];
                 }
             }
+            else if (gp.event.game_mode == gtengine::GameMode::RACE_EDIT)
+            {
+                var msg = "Master Mod Note\n
+                    The Race Editor is a somewhat buggy way to create custom game events used by Polyphony Digital.\n
+                    Note that there are many things that will softlock the editor and require the game to be restarted.\n\n
+                    To add your custom events to the list here, save them as '/APP_DATA_RAW/mygame/000.xml' onwards (up to 999).\n
+                    Events should use the mode 'SINGLE_RACE' with only one event per xml.\n\n
+                    For more detailed events, create/edit the XML events externally.\n
+                    You can define a set of allowed cars by adding a <cars> block to <constraints>.\n
+                    <flier_other_info> can also be used to set advanced options.";
+                DialogUtil::openConfirmDialog(context, DIALOG_OK, msg);
+            }
             else
             {
                 main::GAME_STATUS.user_profile.context.arcade_difficulty = ArcadeProject::DifficultyEnum::NONE;
@@ -187,6 +231,7 @@ module ROOT::EventSelector
 
     method cb_on_cancel(context, finder_data, func_popup_close)
     {
+        main::sound.play("cancel");
         gArcadeSequence.movePrevPage(context);
     }
 
@@ -206,20 +251,60 @@ module ROOT::EventSelector
         EventTitle::FadeEffect.restart();
         EventInfo::ToolTip.value = "";
         EventInfo::ToolTip.value = gp.event.information.description.getText();
-        BalloonTip.set_value(context, item_w, gp.event.information.one_line_title.getText(), 24);
-
+        //BalloonTip.set_value(context, item_w, gp.event.information.one_line_title.getText(), 24);
         switch (gp.event.game_mode)
         {
             case gtengine::GameMode::SINGLE_RACE:
-                ModeName.text = context.translate(RaceModeRoot, "E_LABEL_SINGLE_RACE");
+                ModeName.text = context.translate(RaceModeRoot, "LABEL_SINGLE_RACE");
+                break;
+            case gtengine::GameMode::EVENT_RACE:
+                ModeName.text = context.translate(RaceModeRoot, "LABEL_EVENT_RACE");
+                break;
+            case gtengine::GameMode::EVENT_RALLY:
+                ModeName.text = context.translate(RaceModeRoot, "LABEL_EVENT_RALLY");
                 break;
             case gtengine::GameMode::TIME_ATTACK:
-                ModeName.text = context.translate(RaceModeRoot, "E_LABEL_TIME_ATTACK");
+                ModeName.text = context.translate(RaceModeRoot, "LABEL_TIME_ATTACK");
                 break;
             case gtengine::GameMode::DRIFT_ATTACK:
-                ModeName.text = context.translate(RaceModeRoot, "E_LABEL_DRIFT_ATTACK");
+                ModeName.text = context.translate(RaceModeRoot, "LABEL_DRIFT_ATTACK");
                 break;
+            case gtengine::GameMode::LICENSE:
+            case gtengine::GameMode::SCHOOL:
+                ModeName.text = context.translate(RaceModeRoot, "LABEL_LICENSE");
+                break;
+            case gtengine::GameMode::TOUR:
+                ModeName.text = context.translate(RaceModeRoot, "LABEL_TOUR");
+                break;
+            case gtengine::GameMode::RACE_EDIT:
+                ModeName.text = context.translate(RaceModeRoot, "LABEL_RACE_EDIT");
+                ModeName.TransientReset();
+                return;
+            default:
+                ModeName.text = context.translate(RaceModeRoot, "LABEL_UNKNOWN");
+                ModeName.TransientReset();
+                return;
         }
+
+        var course_name = context.translate(MyGameSelectRoot, "Arcade", "free_crs");
+        if (main::gtengine::MSpecDB::NO_CODE64 != gp.event.track.course_code)
+        {
+            var course_info = CourseData::getCourseInfo(gp.event.track.course_code);
+            course_name = context.translate(MyGameSelectRoot, "CourseName", course_info.name);
+        }
+        ModeName.text += " / %{course_name}";
+
+        var car_name = context.translate(MyGameSelectRoot, "Arcade", "free_car");
+        if (1 == gp.event.constraint.cars.size)
+        {
+            var car_label = gp.event.constraint.cars[0].getCarLabel();
+            car_name = main::gtengine::MSpecDB::getCarShortName(car_label);
+        } 
+        else if (1 < gp.event.constraint.cars.size)
+        {
+            car_name = context.translate(MyGameSelectRoot, "Arcade", "prs_car");
+        }
+        ModeName.text += " / %{car_name}";
 
         ModeName.TransientReset();
     }
@@ -507,6 +592,25 @@ module ROOT::hidden::FlyerV2
             var course_info = CourseData::getCourseInfo(gp.event.track.course_code);
             var course_label = main::gtengine::MSpecDB::getCourseLabel(gp.event.track.course_code);
             self.CourseLogo.image_path = "piece/course_logo_M/%{course_info.logo}.img";
+            self.CourseMap.image_path = "piece/course_map_LL/%{course_info.map}.img";
+            self.CourseLogo.visible = true;
+            self.CourseMap.visible = true;
+        }
+        else
+        {
+            self.CourseLogo.visible = false;
+            self.CourseMap.visible = false;
+        }
+
+        if (gp.event.game_mode == gtengine::GameMode::RACE_EDIT)
+        {
+            self.ImageCar.image_path = "piece/flyer/race_edit.img";
+        }
+        else if (1 <= gp.event.constraint.cars.size)
+        {
+            var car_label = gp.event.constraint.cars[0].getCarLabel();
+            var car_color = main::gtengine::MSpecDB::getCarVariationFlag(gp.event.constraint.cars[0].getCarCode(), 1);
+            self.ImageCar.image_path = "car/thumbnail_M/%s_%02d".format(car_label, car_color);
         }
     }
 }

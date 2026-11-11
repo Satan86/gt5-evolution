@@ -311,6 +311,7 @@ module ROOT
 
         main::Grim2.requestPutLog(strlog);
 
+		RaceSettingsPopup.applyValues(gp);
         if (gp.championship)
         {
             GAME_STATUS.user_profile.context.startChampionShip(event_id, gp);
@@ -2029,5 +2030,33 @@ module ROOT::BG
             return EVENTRESULT_STOP;
         }
     }
-}
+	
+	module GameDetail::Info::HBox::RaceSettings
+    {
+        method onActivate(context)
+        {
+            main::sound.play("ok");
+            var gp = GameDetail.gp_;
+            RaceSettingsPopup.open(context, gp);
+            return EVENTRESULT_FILTER;
+        }
 
+        method onCancel(context)
+        {
+            ROOT::GameDetail.cb_canceled_event(context);
+            return EVENTRESULT_FILTER;
+        }
+
+        method onFocusEnter(context, event)
+        {
+            BalloonTip.set_value(context, self, context.translate(ROOT, "Regulation", "RACE_SETTINGS_TITLE"), 0);
+            return EVENTRESULT_STOP;
+        }
+
+        method onFocusLeave(context, event)
+        {
+            BalloonTip.reset_value();
+            return EVENTRESULT_STOP;
+        }
+    }
+}

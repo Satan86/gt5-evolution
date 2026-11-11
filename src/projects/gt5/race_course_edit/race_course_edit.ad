@@ -62,30 +62,36 @@ module PROJECT
 
             static theme_list = [
                 "template01" : [
-                    [course_type_circuit, course_type_rally], [weather_sunny], [1.0, 1.0, 1.0], [0, 0, 0], [0, 0, 0], 
+                    //mm: rain enabled
+                    [course_type_circuit, course_type_rally], [weather_sunny, weather_rainy], [], [], [],
                     ["6:00", "18:00", "16:00"], [], [], 
                     [["lancer_evo10_gsr_premium_07", 0], ["impreza_sedan_wrx_sti_10", 0], ["focus_rs_wrc_08", 0]], 
                     [], [], seed_type_sequence, 100
                 ], 
 
                 "template02" : [
-                    [course_type_circuit, course_type_rally], [], [], [], [],
-                    [], [], [], 
-                    [["impreza_sedan_wrx_sti_10", 0], ["c4_wrc_08", 0]],
+                    //mm: Liege Alternate: use template01 details
+                    [course_type_circuit, course_type_rally], [weather_sunny, weather_rainy], [], [], [],
+                    ["6:00", "18:00", "16:00"], [], [], 
+                    [["lancer_evo10_gsr_premium_07", 0], ["impreza_sedan_wrx_sti_10", 0], ["focus_rs_wrc_08", 0]], 
                     [], [], seed_type_sequence, 100
                 ],
 
+                // template03: crashes
+                /*
                 "template03" : [
                     [course_type_circuit, course_type_rally], [], [], [], [],
                     [], [], [], 
                     [["impreza_sedan_wrx_sti_10", 0], ["c4_wrc_08", 0]],
                     [], [], seed_type_sequence, 100
                 ],
+                */
 
                 "template04" : [
-                    [course_type_circuit, course_type_rally], [], [], [], [],
-                    [], [], [], 
-                    [["impreza_sedan_wrx_sti_10", 0], ["c4_wrc_08", 0]],
+                    //mm: Eifel Alternate: use template05 details
+                    [course_type_circuit], [weather_sunny, weather_rainy], [], [], [],
+                    ["6:00", "18:00", "7:00"], [], [], 
+                    [["gtr_07", 1], ["is_f_racing_concept_08", 0], ["arta_garaiya_08", 0]],
                     [], [], seed_type_sequence, 100
                 ],
 
@@ -97,111 +103,130 @@ module PROJECT
                 ], 
 
                 "template06" : [
-                    [course_type_circuit, course_type_rally], [weather_sunny], [1.0, 1.0, 1.0], [0, 0, 0], [0, 0, 0], 
+                    //mm: rain enabled
+                    [course_type_circuit, course_type_rally], [weather_sunny, weather_rainy], [], [], [],
                     ["18:00", "21:00", "18:00"], [], [], 
                     [["_147_ti_20_ts_06", 0], ["mustang_gt_07", 0], ["fairlady_z_st_08", 7]], 
                     [], [], seed_type_sequence, 100
                 ], 
 
                 "template07" : [
-                    [course_type_circuit, course_type_rally], [weather_sunny], [1.0, 1.0, 1.0], [0, 0, 0], [0, 0, 0], 
+                    //mm: rain enabled
+                    [course_type_circuit, course_type_rally], [weather_sunny, weather_rainy], [], [], [],
                     ["12:00", "12:00", "12:00"], [1.0, 1.0, 1.0], [], 
                     [["sls_amg_10", 6], ["m3_coupe_07", 1], ["eagle_type122_09", 8]], 
                     [], [], seed_type_sequence, 100
                 ], 
 
                 "template08" : [
-                    [course_type_circuit, course_type_rally], [weather_sunny, weather_snowy], [], [0, 0, 0], [],
+                    [course_type_circuit, course_type_rally], [weather_sunny, weather_snowy], [], [0.0, 0.0, 0.0], [],
                     ["6:00", "18:00", "8:00"], [], [], 
                     [["rs6_avant_08", 0], ["golf_gti_05", 9], ["r34_gtr_v2_nur_02", 1]],
                     [], [], seed_type_sequence, 100
                 ],
-                
+
+                // template09: crashes
+                /*
                 "template09" : [
                     [course_type_circuit, course_type_rally], [], [], [], [],
                     [], [], [], 
                     [["impreza_sedan_wrx_sti_10", 0], ["c4_wrc_08", 0]],
                     [], [], seed_type_sequence, 100
                 ],
+                */
 
                 "template10" : [
-                    [course_type_circuit], [weather_sunny], [1.0, 1.0, 1.0], [0, 0, 0], [0, 0, 0], 
+                    //mm: rain enabled
+                    [course_type_circuit, course_type_rally], [weather_sunny, weather_rainy], [], [], [],
                     ["6:00", "18:00", "7:00"], [], [], 
                     [["pdi_racing_kart_100_xx", 4], ["elise_111r_04", 11], ["az1_92", 0]], 
                     [], [], seed_type_sequence, 100
                 ], 
 
                 "template11" : [
-                    [course_type_circuit], [weather_sunny], [1.0, 1.0, 1.0], [0, 0, 0], [0, 0, 0], 
+                    //mm: rain enabled
+                    [course_type_circuit, course_type_rally], [weather_sunny, weather_rainy], [], [], [],
                     ["7:00", "17:00", "16:00"], [], [0, 0, 0], 
                     [["pdi_racing_kart_100_xx", 4], ["elise_111r_04", 11], ["az1_92", 0]], 
                     [], [], seed_type_sequence, 100
                 ], 
 
                 "template12" : [
-                    [course_type_circuit, course_type_rally], [], [], [], [],
-                    [], [], [], 
-                    [["impreza_sedan_wrx_sti_10", 0], ["c4_wrc_08", 0]],
+                    //mm: Liege Alternate: use template01 details
+                    [course_type_circuit, course_type_rally], [weather_sunny, weather_rainy], [], [], [],
+                    ["6:00", "18:00", "16:00"], [], [], 
+                    [["lancer_evo10_gsr_premium_07", 0], ["impreza_sedan_wrx_sti_10", 0], ["focus_rs_wrc_08", 0]], 
                     [], [], seed_type_sequence, 100
                 ],
 
                 "template13" : [
-                    [course_type_circuit, course_type_rally], [], [], [], [],
-                    [], [], [], 
-                    [["impreza_sedan_wrx_sti_10", 0], ["c4_wrc_08", 0]],
+                    //mm: Liege UK1609: use template01 details
+                    [course_type_circuit, course_type_rally], [weather_sunny, weather_rainy], [], [], [],
+                    ["6:00", "18:00", "16:00"], [], [], 
+                    [["lancer_evo10_gsr_premium_07", 0], ["impreza_sedan_wrx_sti_10", 0], ["focus_rs_wrc_08", 0]], 
                     [], [], seed_type_sequence, 100
                 ],
 
                 "template14" : [
-                    [course_type_circuit, course_type_rally], [], [], [], [],
-                    [], [], [], 
-                    [["impreza_sedan_wrx_sti_10", 0], ["c4_wrc_08", 0]],
+                    //mm: Liege Alternate UK1609: use template01 details
+                    [course_type_circuit, course_type_rally], [weather_sunny, weather_rainy], [], [], [],
+                    ["6:00", "18:00", "16:00"], [], [], 
+                    [["lancer_evo10_gsr_premium_07", 0], ["impreza_sedan_wrx_sti_10", 0], ["focus_rs_wrc_08", 0]], 
                     [], [], seed_type_sequence, 100
                 ],
 
+                // template03 UK1609: crashes
+                /*
                 "template15" : [
                     [course_type_circuit, course_type_rally], [], [], [], [],
                     [], [], [], 
                     [["impreza_sedan_wrx_sti_10", 0], ["c4_wrc_08", 0]],
                     [], [], seed_type_sequence, 100
                 ],
+                */
 
                 "template16" : [
-                    [course_type_circuit, course_type_rally], [], [], [], [],
-                    [], [], [], 
-                    [["impreza_sedan_wrx_sti_10", 0], ["c4_wrc_08", 0]],
+                    //mm: Eifel Alternate UK1609: use template05 details
+                    [course_type_circuit], [weather_sunny, weather_rainy], [], [], [],
+                    ["6:00", "18:00", "7:00"], [], [], 
+                    [["gtr_07", 1], ["is_f_racing_concept_08", 0], ["arta_garaiya_08", 0]],
                     [], [], seed_type_sequence, 100
                 ],
 
                 "template17" : [
-                    [course_type_circuit, course_type_rally], [], [], [], [],
-                    [], [], [], 
-                    [["impreza_sedan_wrx_sti_10", 0], ["c4_wrc_08", 0]],
+                    //mm: Eifel UK1609: use template05 details
+                    [course_type_circuit], [weather_sunny, weather_rainy], [], [], [],
+                    ["6:00", "18:00", "7:00"], [], [], 
+                    [["gtr_07", 1], ["is_f_racing_concept_08", 0], ["arta_garaiya_08", 0]],
                     [], [], seed_type_sequence, 100
                 ],
 
                 "template18" : [
-                    [course_type_circuit, course_type_rally], [], [], [], [],
-                    [], [], [], 
-                    [["impreza_sedan_wrx_sti_10", 0], ["c4_wrc_08", 0]],
+                    //mm: Toscana UK1609: use template06 details
+                    [course_type_circuit, course_type_rally], [weather_sunny, weather_rainy], [], [], [],
+                    ["18:00", "21:00", "18:00"], [], [], 
+                    [["_147_ti_20_ts_06", 0], ["mustang_gt_07", 0], ["fairlady_z_st_08", 7]], 
                     [], [], seed_type_sequence, 100
                 ],
 
                 "template19" : [
-                    [course_type_circuit, course_type_rally], [], [], [], [],
-                    [], [], [], 
-                    [["impreza_sedan_wrx_sti_10", 0], ["c4_wrc_08", 0]],
+                    //mm: Eifel Kart UK1609: use template10 details
+                    [course_type_circuit, course_type_rally], [weather_sunny, weather_rainy], [], [], [],
+                    ["6:00", "18:00", "7:00"], [], [], 
+                    [["pdi_racing_kart_100_xx", 4], ["elise_111r_04", 11], ["az1_92", 0]], 
                     [], [], seed_type_sequence, 100
                 ],
 
                 "template20" : [
-                    [course_type_circuit, course_type_rally], [], [], [], [],
-                    [], [], [], 
-                    [["impreza_sedan_wrx_sti_10", 0], ["c4_wrc_08", 0]],
+                    //mm: Eifel Kart UK1609: use template10 details
+                    [course_type_circuit, course_type_rally], [weather_sunny, weather_rainy], [], [], [],
+                    ["6:00", "18:00", "7:00"], [], [], 
+                    [["pdi_racing_kart_100_xx", 4], ["elise_111r_04", 11], ["az1_92", 0]], 
                     [], [], seed_type_sequence, 100
                 ],
 
-                "template21" : [
+                //mm: disable missing templates 21 to 25
+                /*"template21" : [
                     [course_type_circuit, course_type_rally], [], [], [], [],
                     [], [], [], 
                     [["impreza_sedan_wrx_sti_10", 0], ["c4_wrc_08", 0]],
@@ -234,7 +259,7 @@ module PROJECT
                     [], [], [], 
                     [["impreza_sedan_wrx_sti_10", 0], ["c4_wrc_08", 0]],
                     [], [], seed_type_sequence, 100
-                ],
+                ],*/
             ];
 
             method __init__(cc, cl, ct, w, wv0, ir, wa, t, tps, ba, cps, is, ms, st, ns, cd, cp)
@@ -263,15 +288,16 @@ module PROJECT
         {
             var list = [];
 
-            if (GetVersionBranch() == "gt5")
+            //mm: always show all themes
+            /*if (GetVersionBranch() == "gt5")
             {
                 list = ["template06", "template05", "template07", "template01", "template08", "template10", "template11"];
             }
             else
-            {
+            {*/
                 foreach (|var course_label, var params| in ThemeParams::theme_list)
                     list.push(course_label);
-            }
+            //}
 
             return list;
         }
@@ -324,7 +350,7 @@ module PROJECT
                 time_progress_speeds = params[target];
             ++target;
 
-            var bank_angularitys = [0, 10, 0];
+            var bank_angularitys = [0.0, 10.0, 0.0];
             if (params.size >= target + 1 && params[target] != nil && params[target].size > 0)
                 bank_angularitys = params[target];
             ++target;
@@ -347,7 +373,7 @@ module PROJECT
             if (params.size >= target + 1 && params[target] != nil)
                 initial_seeds = params[target];
 
-            if (GetVersionBranch() == "runviewer" && AppOpt.defined("course_maker_seed"))
+            if (/*GetVersionBranch() == "runviewer" &&*/ AppOpt.defined("course_maker_seed"))
                 initial_seeds = [AppOpt["course_maker_seed"].toInt()];
             ++target;
 
@@ -470,9 +496,10 @@ module PROJECT
         var template_num = course_label.substr(course_label.size - 2, course_label.size).toInt();
         
         var file_postfix;
-        if (template_num > 11)
-            file_postfix = "template11";
-        else
+        //mm: allow all templates to have unique thumbnails
+        //if (template_num > 11)
+        //    file_postfix = "template11";
+        //else
             file_postfix = course_label;
 
         return "piece/course_maker/cm_thumb_%s.img".format(file_postfix);

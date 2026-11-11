@@ -20,23 +20,23 @@ module ROOT
     method onCourseSelect(context)
     {
         SplitLine.visible = false;
-        ROOT.setTopicPath("CourseSelect");
-        ROOT::ButtonHelpGT5.set(context, [
-            [ButtonHelpGT5.getEnterButtonName(), context.translate(ROOT, "BUTTON_OK")], 
-            [ButtonHelpGT5.getCancelButtonName(), context.translate(ROOT, "BUTTON_BACK")]
-        ]);
+        OverLapRoot.setTopicPath("CourseSelect");
+        OverLapRoot::ButtonHelpGT5.set(context,
+            [[ButtonHelpGT5.getEnterButtonName(), context.translate(OverLapRoot, "BUTTON_OK")], 
+             ["Triangle", context.translate(OverLapRoot, "Toggle Premium/Standard")], // toggle PS2 course button
+             ["Square", context.translate(OverLapRoot, "Toggle Forced Weather")], // toggle weather force button
+             [ButtonHelpGT5.getCancelButtonName(), context.translate(OverLapRoot, "BUTTON_BACK")]]);
     }
 
     method onCarSelect(context)
     {
         SplitLine.visible = false;
-        ROOT.setTopicPath("CarSelect");
-        ROOT::ButtonHelpGT5.set(context, [
-            [ButtonHelpGT5.getEnterButtonName(), context.translate(ROOT, "BUTTON_OK")], 
-            
-            ["Triangle", context.translate(ROOT, "BUTTON_SPEEDUP_CAR_ROTATE")], 
-            [ButtonHelpGT5.getCancelButtonName(), context.translate(ROOT, "BUTTON_BACK")]
-        ]);
+        OverLapRoot.setTopicPath("CarSelect");
+        OverLapRoot::ButtonHelpGT5.set(context,
+            [[ButtonHelpGT5.getEnterButtonName(), context.translate(OverLapRoot, "BUTTON_OK")], 
+             //["Select", "Show/Hide Filters"], // select isn't part of ButtonHelpGT5 :(
+             ["Triangle", context.translate(OverLapRoot, "BUTTON_SPEEDUP_CAR_ROTATE")], 
+             [ButtonHelpGT5.getCancelButtonName(), context.translate(OverLapRoot, "BUTTON_BACK")]]);
     }
 
     method onDrivingOption(context)

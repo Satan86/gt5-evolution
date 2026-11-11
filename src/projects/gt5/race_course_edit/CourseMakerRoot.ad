@@ -16,6 +16,9 @@ module ROOT
     attribute last_error;
     attribute already_decided;
 
+    static sSliderValueColor = menu::MColorObject(204.0 / 255.0, 221.0 / 255.0, 240.0 / 255.0);
+    static sSliderRedColor = menu::MColorObject(1.0, 0.2, 0.2);
+
     function get_specific_time(second)
     {
         |var hour, var min, var sec| = PROJECT::get_time_array(second);
@@ -533,6 +536,10 @@ module ROOT
 
             var kind = generate_param.kind;
             self.common["course_type"] = kind;
+
+            //mm: correctly load LENGTHY
+            var lengthy = generate_param.lengthy;
+            self.common["lengthy"] = lengthy;
 
             var sections = generate_param.sections;
             var num_section = sections.size;
@@ -1578,6 +1585,7 @@ module ROOT
                 {
                     attribute value;
                     attribute range;
+                    attribute original_range;
                     attribute step;
                     attribute format_callback;
                     attribute is_zero_callback;
@@ -1588,10 +1596,11 @@ module ROOT
                     attribute conv_index_to_value;
                     attribute conv_value_to_index;
 
-                    method __init__(v, r, s, fc, izc, zt)
+                    method __init__(v, r, or, s, fc, izc, zt)
                     {
                         self.value = v;
                         self.range = r;
+                        self.original_range = or;
                         self.step = s;
                         self.format_callback = fc;
                         self.is_zero_callback = izc;
@@ -1775,11 +1784,13 @@ module ROOT
                         ContentParams("time_progress_speed", hidden::ItemSlider, time_prog_slider_params, true)
                     ];
 
-                    if (GetVersionBranch() == "runviewer")
+                    //mm: allow course_type (point-to-point) selection
+                    //if (GetVersionBranch() == "runviewer")
                         common_params.push(ContentParams("course_type", hidden::ItemOptionMenu, course_type_option_menu_params, true));
 
-                    if (GetVersionBranch() == "runviewer")
-                    {
+                    //mm: allow length selection
+                    //if (GetVersionBranch() == "runviewer")
+                    //{
                         var lengthy_slider_params = SliderParams();
                         lengthy_slider_params.value = 0.5;
                         lengthy_slider_params.range = [0.5, 10000.0];
@@ -1787,8 +1798,10 @@ module ROOT
 
                         lengthy_slider_params.format_callback = function (context, value, slider) 
                         {
-                            var unit = context.translate(ROOT, "Unit", main::pdiext::MUnit::GetUnitKeywordOfCourseLength());
-                            return value <= 0.5 ? zero_text : "%d%s".format(value.toInt(), unit);
+                            //mm: fix LENGTHY to correctly only display as meters
+                            return value <= 0.5 ? zero_text : "%dm".format(value.toInt());
+                            //var unit = context.translate(ROOT, "Unit", main::pdiext::MUnit::GetUnitKeywordOfCourseLength());
+                            //return value <= 0.5 ? zero_text : "%d%s".format(value.toInt(), unit);
                         };
 
                         lengthy_slider_params.is_zero_callback = function (value, slider) 
@@ -1798,100 +1811,66 @@ module ROOT
 
                         lengthy_slider_params.zero_text = zero_text;
                         common_params.push(ContentParams("lengthy", hidden::ItemSlider, lengthy_slider_params, true));
-                    }
+                    //}
 
                     return common_params;
                 }
 
                 method setup_section_params(context)
                 {
-                    var curvy_slider_params = SliderParams();
-                    curvy_slider_params.value = 5;
-                    curvy_slider_params.range = [0, 10];
-                    curvy_slider_params.step = 1;
-
-                    curvy_slider_params.conv_index_to_value = function (index, slider) 
+                    var conv_index_to_value = function (index, slider) 
                     {
-                        return index.toFloat() / 10.0;
+                        return index.toFloat() / 10.0 + slider.norm_value_shift;
                     };
 
-                    curvy_slider_params.conv_value_to_index = function (value, slider)
+                    var conv_value_to_index = function (value, slider)
                     {
-                        var index = value * 10.0;
+                        var index = ((value - slider.norm_value_shift) * 10.0);
+                        // note: adds small value so toInt doesn't break
+                        // original game fixed this by... having fixed value tables
+                        if (index > 0) {
+                            index += 0.1;
+                        } else {
+                            index -= 0.1;
+                        }
                         return index.toInt();
                     };
 
-                    var normalize_index_type1 = [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5];
-                    var normalize_index_type2 = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
-                    var normalize_rank = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
-                    var normalize_index_min_type1 = normalize_index_type1[0];
-                    var normalize_index_max_type1 = normalize_index_type1[normalize_index_type1.size - 1];
-                    var normalize_index_default_type1 = normalize_index_type1[normalize_index_type1.size / 2];
-
-                    var normalize_index_min_type2 = normalize_index_type2[0];
-                    var normalize_index_max_type2 = normalize_index_type2[normalize_index_type2.size - 1];
-                    var normalize_index_default_type2 = normalize_index_min_type2;
-
-                    var normalize_rank_min = normalize_rank[0];
-                    var normalize_rank_max = normalize_rank[normalize_rank.size - 1];
-                    var normalize_index_rank_pair_type1 = [ : ];
-
-                    for (var i = 0; i < normalize_index_type1.size && i < normalize_rank.size; i++)
-                    {
-                        normalize_index_rank_pair_type1[normalize_index_type1[i]] = normalize_rank[i];
-                    }
-
-                    var normalize_index_rank_pair_type2 = [ : ];
-
-                    for (var i = 0; i < normalize_index_type2.size && i < normalize_rank.size; i++)
-                    {
-                        normalize_index_rank_pair_type2[normalize_index_type2[i]] = normalize_rank[i];
-                    }
-
-                    var conv_index_to_value = function (index, slider) 
-                    {
-                        var rank = slider.norm_index_rank_pair[index.toInt()];
-                        var normalized_value = (rank.toFloat() - 1.0) / (normalize_rank_max.toFloat() - 1.0);
-                        var value = normalized_value + slider.norm_value_shift;
-                        return value;
-                    };
-
-                    var conv_value_to_index = function (value, slider) 
-                    {
-                        var v = (value * 10.0) - (slider.norm_value_shift * 10.0);
-                        var index = slider.norm_index[v.toInt()];
-                        return index;
-                    };
+                    var curvy_slider_params = SliderParams();
+                    curvy_slider_params.value = 5;
+                    curvy_slider_params.original_range = [0, 10];
+                    curvy_slider_params.range = [-5, 10];
+                    curvy_slider_params.step = 1;
+                    curvy_slider_params.norm_value_shift = 0;
+                    curvy_slider_params.conv_index_to_value = conv_index_to_value;
+                    curvy_slider_params.conv_value_to_index = conv_value_to_index;
 
                     var width_slider_params = SliderParams();
-                    width_slider_params.value = normalize_index_default_type1;
-                    width_slider_params.range = [normalize_index_min_type1, normalize_index_max_type1];
+                    width_slider_params.value = 5;
+                    width_slider_params.original_range = [0, 10];
+                    width_slider_params.range = [-10, 50];
                     width_slider_params.step = 1;
-                    width_slider_params.norm_value_shift = 0.0;
-                    width_slider_params.norm_index = normalize_index_type1;
-                    width_slider_params.norm_index_rank_pair = normalize_index_rank_pair_type1;
+                    width_slider_params.norm_value_shift = 0;
                     width_slider_params.conv_index_to_value = conv_index_to_value;
                     width_slider_params.conv_value_to_index = conv_value_to_index;
 
                     var sharpness_slider_params = SliderParams();
-                    sharpness_slider_params.value = normalize_index_default_type1;
-                    sharpness_slider_params.range = [normalize_index_min_type1, normalize_index_max_type1];
+                    sharpness_slider_params.value = 5;
+                    sharpness_slider_params.original_range = [0, 10];
+                    sharpness_slider_params.range = [-10, 20];
                     sharpness_slider_params.step = 1;
-                    sharpness_slider_params.norm_value_shift = 0.0;
-                    sharpness_slider_params.norm_index = normalize_index_type1;
-                    sharpness_slider_params.norm_index_rank_pair = normalize_index_rank_pair_type1;
+                    sharpness_slider_params.norm_value_shift = 0;
                     sharpness_slider_params.conv_index_to_value = conv_index_to_value;
                     sharpness_slider_params.conv_value_to_index = conv_value_to_index;
 
                     var bank_angularitys = ROOT.model.get_basic_data(context, "bank_angularitys");
                     var bank_slider_params = SliderParams();
 
-                    bank_slider_params.value = normalize_index_type2[bank_angularitys[2]];
-                    bank_slider_params.range = [normalize_index_type2[bank_angularitys[0]], normalize_index_type2[bank_angularitys[1]]];
+                    bank_slider_params.value = (bank_angularitys[2]);
+                    bank_slider_params.original_range = [(bank_angularitys[0]), (bank_angularitys[1])];
+                    bank_slider_params.range = [-5, 15];
                     bank_slider_params.step = 1;
                     bank_slider_params.norm_value_shift = 0.5;
-                    bank_slider_params.norm_index = normalize_index_type2;
-                    bank_slider_params.norm_index_rank_pair = normalize_index_rank_pair_type2;
                     bank_slider_params.conv_index_to_value = conv_index_to_value;
                     bank_slider_params.conv_value_to_index = conv_value_to_index;
 
@@ -2551,12 +2530,14 @@ module ROOT
 
                 if (!slider.defined('norm_index'))
                 {
+                    // mm changes make this unused
                     slider.defineAttribute('norm_index');
                     slider.norm_index = param.args.norm_index;
                 }
 
                 if (!slider.defined('norm_index_rank_pair'))
                 {
+                    // mm changes make this unused
                     slider.defineAttribute('norm_index_rank_pair');
                     slider.norm_index_rank_pair = param.args.norm_index_rank_pair;
                 }
@@ -2571,6 +2552,13 @@ module ROOT
                 {
                     slider.defineAttribute('conv_value_to_index');
                     slider.conv_value_to_index = param.args.conv_value_to_index;
+                }
+
+                if (!slider.defined('original_range'))
+                {
+                    //mm: shows red outside of this range for non-common sliders
+                    slider.defineAttribute('original_range');
+                    slider.original_range = param.args.original_range;
                 }
 
                 if (!slider.defined('real_min'))
@@ -2592,6 +2580,16 @@ module ROOT
                 {
                     module (slider)
                     {
+                        //mm: outside original range displays in red
+                        method onValueChanged(context)
+                        {
+                            self.sliderValueChanged(context);
+                            if (self.original_range != nil)
+                            {
+                                self['popup'].Value.label.color = (self.value < self.original_range[0] || self.value > self.original_range[1]) ? ROOT.sSliderRedColor : ROOT.sSliderValueColor;
+                            }
+                        }
+
                         method onPopupOpen(context)
                         {
                             self.sliderPopupOpen(context);
@@ -2599,6 +2597,11 @@ module ROOT
 
                             if (state & 0x100)
                                 ROOT.model.select_all_sections(context);
+
+                            if (self.original_range != nil)
+                            {
+                                self['popup'].Value.label.color = (self.value < self.original_range[0] || self.value > self.original_range[1]) ? ROOT.sSliderRedColor : ROOT.sSliderValueColor;
+                            }
 
                             return EVENTRESULT_CONTINUE;
                         }
@@ -2636,6 +2639,11 @@ module ROOT
                 try
                 {
                     var v = slider.conv_index_to_value != nil ? slider.conv_index_to_value(value, slider) : value;
+
+                    if (slider.original_range != nil)
+                    {
+                        slider.label.color = (slider.value < slider.original_range[0] || slider.value > slider.original_range[1]) ? ROOT.sSliderRedColor : ROOT.sSliderValueColor;
+                    }
 
                     if (self.is_common)
                     {
@@ -2692,6 +2700,11 @@ module ROOT
 
                     slider.index = v;
                     slider.reflect(context);
+
+                    if (slider.original_range != nil)
+                    {
+                        slider.label.color = (slider.value < slider.original_range[0] || slider.value > slider.original_range[1]) ? ROOT.sSliderRedColor : ROOT.sSliderValueColor;
+                    }
                 }
                 catch (e)
                 {
@@ -2830,7 +2843,7 @@ module ROOT
     {
         method initialize(context)
         {
-            self.visible = pdiext::isQABuild();
+            self.visible = true; //pdiext::isQABuild();
         }
 
         method update_status(context, basic, common)
@@ -2874,7 +2887,7 @@ module ROOT
         {
             method onInitialize(context)
             {
-                self.visible = GetVersionBranch() == "runviewer";
+                self.visible = true; //GetVersionBranch() == "runviewer";
             }
 
             module Start
@@ -2906,7 +2919,7 @@ module ROOT
         {
             method onInitialize(context)
             {
-                self.visible = GetVersionBranch() == "runviewer";
+                self.visible = true; //GetVersionBranch() == "runviewer";
             }
 
             module CheckBox

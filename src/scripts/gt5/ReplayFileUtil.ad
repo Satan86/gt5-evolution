@@ -300,7 +300,8 @@ module ReplayFileUtil
 
     function getFavoriteMax()
     {
-        return 50;
+        //mm: increase favourite replays max from 50 -> 200
+        return 200;
     }
 
     function getData(path)

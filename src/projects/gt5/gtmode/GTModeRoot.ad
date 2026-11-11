@@ -1244,6 +1244,14 @@ module GTModeRoot
         {
             module News
             {
+				method onInitialize(context)
+                {
+                    var online = LoginUtil::isOnline();
+                    self.insensitive = false;
+                    self.ColorFace.visible = true;
+                    self.ImageFace.visible = true;
+                }
+				
                 method onActivate(context)
                 {
                     CHECK_NOT_DEMO();
@@ -2523,10 +2531,13 @@ module GTModeRoot
                 {
                     self.max_new_date_sec = 0L;
                     self.New.visible = false;
+					
+					self.TextFace.text = context.translate(ROOT, "GTModeProject::GTModeRoot",
+                        LoginUtil::isOnline() ? "LABEL_ONLINEUSEDCARDEALER" : "LABEL_SPECIALUSEDCARDEALER");
 
+					var me = self;
                     if (LoginUtil::isOnline())
                     {
-                        var me = self;
                         Grim2.requestUsedCarList(function(args) 
                         {
                             |var context, var request| = args;
@@ -2539,7 +2550,13 @@ module GTModeRoot
                                 if (me != nil && me.max_new_date_sec != nil)
                                 {
                                     me.max_new_date_sec = new_date_sec;
-                                    if (GAME_STATUS.user_profile.context.hotcar_dealer_new_date < me.max_new_date_sec)
+                                    var saved = GAME_STATUS.user_profile.context.hotcar_dealer_new_date;
+                                    if (saved < 1000000000L)
+                                    {
+                                        // Last visit was offline (pseudo-version scale), always show NEW
+                                        me.New.visible = true;
+                                    }
+                                    else if (saved < me.max_new_date_sec)
                                     {
                                         var now_sec = pdiext::getBetterTime().getBySecond();
                                         if (now_sec < me.max_new_date_sec)
@@ -2549,20 +2566,54 @@ module GTModeRoot
                             }
                         });
                     }
+					else
+                    {
+                        // Inlined UsedCarDealerRoot::getWeek()
+                        var current_time = pdiext::getBetterTimeLocal();
+                        var md = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+                        var y = current_time.year;
+                        var m = current_time.month;
+                        var d = current_time.day;
+                        var td = d;
+                        if ((y % 4 == 0 && y % 100 != 0) || (y % 400 == 0))
+                            md[1] = 29;
+                        for (var j = 0; j < m - 1; j++)
+                            td += md[j];
+                        var j1 = (y + (y-1)/4 - (y-1)/100 + (y-1)/400) % 7;
+                        var w = (td+j1-1)/7;
+                        if (j1 <= 4)
+                            w++;
+                        if (w <= 0 || w > 52)
+                            w = 52;
+
+                        // pseudo-versioning
+                        me.max_new_date_sec = y * 100L + w;
+
+                        var saved = GAME_STATUS.user_profile.context.hotcar_dealer_new_date;
+                        if (saved >= 1000000000L)
+                        {
+                            // Last visit was online (big ol' timestamp scale), always show NEW
+                            me.New.visible = true;
+                        }
+                        else if (saved < me.max_new_date_sec)
+                        {
+                            me.New.visible = true;
+                        }
+                    }
 
                     return EVENTRESULT_FILTER;
                 }
 
                 method onActivate(context)
                 {
-                    CHECK_ONLINE_GRANDTOP();
-                    CHECK_ONLINE_PROMPT();
+                    //CHECK_ONLINE_GRANDTOP();
+                    //CHECK_ONLINE_PROMPT();
 
                     main::sound.play("ok");
                     PROJECT.history['GTModeRoot::FocusWidgetName'] = self.getNodePath(PROJECT::ROOT);
                     UsedCarDealerRoot.open(context, true);
 
-                    if (self.max_new_date_sec > GAME_STATUS.user_profile.context.hotcar_dealer_new_date)
+                    if (self.max_new_date_sec != 0L)
                         GAME_STATUS.user_profile.context.hotcar_dealer_new_date = self.max_new_date_sec;
 
                     return EVENTRESULT_FILTER;

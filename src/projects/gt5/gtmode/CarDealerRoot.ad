@@ -719,6 +719,9 @@ module ROOT::CarSelect
         self.Info::Price.set(price, true);
         self.Info::SpecialLogo.set(cpp.car_code);
         self.Info::PP.set(cpp.getCP());
+		
+		var cp = main::gtengine::MCarParameter(cpp.car_code);
+		self.Info::racingmodification.visible = cp.getRacingModifyCode() != nil;
     }
 
     method onChangeCar(context, ct)

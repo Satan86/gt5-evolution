@@ -1,0 +1,183 @@
+module ROOT
+{
+    hidden.visible = false;
+
+    class Data : System::Object
+    {
+        attribute difficultySettings;
+        attribute modal_page;
+        attribute result;
+
+        method __init__(difficultySettings)
+        {
+            self.difficultySettings = difficultySettings;
+        }
+
+        method open(context, root)
+        {
+            self.result = false;
+            self.modal_page = SequenceUtil::ModalPage(context, root);
+            self.modal_page.open();
+            return self.result;
+        }
+
+        method close(context)
+        {
+            if (self.modal_page != nil)
+            {
+                self.modal_page.close();
+                self.modal_page = nil;
+            }
+        }
+    }
+
+    attribute sData;
+
+    function OpenDialog(context, data)
+    {
+        var dialog = ROOT.doCopy();
+        dialog.context_number = context.context_number;
+        return dialog.open(context, data);
+    }
+
+    method open(context, data)
+    {
+        Pane::TitleRow::label.text = context.translate(ROOT, "Master AI Option");
+        Pane.pack_alignment_x = 0.5;
+        HDToolTip.visible = true;
+        self.sData = data;
+
+        self.FadeActor.out = true;
+        self.FadeActor.warp();
+        self.setFocus(Pane::Button::OK::OK);
+        var result = self.sData.open(context, self);
+        return result;
+    }
+
+    method close(context)
+    {
+        context.target_widget = nil;
+
+        self.apply(context);
+
+        if (self.sData != nil)
+        {
+            self.setFocus(nil);
+            self.FadeActor.out = true;
+            context.sync(0.25);
+
+            self.sData.close(context);
+            self.sData = nil;
+        }
+    }
+
+    method abort(context)
+    {
+        self.close(context);
+    }
+
+    method isOpening()
+    {
+        return self.sData != nil;
+    }
+
+    method onInitialize(context)
+    {
+        self.navigate_insensitive = true;
+        Pane.minimum_height = 0;
+        Pane::ScrolledWindow::ScrollClip.scroll_mode = 0;
+        Pane::ScrolledWindow::ScrollClip.space.y = 0.0;
+        Pane::ScrolledWindow::ScrollClip.updateGeometry();
+
+        var Pane_S = self.Pane::ScrolledWindow::ScrollClip::space;
+        var sliderA = Pane_S.AIAccelerating::slider;
+        sliderA.range = [60, 120];
+        sliderA.index = self.sData.difficultySettings[0];
+        sliderA.setup(context);
+
+        var sliderB = Pane_S.AIBraking::slider;
+        sliderB.range = [60, 120];
+        sliderB.index = self.sData.difficultySettings[1];
+        sliderB.setup(context);
+
+        var sliderC = Pane_S.AICornering::slider;
+        sliderC.range = [60, 120];
+        sliderC.index = self.sData.difficultySettings[2];
+        sliderC.setup(context);
+
+        var sliderD = Pane_S.AISlowdown::slider;
+        sliderD.range = [0, 10];
+        sliderD.index = self.sData.difficultySettings[3];
+        sliderD.setup(context);
+
+        var sliderE = Pane_S.AICatchup::slider;
+        sliderE.range = [0, 10];
+        sliderE.index = self.sData.difficultySettings[4];
+        sliderE.setup(context);
+
+        OptionMenuUtil::initialize(
+            context,
+            self,
+            Pane_S.AICatchSlowDistance::OptionMenu,
+            hidden::Item,
+            ["VERY_SHORT", "SHORT", "MEDIUM", "LONG", "VERY_LONG"],
+            "TrialSetting"
+        );
+        Pane_S.AICatchSlowDistance::OptionMenu.setIndex(context, self.sData.difficultySettings[5]);
+    }
+
+    method onFinalize(context)
+    {
+        var Pane_S = self.Pane::ScrolledWindow::ScrollClip::space;
+
+        OptionMenuUtil::finalize(context, Pane_S.AICatchSlowDistance::OptionMenu);
+    }
+
+    method apply(context)
+    {
+        var Pane_S = self.Pane::ScrolledWindow::ScrollClip::space;
+
+        self.sData.difficultySettings[0] = Pane_S.AIAccelerating::slider.index;
+        self.sData.difficultySettings[1] = Pane_S.AIBraking::slider.index;
+        self.sData.difficultySettings[2] = Pane_S.AICornering::slider.index;
+        self.sData.difficultySettings[3] = Pane_S.AISlowdown::slider.index;
+        self.sData.difficultySettings[4] = Pane_S.AICatchup::slider.index;
+        self.sData.difficultySettings[5] = Pane_S.AICatchSlowDistance::OptionMenu.index;
+    }
+
+    method onCancel(context)
+    {
+        main::sound.play("cancel");
+        ROOT.setFocus(ROOT::Pane::Button::OK::Cancel);
+        return EVENTRESULT_FILTER;
+    }
+}
+
+module ROOT::Pane::Button::OK::OK
+{
+    method onActivate(context)
+    {
+        var root = self.root_window;
+        main::sound.play("ok");
+
+        root.sData.result = true;
+        root.apply(context);
+        root.close(context);
+        return EVENTRESULT_STOP;
+    }
+}
+
+module ROOT::Pane::Button::OK::Cancel
+{
+    method onActivate(context)
+    {
+        main::sound.play("cancel");
+        self.root_window.close(context);
+        return EVENTRESULT_STOP;
+    }
+
+    method onCancel(context)
+    {
+        return onActivate(context);
+    }
+}

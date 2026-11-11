@@ -1,0 +1,639 @@
+
+module ROOT
+{
+    hidden.visible = false;
+
+    static sModalPage;
+    static sGP;
+
+    // modal methods
+    // =============
+    method open(context, gp)
+    {
+        if (!checkEditable(gp))
+        {
+            DialogUtil::openConfirmDialog(context, DialogUtil::ERROR,
+                context.translate(ROOT, "Regulation", "RACE_SETTINGS_NOT_EDITABLE")
+            );
+            return;
+        }
+        sGP = gp;
+        sModalPage = SequenceUtil::ModalPage(context, ROOT);
+        sModalPage.open();
+    }
+
+    method close(context)
+    {
+        saveValues();
+        if (sModalPage != nil)
+            sModalPage.close();
+    }
+
+    // standard methods
+    // ================
+    method onInitialize(context)
+    {
+        if (PROJECT.history["RaceSettingsPopup::EntryNum"] == nil)
+        {
+            resetValues();
+        }
+
+        Pane::EntryNum::slider.max = 16;
+        Pane::EntryNum::slider.decide_cb = onMaxCarsDecide;
+        Pane::EntryNum::slider.setup(context, 1, context.translate(ROOT, "Regulation", "UNCHANGED"));
+
+        Pane::PlayerPos::slider.max = 16;
+        Pane::PlayerPos::slider.setup(context, 1, context.translate(ROOT, "Regulation", "UNCHANGED"));
+
+        var lap_mult_list = ["LAPS_0_5x", "LAPS_1x_UNCHANGED", "LAPS_2x", "LAPS_3x", "LAPS_5x"];
+        OptionMenuUtil::initialize(context, ROOT, Pane::LapMult::OptionMenu, hidden::OptionMenuItem, lap_mult_list, "Regulation");
+        var time_mult_list = ["DURATION_0_25x", "DURATION_0_5x", "DURATION_1x_UNCHANGED", "DURATION_1_5x", "DURATION_2x"];
+        OptionMenuUtil::initialize(context, ROOT, Pane::TimeMult::OptionMenu, hidden::OptionMenuItem, time_mult_list, "Regulation");
+        var laps_insensitive;
+        var time_insensitive;
+        |laps_insensitive, time_insensitive| = getLapTimeMultInsensitive(sGP);
+        Pane::LapMult::OptionMenu.insensitive = laps_insensitive;
+        Pane::TimeMult::OptionMenu.insensitive = time_insensitive;
+
+        var start_type_def = getDefault(sGP, "StartType");
+        var start_type_list = ["START_TYPE_GRID", "START_TYPE_ROLLING2", "START_TYPE_ROLLING_DL"];
+        if (start_type_def == 0)
+            start_type_list.unshift("START_TYPE_PER_EVENT_UNCHANGED");
+        else
+            start_type_list[start_type_def-1] = start_type_list[start_type_def-1]+"_UNCHANGED";
+        OptionMenuUtil::initialize(context, ROOT, Pane::StartType::OptionMenu, hidden::OptionMenuItem, start_type_list, "Regulation");
+        Pane::StartType::OptionMenu.setIndex(context, start_type_def == 0 ? start_type_def : start_type_def - 1);
+
+        var consumption_def = getDefault(sGP, "Consumption");
+        var consumption_list = ["CONSUMPTION_OFF", "CONSUMPTION_ON"];
+        if (consumption_def == 0)
+            consumption_list.unshift("UNCHANGED");
+        else
+            consumption_list[consumption_def-1] = consumption_list[consumption_def-1]+"_UNCHANGED";
+        OptionMenuUtil::initialize(context, ROOT, Pane::Consumption::OptionMenu, hidden::OptionMenuItem, consumption_list, "Regulation");
+        Pane::Consumption::OptionMenu.setIndex(context, consumption_def == 0 ? consumption_def : consumption_def - 1);
+
+        var low_mu_def = getDefault(sGP, "LowMuType");
+        var low_mu_list = ["LOW_MU_TYPE_MODERATE", "LOW_MU_TYPE_REAL"];
+        if (low_mu_def == 0)
+            low_mu_list.unshift("UNCHANGED");
+        else
+            low_mu_list[low_mu_def-1] = low_mu_list[low_mu_def-1]+"_UNCHANGED";
+        OptionMenuUtil::initialize(context, ROOT, Pane::LowMuType::OptionMenu, hidden::OptionMenuItem, low_mu_list, "Regulation");
+        Pane::LowMuType::OptionMenu.setIndex(context, low_mu_def == 0 ? low_mu_def : low_mu_def - 1);
+
+        var damage_def = getDefault(sGP, "Damage");
+        var damage_list = ["DAMAGE_WEAK", "DAMAGE_MIDDLE", "DAMAGE_STRONG"];
+        if (damage_def == 0)
+            damage_list.unshift("UNCHANGED");
+        else
+            damage_list[damage_def-1] = damage_list[damage_def-1]+"_UNCHANGED";
+        OptionMenuUtil::initialize(context, ROOT, Pane::Damage::OptionMenu, hidden::OptionMenuItem, damage_list, "Regulation");
+
+        var premium_list = ["UNCHANGED", "OPPONENT_TYPE_PREMIUM", "OPPONENT_TYPE_STANDARD"];
+        OptionMenuUtil::initialize(context, ROOT, Pane::AIPremium::OptionMenu, hidden::OptionMenuItem, premium_list, "Regulation");
+
+        setDefaultIndex(context, sGP);
+    }
+
+    method onFinalize(context)
+    {
+        OptionMenuUtil::finalize(context, Pane::LapMult::OptionMenu);
+        OptionMenuUtil::finalize(context, Pane::TimeMult::OptionMenu);
+        OptionMenuUtil::finalize(context, Pane::StartType::OptionMenu);
+        OptionMenuUtil::finalize(context, Pane::Consumption::OptionMenu);
+        OptionMenuUtil::finalize(context, Pane::LowMuType::OptionMenu);
+        OptionMenuUtil::finalize(context, Pane::Damage::OptionMenu);
+        OptionMenuUtil::finalize(context, Pane::AIPremium::OptionMenu);
+    }
+
+    method onCancel(context)
+    {
+        main::sound.play("cancel");
+        ROOT.setFocus(Pane::Button::OK::OK);
+        return EVENTRESULT_FILTER;
+    }
+
+    // callbacks
+    // =========
+    method onMaxCarsDecide(context, index, slider)
+    {
+        clampPlayerPos(context, index);
+    }
+
+    method clampPlayerPos(context, index)
+    {
+        index = index <= 0 ? sGP.events[0].entry_set.entry_generate.entry_num : index;
+        Pane::PlayerPos::slider.max = index;
+        if (Pane::PlayerPos::slider.index > index)
+            Pane::PlayerPos::slider.index = index;
+        Pane::PlayerPos::slider.setup(context, 1, context.translate(ROOT, "Regulation", "UNCHANGED"));
+    }
+
+    // custom methods
+    // ==============
+    method checkEditable(gp)
+    {
+        var completetype;
+
+        for (var i = 0; i < gp.events.size; i++)
+        {
+            // event complete type must match for all events
+            if (completetype == nil)
+            {
+                completetype = gp.events[i].race_parameter.complete_type;
+            }
+            else if (completetype != gp.events[i].race_parameter.complete_type)
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    method getAIPremiumInsensitive(gp)
+    {
+        var has_premium = true;
+        var has_standard = true;
+        for (var i = 0; i < gp.events.size; i++)
+        {
+            var prm_count = 0;
+            var std_count = 0;
+            for (var n = 0; n < gp.events[i].entry_set.entry_generate.cars.size; n++)
+            {
+                if (gtengine::MSpecDB::isStandardModel(gp.events[i].entry_set.entry_generate.cars[n].code))
+                    std_count += 1;
+                else
+                    prm_count += 1;
+            }
+            if (std_count == 0)
+            {
+                has_standard = false;
+            }
+            if (prm_count == 0)
+            {
+                has_premium = false;
+            }
+        }
+
+        if (!has_premium && !has_standard)
+        {
+            // crazy event where one race has only standard cars & another has only premium cars,
+            // so the option can't work
+            return 0;
+        }
+        else if (!has_standard)
+        {
+            // all events only have premium cars
+            return 1;
+        }
+        else if (!has_premium)
+        {
+            // all events only have standard cars
+            return 2;
+        }
+        return -1;
+    }
+
+    method getLapTimeMultInsensitive(gp)
+    {
+        var has_laps = false;
+        var has_time = false;
+        for (var i = 0; i < gp.events.size; i++)
+        {
+            switch (gp.events[i].race_parameter.complete_type)
+            {
+                case gtengine::CompleteType::BYLAPS:
+                    has_laps = true;
+                    break;
+                    
+                case gtengine::CompleteType::BYTIME:
+                    has_time = true;
+                    break;
+
+                default:
+                    break;
+            }
+        }
+
+        return [!has_laps, !has_time];
+    }
+
+    method getDefault(gp, element)
+    {
+        var value;
+        var index;
+        switch (element)
+        {
+            case "StartType":
+                for (var i = 0; i < gp.events.size; i++)
+                {
+                    if (value == nil)
+                    {
+                        value = gp.events[i].race_parameter.start_type;
+                    }
+                    else if (value != gp.events[i].race_parameter.start_type)
+                    {
+                        return 0;
+                    }
+                }
+                switch (value)
+                {
+                    case gtengine::StartType::GRID:
+                        index = 1;
+                        break;
+
+                    case gtengine::StartType::ROLLING2:
+                        index = 2;
+                        break;
+
+                    case gtengine::StartType::ROLLING_DL:
+                        index = 3;
+                        break;
+
+                    default:
+                        index = 0;
+                        break;
+                }
+                break;
+
+            case "Consumption":
+                for (var i = 0; i < gp.events.size; i++)
+                {
+                    if (value == nil)
+                    {
+                        value = gp.events[i].race_parameter.consume_fuel;
+                    }
+                    else if (value != gp.events[i].race_parameter.consume_fuel)
+                    {
+                        return 0;
+                    }
+
+                    if (value != gp.events[i].race_parameter.consume_tire)
+                    {
+                        return 0;
+                    }
+                }
+                switch (value)
+                {
+                    case false:
+                        index = 1;
+                        break;
+
+                    case true:
+                        index = 2;
+                        break;
+
+                    default:
+                        index = 0;
+                        break;
+                }
+                break;
+
+            case "LowMuType":
+                for (var i = 0; i < gp.events.size; i++)
+                {
+                    if (value == nil)
+                    {
+                        value = gp.events[i].race_parameter.low_mu_type;
+                    }
+                    else if (value != gp.events[i].race_parameter.low_mu_type)
+                    {
+                        return 0;
+                    }
+                }
+                switch (value)
+                {
+                    case gtengine::LowMuType::MODERATE:
+                        index = 1;
+                        break;
+
+                    case gtengine::LowMuType::REAL:
+                        index = 2;
+                        break;
+
+                    default:
+                        index = 0;
+                        break;
+                }
+                break;
+
+            case "Damage":
+                for (var i = 0; i < gp.events.size; i++)
+                {
+                    if (value == nil)
+                    {
+                        value = gp.events[i].race_parameter.behavior_damage_type;
+                    }
+                    else if (value != gp.events[i].race_parameter.behavior_damage_type)
+                    {
+                        return 0;
+                    }
+                }
+                switch (value)
+                {
+                    case gtengine::BehaviorDamageType::WEAK:
+                        index = 1;
+                        break;
+
+                    case gtengine::BehaviorDamageType::MIDDLE:
+                        index = 2;
+                        break;
+
+                    case gtengine::BehaviorDamageType::STRONG:
+                        index = 3;
+                        break;
+
+                    default:
+                        index = 0;
+                        break;
+                }
+                break;
+
+            default:
+                break;
+        }
+
+        return index;
+    }
+
+    method setDefaultIndex(context, gp)
+    {
+        Pane::EntryNum::slider.index = PROJECT.history["RaceSettingsPopup::EntryNum"];
+        Pane::EntryNum::slider.setup(context, 1, context.translate(ROOT, "Regulation", "UNCHANGED"));
+        Pane::PlayerPos::slider.index = PROJECT.history["RaceSettingsPopup::PlayerPos"];
+        clampPlayerPos(context, PROJECT.history["RaceSettingsPopup::EntryNum"]);
+        Pane::PlayerPos::slider.setup(context, 1, context.translate(ROOT, "Regulation", "UNCHANGED"));
+        Pane::LapMult::OptionMenu.setIndex(context, PROJECT.history["RaceSettingsPopup::LapMult"]);
+        Pane::TimeMult::OptionMenu.setIndex(context, PROJECT.history["RaceSettingsPopup::TimeMult"]);
+
+        var start_type_def = getDefault(gp, "StartType");
+        var start_type_val = PROJECT.history["RaceSettingsPopup::StartType"];
+        if (start_type_val > 0)
+            Pane::StartType::OptionMenu.setIndex(context, start_type_def == 0 ? start_type_val : start_type_val - 1);
+        else
+            Pane::StartType::OptionMenu.setIndex(context, start_type_def == 0 ? 0 : start_type_def - 1);
+
+        var consumption_def = getDefault(gp, "Consumption");
+        var consumption_val = PROJECT.history["RaceSettingsPopup::Consumption"];
+        if (consumption_val > 0)
+            Pane::Consumption::OptionMenu.setIndex(context, consumption_def == 0 ? consumption_val : consumption_val - 1);
+        else
+            Pane::Consumption::OptionMenu.setIndex(context, consumption_def == 0 ? 0 : consumption_def - 1);
+
+        var low_mu_def = getDefault(gp, "LowMuType");
+        var low_mu_val = PROJECT.history["RaceSettingsPopup::LowMuType"];
+        if (low_mu_val > 0)
+            Pane::LowMuType::OptionMenu.setIndex(context, low_mu_def == 0 ? low_mu_val : low_mu_val - 1);
+        else
+            Pane::LowMuType::OptionMenu.setIndex(context, low_mu_def == 0 ? 0 : low_mu_def - 1);
+
+        var damage_def = getDefault(gp, "Damage");
+        var damage_val = PROJECT.history["RaceSettingsPopup::Damage"];
+        if (damage_val > 0)
+            Pane::Damage::OptionMenu.setIndex(context, damage_def == 0 ? damage_val : damage_val - 1);
+        else
+            Pane::Damage::OptionMenu.setIndex(context, damage_def == 0 ? 0 : damage_def - 1);
+
+        var premium_insensitive = getAIPremiumInsensitive(gp);
+        Pane::AIPremium::OptionMenu.insensitive = premium_insensitive >= 0;
+        if (premium_insensitive >= 0)
+            Pane::AIPremium::OptionMenu.setIndex(context, premium_insensitive);
+        else
+            Pane::AIPremium::OptionMenu.setIndex(context, PROJECT.history["RaceSettingsPopup::AIPremium"]);
+    }
+
+    method applyValues(gp)
+    {
+        if (!checkEditable(gp))
+            return;
+
+        var entry_num = PROJECT.history["RaceSettingsPopup::EntryNum"];
+        if (entry_num != nil && entry_num > 0)
+        {
+            for (var i = 0; i < gp.events.size; i++)
+            {
+                //todo: better validate for max cars too big for course
+                //  (currently impossible, all courses are 16 max in master mod)
+                gp.events[i].entry_set.entry_generate.entry_num = entry_num;
+                gp.events[i].race_parameter.entry_max = entry_num;
+                gp.events[i].race_parameter.racers_max = entry_num;
+
+                // clamp player position in file immediately for safety
+                if (gp.events[i].entry_set.entry_generate.player_pos >= entry_num)
+                    gp.events[i].entry_set.entry_generate.player_pos = entry_num - 1;
+            }
+        }
+
+        var player_pos = PROJECT.history["RaceSettingsPopup::PlayerPos"];
+        if (player_pos != nil && player_pos > 0)
+        {
+            for (var i = 0; i < gp.events.size; i++)
+            {
+                var event_player_pos = player_pos - 1;
+                if (event_player_pos >= gp.events[i].entry_set.entry_generate.entry_num)
+                    event_player_pos = gp.events[i].entry_set.entry_generate.entry_num - 1;
+                gp.events[i].entry_set.entry_generate.player_pos = event_player_pos;
+            }
+        }
+
+        var start_type = PROJECT.history["RaceSettingsPopup::StartType"];
+        if (start_type != nil && start_type > 0)
+        {
+            for (var i = 0; i < gp.events.size; i++)
+            {
+                switch (start_type)
+                {
+                    case 1:
+                        gp.events[i].race_parameter.start_type = gtengine::StartType::GRID;
+                        break;
+                    case 2:
+                        gp.events[i].race_parameter.start_type = gtengine::StartType::ROLLING2;
+                        break;
+                    case 3:
+                        gp.events[i].race_parameter.start_type = gtengine::StartType::ROLLING_DL;
+                        gp.events[i].race_parameter.time_to_start = 10000;
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
+
+        var consumption_type = PROJECT.history["RaceSettingsPopup::Consumption"];
+        if (consumption_type != nil && consumption_type > 0)
+        {
+            for (var i = 0; i < gp.events.size; i++)
+            {
+                switch (consumption_type)
+                {
+                    case 1:
+                        gp.events[i].race_parameter.consume_fuel = false;
+                        gp.events[i].race_parameter.consume_tire = false;
+                        break;
+                    case 2:
+                        gp.events[i].race_parameter.consume_fuel = true;
+                        gp.events[i].race_parameter.consume_tire = true;
+                        gp.events[i].race_parameter.enable_pit = true;
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
+
+        var low_mu_type = PROJECT.history["RaceSettingsPopup::LowMuType"];
+        if (low_mu_type != nil && low_mu_type > 0)
+        {
+            for (var i = 0; i < gp.events.size; i++)
+            {
+                switch (low_mu_type)
+                {
+                    case 1:
+                        gp.events[i].race_parameter.low_mu_type = gtengine::LowMuType::MODERATE;
+                        break;
+                    case 2:
+                        gp.events[i].race_parameter.low_mu_type = gtengine::LowMuType::REAL;
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
+
+        var damage = PROJECT.history["RaceSettingsPopup::Damage"];
+        if (damage != nil && damage > 0)
+        {
+            for (var i = 0; i < gp.events.size; i++)
+            {
+                switch (damage)
+                {
+                    case 1:
+                        gp.events[i].race_parameter.behavior_damage_type = gtengine::BehaviorDamageType::WEAK;
+                        break;
+                    case 2:
+                        gp.events[i].race_parameter.behavior_damage_type = gtengine::BehaviorDamageType::MIDDLE;
+                        break;
+                    case 3:
+                        gp.events[i].race_parameter.behavior_damage_type = gtengine::BehaviorDamageType::STRONG;
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
+
+        var ai_premium = PROJECT.history["RaceSettingsPopup::AIPremium"];
+        if (ai_premium != nil && ai_premium > 0 && getAIPremiumInsensitive(gp) < 0)
+        {
+            for (var i = 0; i < gp.events.size; i++)
+            {
+                var premium_only = ai_premium == 1;
+                var new_cars = [];
+                for (var n = 0; n < gp.events[i].entry_set.entry_generate.cars.size; n++)
+                {
+                    var car = gp.events[i].entry_set.entry_generate.cars[n];
+                    var car_is_std = gtengine::MSpecDB::isStandardModel(car.code);
+                    if (premium_only ? !car_is_std : car_is_std)
+                    {
+                        new_cars.append(car);
+                    }
+                }
+                // apply over the top of existing array
+                gp.events[i].entry_set.entry_generate.cars.resize(new_cars.size);
+                for (var n = 0; n < new_cars.size; n++)
+                {
+                    gp.events[i].entry_set.entry_generate.cars[n] = new_cars[n];
+                }
+            }
+        }
+
+        var lap_mult = PROJECT.history["RaceSettingsPopup::LapMult"];
+        if (lap_mult != nil && lap_mult != 1)
+        {
+            for (var i = 0; i < gp.events.size; i++)
+            {
+                if (gp.events[i].race_parameter.complete_type == gtengine::CompleteType::BYLAPS)
+                    gp.events[i].race_parameter.race_limit_laps = ((gp.events[i].race_parameter.race_limit_laps * [0.5, 1.0, 2.0, 3.0, 5.0][lap_mult]) + 0.6).toInt();
+            }
+        }
+
+        var time_mult = PROJECT.history["RaceSettingsPopup::TimeMult"];
+        if (time_mult != nil && time_mult != 2)
+        {
+            for (var i = 0; i < gp.events.size; i++)
+            {
+                if (gp.events[i].race_parameter.complete_type == gtengine::CompleteType::BYTIME)
+                    gp.events[i].race_parameter.race_limit_minute = ((gp.events[i].race_parameter.race_limit_minute * [0.25, 0.5, 1.0, 1.5, 2.0][time_mult]) + 0.6).toInt();
+            }
+        }
+    }
+
+    method saveValues()
+    {
+        PROJECT.history["RaceSettingsPopup::EntryNum"] = Pane::EntryNum::slider.index;
+        PROJECT.history["RaceSettingsPopup::PlayerPos"] = Pane::PlayerPos::slider.index;
+        PROJECT.history["RaceSettingsPopup::LapMult"] = Pane::LapMult::OptionMenu.index;
+        PROJECT.history["RaceSettingsPopup::TimeMult"] = Pane::TimeMult::OptionMenu.index;
+
+        var start_type_def = getDefault(sGP, "StartType");
+        var start_type_val = Pane::StartType::OptionMenu.index + (start_type_def == 0 ? 0 : 1);
+        PROJECT.history["RaceSettingsPopup::StartType"] = start_type_val == start_type_def ? 0 : start_type_val;
+
+        var consumption_def = getDefault(sGP, "Consumption");
+        var consumption_val = Pane::Consumption::OptionMenu.index + (consumption_def == 0 ? 0 : 1);
+        PROJECT.history["RaceSettingsPopup::Consumption"] = consumption_val == consumption_def ? 0 : consumption_val;
+
+        var low_mu_def = getDefault(sGP, "LowMuType");
+        var low_mu_val = Pane::LowMuType::OptionMenu.index + (low_mu_def == 0 ? 0 : 1);
+        PROJECT.history["RaceSettingsPopup::LowMuType"] = low_mu_val == low_mu_def ? 0 : low_mu_val;
+
+        var damage_def = getDefault(sGP, "Damage");
+        var damage_val = Pane::Damage::OptionMenu.index + (damage_def == 0 ? 0 : 1);
+        PROJECT.history["RaceSettingsPopup::Damage"] = damage_val == damage_def ? 0 : damage_val;
+
+        var premium_val = Pane::AIPremium::OptionMenu.index;
+        if (getAIPremiumInsensitive(sGP) >= 0)
+            premium_val = 0;
+        PROJECT.history["RaceSettingsPopup::AIPremium"] = premium_val;
+    }
+
+    method resetValues()
+    {
+        PROJECT.history["RaceSettingsPopup::EntryNum"] = 0;
+        Pane::EntryNum::slider.index = PROJECT.history["RaceSettingsPopup::EntryNum"];
+        PROJECT.history["RaceSettingsPopup::PlayerPos"] = 0;
+        Pane::PlayerPos::slider.index = PROJECT.history["RaceSettingsPopup::PlayerPos"];
+        PROJECT.history["RaceSettingsPopup::StartType"] = 0;
+        PROJECT.history["RaceSettingsPopup::Consumption"] = 0;
+        PROJECT.history["RaceSettingsPopup::LowMuType"] = 0;
+        PROJECT.history["RaceSettingsPopup::Damage"] = 0;
+        PROJECT.history["RaceSettingsPopup::AIPremium"] = 0;
+        PROJECT.history["RaceSettingsPopup::LapMult"] = 1;
+        PROJECT.history["RaceSettingsPopup::TimeMult"] = 2;
+    }
+
+    // module impl
+    // ===========
+    module Pane::Button::OK::Reset
+    {
+        method onActivate(context)
+        {
+            main::sound.play("ok");
+            ROOT.resetValues();
+            ROOT.setDefaultIndex(context, ROOT.sGP);
+            return EVENTRESULT_FILTER;
+        }    
+    }
+
+    module Pane::Button::OK::OK
+    {
+        method onActivate(context)
+        {
+            main::sound.play("ok");
+            ROOT.close(context);
+            return EVENTRESULT_FILTER;
+        }        
+    }
+}

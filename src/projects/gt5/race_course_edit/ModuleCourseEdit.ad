@@ -64,6 +64,9 @@ function onRaceRootInitialize(context)
 function onAfterRace(context)
 {
     var slot_id = getPlayerSlot();
+    //mm: fix adhoc error after exiting course maker debug replay
+    if (slot_id < 0)
+        return;
     var res = ORG.leaveRace(slot_id);
 
     while (!ORG.checkLeaveRace(slot_id))

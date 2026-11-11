@@ -215,7 +215,8 @@ module ROOT::ModeSelector
             }
         }
 
-        if (arcade_mode == ArcadeModeEnum::SINGLE_RACE)
+        if (arcade_mode == ArcadeModeEnum::SINGLE_RACE
+            || arcade_mode == ArcadeModeEnum::QUICK_RACE)
         {
             self.hide(context, false);
             
@@ -269,6 +270,7 @@ module ROOT::ModeSelector
         switch(arcade_mode)
         {
             case ArcadeModeEnum::SINGLE_RACE:
+            case ArcadeModeEnum::QUICK_RACE:
                 disable = !main::GAME_STATUS.user_profile.option.visible_icon_singlerace;
                 break;
 
@@ -314,7 +316,8 @@ module ROOT::ModeSelector
                     ['value': ArcadeModeEnum::SINGLE_RACE, 'label': "SINGLE_RACE", 'image': "image/gt5/thumbnail/arcade_singlerace.dds"],
                     ['value': ArcadeModeEnum::TIME_ATTACK, 'label': "TIME_ATTACK", 'image': "image/gt5/thumbnail/arcade_timetrial.dds"],
                     ['value': ArcadeModeEnum::DRIFT_ATTACK, 'label': "DRIFT_ATTACK", 'image': "image/gt5/thumbnail/arcade_drifttrial.dds"],
-                    ['value': ArcadeModeEnum::SPLIT_BATTLE, 'label': "SPLIT_BATTLE", 'image': "image/gt5/thumbnail/arcade_2p.dds"]
+                    ['value': ArcadeModeEnum::SPLIT_BATTLE, 'label': "SPLIT_BATTLE", 'image': "image/gt5/thumbnail/arcade_2p.dds"],
+                    ['value': ArcadeModeEnum::MY_GAME, 'label': "MY_GAME", 'image': "image/gt5/thumbnail/arcade_usercustom.dds"],
                 ];
             }
 
@@ -441,6 +444,27 @@ module ROOT::Difficulty
         var candidate_data = folder_data.getItemData();
         main::GAME_STATUS.user_profile.context.arcade_difficulty = candidate_data.value_;
 
+        if (ArcadeProject::DifficultyEnum::MM_PRO == candidate_data.value_)
+        {
+            hide(context, false);
+            RaceModeRoot.Exit.hide(context, true);
+            OverLapRoot::ButtonHelpGT5.hide();
+
+            var data = SettingProject::MasterDifficultyOptions::Data(gMasterDifficultySettings);
+            var result = SettingProject::MasterDifficultyOptions.OpenDialog(context, data);
+            gMasterDifficultySettings = data.difficultySettings;
+
+            if (result)
+            {
+                gArcadeSequence.moveNextPage(context);
+            }
+
+            OverLapRoot::ButtonHelpGT5.appear();
+            appear(context, false, false);
+
+            return;
+        }
+
         gArcadeSequence.moveNextPage(context);
     }
 
@@ -468,11 +492,12 @@ module ROOT::Difficulty
 
         {
             var data_list = [
-                ['value': PROJECT::DifficultyEnum::EASY, 'label': "DIFFICULTY_EASY", 'image': "image/gt5/icon/arcade_level_C.dds"],
-                ['value': PROJECT::DifficultyEnum::NORMAL, 'label': "DIFFICULTY_NORMAL", 'image': "image/gt5/icon/arcade_level_B.dds"],
-                ['value': PROJECT::DifficultyEnum::PRO, 'label': "DIFFICULTY_PRO", 'image': "image/gt5/icon/arcade_level_A.dds"],
+                ['value': ArcadeProject::DifficultyEnum::MM_PRO, 'label': "DIFFICULTY_MASTER", 'image': "image/gt5/icon/arcade_level_A.dds"],
+                ['value': ArcadeProject::DifficultyEnum::PRO, 'label': "DIFFICULTY_PRO", 'image': "image/gt5/icon/arcade_level_A.dds"],
+                ['value': ArcadeProject::DifficultyEnum::NORMAL, 'label': "DIFFICULTY_NORMAL", 'image': "image/gt5/icon/arcade_level_B.dds"],
+                ['value': ArcadeProject::DifficultyEnum::EASY, 'label': "DIFFICULTY_EASY", 'image': "image/gt5/icon/arcade_level_C.dds"],
             ];
-        
+
             for (var i = 0; i < data_list.size; i++)
             {
                 var data = data_list[i];
@@ -505,7 +530,8 @@ module ROOT::ListBox3D
         "image/gt5/flyer/flyer_arcade_singlerace.dds",
         "image/gt5/flyer/flyer_arcade_timetrial.dds",
         "image/gt5/flyer/flyer_arcade_drifttrial.dds",
-        "image/gt5/flyer/flyer_arcade_2p.dds"
+        "image/gt5/flyer/flyer_arcade_2p.dds",
+        "image/gt5/flyer/flyer_arcade_usercustom.dds"
     ];
 
 

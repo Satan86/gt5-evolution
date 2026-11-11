@@ -17,10 +17,62 @@ module News
     }
 
     static sNewsObserver = nil;
+    static sLocalArticles = [];
+
+    function loadLocalArticles()
+    {
+        sLocalArticles = [];
+        //mm: TODO: localisation support
+        var res = main::pdistd::ReadFile("/textdata/gt5/news/news.xml");
+        if (res["result"] != main::pdistd::FileError::OK)
+            return;
+
+        var xml = main::pdistd::MXml();
+        xml.parse(res["buffer"]);
+        var dom = xml.result;
+        var nodelist = dom["NewsRoot"];
+        if (nodelist == nil || nodelist.size == 0)
+            return;
+
+        var categories = nodelist[0]["Category"];
+        var articles = nodelist[0]["Article"];
+        if (articles == nil)
+            return;
+
+        for (var i = 0; i < articles.size; i++)
+        {
+            var article = articles[i];
+            var cat_id1 = article.getAttribute("category_id1").toInt();
+            if (cat_id1 == 20)
+                continue;
+            var cat_name = "";
+            if (categories != nil)
+            {
+                for (var j = 0; j < categories.size; j++)
+                {
+                    if (categories[j].getAttribute("category_id1").toInt() == cat_id1)
+                    {
+                        cat_name = categories[j].getAttribute("name");
+                        break;
+                    }
+                }
+            }
+
+            sLocalArticles.push([
+                "news_id":       article.getAttribute("news_id"),
+                "category_id1":  cat_id1,
+                "category_id2":  article.getAttribute("category_id2").toInt(),
+                "category_name": cat_name,
+                "title":         article.getAttribute("title"),
+                "headline":      article.getAttribute("headline"),
+                "news_time":     nil,
+            ]);
+        }
+    }
 
     method initialize()
     {
-        News.visible = LoginUtil::isOnline() && Grim2Util::News::isEnable();
+        News.visible = true;
         sNewsObserver = OBS_Enum::NEWS_OBS_SLEEP;
 
         tip.value = "";
@@ -34,9 +86,7 @@ module News
         News.FadeActor.on_effect_end = pop_news;
         ActorUtil::ResetActors(News, false);
 
-        News.visible = LoginUtil::isOnline() && Grim2Util::News::isEnable();
-        if (Grim2.isOutOfService())
-            News.visible = true;
+        News.visible = true;
     }
 
     method off(context)
@@ -54,6 +104,20 @@ module News
         if (Grim2.isOutOfService())
         {
             tip.value = context.translate(ROOT, "Network", "GT5_OUT_OF_SERVICE");
+            return;
+        }
+
+        if (!LoginUtil::isOnline())
+        {
+            if (sLocalArticles.size == 0)
+                loadLocalArticles();
+
+            if (sLocalArticles.size == 0)
+                return;
+
+            var news = sLocalArticles.shift();
+            tip.value = context.translate(context.getRootWindow(), "News", "SCROLL_NEWS_FORMAT")
+                .build(news["category_name"], news["title"], news["headline"]);
             return;
         }
 

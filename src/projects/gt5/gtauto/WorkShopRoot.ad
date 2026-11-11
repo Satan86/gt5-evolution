@@ -272,6 +272,7 @@ module ROOT
         ROOT::sShopFrontFocus = 0;
         ROOT::sPaintItem = nil;
         ROOT::sRM = nil;
+        ROOT::sRacingModifyCarNames = nil;
         ROOT::sOnAeroPartsMenu = false;
         ROOT::sNeedCapture = false;
         ROOT::sNeedChangeCar1 = false;
@@ -302,7 +303,7 @@ module ROOT
 
     function CheckDebugCommand(context)
     {
-        if (pdiext::isQABuild())
+        if (true /*pdiext::isQABuild()*/)
         {
             var state = context.getUpdateContext().getPadButtonState(0);
             if (state & 0x800)
@@ -1443,6 +1444,37 @@ module ROOT
     }
 
     static sRM;
+    static sRacingModifyCarNames;
+
+    function getRacingModifyCarNames()
+    {
+        // cache car names; no reason not to
+        if (ROOT::sRacingModifyCarNames != nil)
+            return ROOT::sRacingModifyCarNames;
+
+        var premium_car_names = [];
+        var standard_car_names = [];
+
+        foreach (var car_code in CarData::getCarList(nil, nil, nil, nil))
+        {
+            var cp = gtengine::MCarParameter(car_code);
+            if (cp.getRacingModifyCode() == nil)
+                continue;
+
+            var car_name = gtengine::MSpecDB::getCarName(car_code);
+
+            if (gtengine::MSpecDB::checkGenericFlag("has_premium_model", car_code))
+                premium_car_names.push(car_name);
+            else
+                standard_car_names.push(car_name);
+        }
+
+        premium_car_names.sort();
+        standard_car_names.sort();
+        ROOT::sRacingModifyCarNames = [premium_car_names, standard_car_names];
+
+        return ROOT::sRacingModifyCarNames;
+    }
 
     function on_racing_modify(context, focus_index)
     {
@@ -1452,7 +1484,23 @@ module ROOT
             main::sound.play("disable");
             ROOT::MessageArea::MessageWindow::FadeActor.reset();
 
-            DialogUtil::openConfirmDialog(context, DialogUtil::ERROR, context.translate(ROOT, "MESSAGE_THIS_CAR_CANNOT_MODIFY"));
+            if(DialogUtil::openConfirmDialog(context, DialogUtil::DEFAULT_NO,
+                context.translate(ROOT, "MESSAGE_THIS_CAR_CANNOT_MODIFY") + "\n\n" + context.translate(ROOT, "LIST_MODIFIABLE_CARS")
+            ))
+            {
+                var rm_lists = getRacingModifyCarNames();
+                var rm_list = "Premium cars with Racing Modifications available:";
+
+                foreach (var car_name in rm_lists[0])
+                    rm_list += "\r\n" + car_name;
+
+                rm_list += "\r\n\r\nStandard cars with Racing Modifications available:";
+
+                foreach (var car_name in rm_lists[1])
+                    rm_list += "\r\n" + car_name;
+
+                DialogUtil::openInformationDialog(context, rm_list);
+            }
 
             return;
         }
@@ -2458,6 +2506,7 @@ module ROOT::Each::AeroParts::PartsSelect
     method setup(context, cp)
     {
         var is_exist_parts = false;
+        var default_tab = nil;
         cp.beginPartsInfo();
 
         foreach (var parts_type in sPartsTypes)
@@ -2507,6 +2556,9 @@ module ROOT::Each::AeroParts::PartsSelect
             }
 
             self[parts_type.code]["Normal"].visible = is_exist_parts_type;
+
+            if (is_exist_parts_type && default_tab == nil)
+                default_tab = parts_type.code;
         }
 
         cp.endPartsInfo();
@@ -2514,7 +2566,7 @@ module ROOT::Each::AeroParts::PartsSelect
             return false;
 
         self.updateTotalWages();
-        self.change_tab("AERO1");
+        self.change_tab(default_tab != nil ? default_tab : "AERO1");
 
         return true;
     }

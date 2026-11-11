@@ -142,6 +142,25 @@ module ROOT
                 list.push([cp, true]);
             }
 
+            //mm: add all template cars to the Debug tab
+            var all_template_car_list = [
+                ["impreza_sedan_wrx_sti_10", 0], ["c4_wrc_08", 0],
+                ["lancer_evo10_gsr_premium_07", 0], ["focus_rs_wrc_08", 0],
+                ["gtr_07", 1], ["is_f_racing_concept_08", 0], ["arta_garaiya_08", 0],
+                ["_147_ti_20_ts_06", 0], ["mustang_gt_07", 0], ["fairlady_z_st_08", 7],
+                ["sls_amg_10", 6], ["m3_coupe_07", 1], ["eagle_type122_09", 8],
+                ["rs6_avant_08", 0], ["golf_gti_05", 9], ["r34_gtr_v2_nur_02", 1],
+                ["pdi_racing_kart_100_xx", 4], ["elise_111r_04", 11], ["az1_92", 0]
+            ];
+            foreach (|var car_label, var car_color| in all_template_car_list)
+            {
+                var cp = gtengine::MCarParameter();
+                cp.setCarCode(car_label);
+                cp.color = car_color;
+                cp.ownArcadePartsAll();
+                list.push([cp, true]);
+            }
+
             return self.get_finder_candidates(context, list);
         }
 
@@ -464,7 +483,8 @@ module ROOT
 
             method onInitialize(context)
             {
-                self.DebugCars.visible = GetVersionBranch() == "runviewer";
+                //mm: enable debug cars tab
+                self.DebugCars.visible = true; //GetVersionBranch() == "runviewer";
             }
 
             method onActivate(context, event)

@@ -1,10 +1,3 @@
-//---------------------------------------------------------------------------------------
-// SPDX-FileCopyrightText: Copyright (C) 2026 Nenkai, OpenAdhoc Contributors
-// SPDX-License-Identifier: GPL-3.0-or-later
-// SPDX-FileAttributionText: https://github.com/Nenkai/OpenAdhoc
-// SPDX-FileNotice: AI usage and consumption is prohibited. See AGENTS.md for policy.
-//---------------------------------------------------------------------------------------
-
 module GTTopRoot
 {
     #include "TopNews.ad"
@@ -72,6 +65,8 @@ module GTTopRoot
         var news_enable = LoginUtil::isOnline() && Grim2Util::News::isEnable();
         PopupNews.visible = news_enable;
         PopupNews::ParallelActor.out = !news_enable;
+		PopupNews.visible = true;
+        PopupNews::ParallelActor.out = false;
         PopupNews.initialize(context);
     }
 
@@ -235,6 +230,8 @@ module GTTopRoot
         {
             PopupNews.visible = false;
         }
+		PopupNews.visible = true;
+        PopupNews::ParallelActor.out = false;	
 
         Menus::MainMenu::ParallelActor.out = false;
         Menus::SideMenu::ParallelActor.out = false;
@@ -433,15 +430,36 @@ module GTTopRoot
         }
         else
         {
-            if (scene_alias == "top_garage")
+            if (Garage2Util::Premium::getCount() > 0)
             {
-                var cars = Garage2Util::Premium::RandomPickup(1);
+				var cars = Garage2Util::Premium::RandomPickup(1);
                 var cpp = cars[0];
-                cp = cpp.getCP();
-                var car_label = cp.getCarLabel();
+                var prem_cp = cpp.getCP();
+                var car_label = prem_cp.getCarLabel();
 
-                if (car_label.beginWith("nascar_"))
-                    scene_alias = "top_garage_NASCAR";
+                if (car_label.beginWith("_908_hdi_fap"))
+                {
+                    var i = pdistd::MRandom::GetValue(0, 3);
+                    if (i > 0)
+                    {
+                        cp = prem_cp;
+                        scene_alias = "menu_lemans2010";
+                    }
+                }
+                else if (scene_alias == "top_garage")
+                {
+                    cp = prem_cp;
+                    if (car_label.beginWith("nascar_"))
+                        scene_alias = "top_garage_NASCAR";
+                }
+                else if (scene_alias.beginWith("top_ahrweiler"))
+                {
+                    var current_time = pdiext::getBetterTimeLocal();
+                    var m = current_time.month;
+                    var d = current_time.day;
+                    if (m == 12 && d >= 22 && d <= 28)
+                        scene_alias = "photo_ahrweiler1_winter";
+                }
             }
         }
 
@@ -550,8 +568,11 @@ module GTTopRoot
 
         sound.play("ok");
 
+		//mm: reduce login prompts
+        /*
         if (pdistd::MNetworkInterface::isUp() && !GAME_STATUS.config.no_request_NP_sign_in)
             LoginUtil::tryLogin(context);
+		*/
 
         Menus::MainMenu.saveFocusPosition();
         PROJECT.history['LastPageName'] = ROOT.name;
@@ -638,9 +659,12 @@ module GTTopRoot
         }
 
         sound.play("ok");
-
+		
+		//mm: reduce login prompts
+        /*
         if (pdistd::MNetworkInterface::isUp())
             LoginUtil::tryLogin(context);
+		*/
 
         Menus::MainMenu.saveFocusPosition();
         PROJECT.history['LastPageName'] = ROOT.name;
@@ -771,8 +795,11 @@ module GTTopRoot
 
         if (index != LOUNGE_MODE_LAN_BATTLE)
         {
+			//mm: reduce login prompts
+            /*
             if (pdistd::MNetworkInterface::isUp())
                 LoginUtil::tryLogin(context);
+			*/
 
             if (!LoginUtil::isOnline())
             {
@@ -1019,59 +1046,6 @@ module GTTopRoot
             DebugMenuPopup.open(context);
             LeaveDetectUtil::resume(context);
             return EVENTRESULT_FILTER;
-        }
-        else if (event.keysym == CELL_PAD_CTRL_START)
-        {
-            var message = "Thanks for playing Gran Turismo 5 Evolution!\n"
-                          "If you have an interest in modding or would like to know more, feel free to join the GT Modding Community Discord!\n"
-                          "https://nenkai.github.io/gt-modding-hub/\n"
-                          "\n"
-						  "● Gran Turismo 5 Evolution\n"
-						  "Mod by Erik Delgado\n"
-						  "[Mod Link]\n"
-						  "gtplanet.net/forum/threads/432917/\n"
-						  "[Credits]\n"
-						  "- Nenkai / OpenAdhoc, GT5 Master Mod, GT Modding Hub, custom Adhoc code, support provided in the GT Modding Discord.\n"
-                          "- ddm / OpenAdhoc, GT5 Master Mod, custom Adhoc code, support provided in the GT Modding Discord.\n"
-						  "- Lunard / New engine sounds.\n"
-						  "- TheAdmiester / Updated car specs, new engine sounds from GT4 Spec II and GT6 Spec II, improved audio mixing, custom Adhoc code.\n"
-						  "- modeewy25 / Updated car specs.\n"
-						  "- GTPlanet / Updated car specs.\n"
-						  "- r3n4 / Event flyers for new events, background images for One-Make Events, RM previews, updated boot notice year.\n"
-						  "- Mashmo / Support provided in the GT Modding Discord.\n"
-						  "- Racing Game Cafe Discord / Coming up with the mod name.\n"
-						  "- BertoBoi / Helping with some event descriptions.\n"
-						  "- Aphelion / Support with editing car descriptions.\n"
-                          "- theufcveteran / Background images for One-Make Events.\n"
-						  "\n"
-						  "● GT5 Master Mod\n"
-                          "[Creator]\n"
-                          "Mod by Nenkai!\n"
-                          "Github: Nenkai\n"
-                          "GTP: Nenkai\n"
-                          "\n"
-                          "[Mod Link]\n"
-                          "gtplanet.net/forum/threads/395844/\n"
-                          "\n"
-                          "[Additional Credits]\n"
-                          "It's by crediting and acknowledging other individuals and effort that the modding community can advance!\n"
-                          "- Polyphony Digital (PDI) / Amazing games and tech\n"
-                          "- ddm / All Arcade Mode improvements\n"
-                          "- LukeGB / GT5 GTMode decompilation\n"
-                          "- Klitlika / Added cars to arcade and recommended, course list changes, UCD cars to dealership & restored & fixed cut events\n"
-                          "- Shy_Doge / Making the missing PS2 tracks maps and logos.\n"
-                          "- Jonny_0093 / PS2 tracks arcade previews\n"
-                          "- Goongumps / Online Mode car category changes"
-                          "- xFileFIN / Tools, helping me get started in Gran Turismo internals\n"
-                          "- Xenn / Easter Egg\n"
-                          "- Paiky (GT Archive) & Dezent / Contributing and getting GT5 QA Build which allowed content to be ported over to GT5.\n"
-                          "- Content Creators / DoVe_7, DustinEden, Paiky/GT Archive, Gustingorriz, ThunderTHR, Grand Prix, R4BBIT G4MING, ...\n"
-                          "- More at https://nenkai.github.io/gt-modding-hub/credits/\n"
-                          "\n"
-                          "You, for playing this! :D\n";
-
-            DialogUtil::openInformationDialog(context, 
-                message, "Credits");
         }
 
         return EVENTRESULT_CONTINUE;
@@ -1520,7 +1494,10 @@ module GTTopRoot::PopupNews
     method initialize(context)
     {
         if (!LoginUtil::isOnline() || !Grim2Util::News::isEnable())
+		{
+            initializeLocal(context);
             return;
+		}
 
         var update_scroll_news = ScrollNewsUtil::isEmpty();
         var me = self;
@@ -1616,14 +1593,88 @@ module GTTopRoot::PopupNews
             });
         }
     }
+	
+	method initializeLocal(context)
+    {
+        var res = main::pdistd::ReadFile("/textdata/gt5/news/news.xml");
+        if (res["result"] != main::pdistd::FileError::OK)
+            return;
+
+        var xml = main::pdistd::MXml();
+        xml.parse(res["buffer"]);
+        var dom = xml.result;
+        var nodelist = dom["NewsRoot"];
+        if (nodelist == nil || nodelist.size == 0)
+            return;
+
+        var categories = nodelist[0]["Category"];
+        var articles = nodelist[0]["Article"];
+        if (articles == nil)
+            return;
+
+        var POPUP_COUNT = 6;
+        self.news_list = [];
+        var optional_pool = [];
+        for (var i = 0; i < articles.size; i++)
+        {
+            var article = articles[i];
+            var cat_id1 = article.getAttribute("category_id1").toInt();
+			var cat_id2 = article.getAttribute("category_id2").toInt();
+            var cat_name = "";
+            if (categories != nil)
+            {
+                for (var j = 0; j < categories.size; j++)
+                {
+                    if (categories[j].getAttribute("category_id1").toInt() == cat_id1)
+                    {
+                        cat_name = categories[j].getAttribute("name");
+                        break;
+                    }
+                }
+            }
+
+            var news = [
+                "news_id":       article.getAttribute("news_id"),
+                "category_id1":  cat_id1,
+                "category_id2":  cat_id2,
+                "category_name": cat_name,
+                "title":         article.getAttribute("title"),
+                "headline":      article.getAttribute("headline"),
+                "comment":       article.getAttribute("comment"),
+                "news_time":     nil,
+            ];
+
+            if (cat_id2 == 0)
+                self.news_list.push(news);
+            else
+                optional_pool.push(news);
+        }
+
+        var selected_optional = [];
+        while (selected_optional.size < POPUP_COUNT - self.news_list.size && optional_pool.size > 0)
+        {
+            var idx = pdistd::MRandom::GetValue(0, optional_pool.size);
+            selected_optional.push(optional_pool[idx]);
+            optional_pool.erase(idx);
+        }
+        selected_optional.sort(function(a, b) { return a["news_id"] < b["news_id"]; });
+        for (var i = 0; i < selected_optional.size; i++)
+            self.news_list.push(selected_optional[i]);
+
+        initialize3(context);
+    }
 
     method initialize3(context)
     {
         news_list.sort(function(a, b) {
             if (a["category_id1"] == b["category_id1"])
+            {
+                if (a["news_time"] == nil || b["news_time"] == nil)
+                    return false;
                 return a["news_time"].getBySecond() > b["news_time"].getBySecond();
-
-            return a["category_id1"] < b["category_id1"];
+            }
+			
+			return a["category_id1"] < b["category_id1"];
         });
 
         foreach (var news in self.news_list)
@@ -1743,16 +1794,15 @@ module GTTopRoot::PopupNews
             {
                 main::sound.play("ok");
 
-                if (pdistd::MNetworkInterface::isUp())
-                    LoginUtil::tryLogin(context);
+                //mm: reduce login prompts
+                //if (pdistd::MNetworkInterface::isUp())
+                //    LoginUtil::tryLogin(context);
 
                 if (!LoginUtil::isOnline())
                 {
+					LeaveDetectUtil::suspend(context);
                     DialogUtil::openConfirmDialog(context, DialogUtil::ERROR, context.translate(ROOT, "Network", "CANNOT_CONNECT_SERVER"));
-                    PopupNews::ParallelActor.out = true;
-                    context.sync(0.5);
-                    PopupNews.visible = false;
-                    ROOT.setFocus(Menus::MainMenu::ListBox);
+					LeaveDetectUtil::resume(context);
 
                     return EVENTRESULT_FILTER;
                 }
@@ -1801,17 +1851,30 @@ module GTTopRoot::hidden
         {
             main::sound.play("ok");
 
+			//mm: reduce login prompts
+            /*
             if (pdistd::MNetworkInterface::isUp())
                 LoginUtil::tryLogin(context);
+			*/
 
             if (!LoginUtil::isOnline())
             {
-                DialogUtil::openConfirmDialog(context, DialogUtil::ERROR, context.translate(ROOT, "Network", "CANNOT_CONNECT_SERVER"));
-                PopupNews::ParallelActor.out = true;
-                context.sync(0.5);
-                PopupNews.visible = false;
-                ROOT.setFocus(Menus::MainMenu::ListBox);
-
+				LeaveDetectUtil::suspend(context);
+				
+                if (self.news["comment"] != nil)
+                {
+                    DialogUtil::openInformationDialog(context, self.news["comment"], self.news["title"]);
+                }
+                else
+                {
+                    DialogUtil::openConfirmDialog(context, DialogUtil::ERROR, context.translate(ROOT, "Network", "CANNOT_CONNECT_SERVER"));
+                    PopupNews::ParallelActor.out = true;
+                    context.sync(0.5);
+                    PopupNews.visible = false;
+                    ROOT.setFocus(Menus::MainMenu::ListBox);
+                }
+				
+				LeaveDetectUtil::resume(context);
                 return EVENTRESULT_FILTER;
             }
 

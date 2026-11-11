@@ -18,3 +18,4 @@ files_to_compile:
   - name: TuningPopup.ad
   - name: ItemDetailPopup.ad
   - name: SettingSheetPopup.ad
+  - name: MasterDifficultyOptions.ad

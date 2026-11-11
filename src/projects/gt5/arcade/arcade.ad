@@ -28,18 +28,23 @@ module PROJECT
     static gEnableCourses;
     static gEnableCourseDataMap;
     static gDifficultySetting;
+    static gCarCategories;
     static gAbortSequence = false;
     static gLeaveDetectTime;
     static gDrivingOption;
+    static gForceWeather = false;
+    static gMasterDifficultySettings;
 
 
     module ArcadeModeEnum
     {
         static SINGLE_RACE = 0;
+        static QUICK_RACE = 10;
         static TIME_ATTACK = 1;
         static DRIFT_ATTACK = 2;
         static SPLIT_BATTLE = 3;
         static MY_GAME = 4;
+        static EVENT_SYNTHESIZER = 11;
     }
 
     module DifficultyEnum
@@ -48,6 +53,16 @@ module PROJECT
         static EASY = 0;
         static NORMAL = 1;
         static PRO = 2;
+        static MM_PRO = 3;
+    }
+
+    module MasterDifficultyCatchupDistEnum
+    {
+        static VERY_SHORT = 0;
+        static SHORT      = 1;
+        static MEDIUM     = 2;
+        static LONG       = 3;
+        static VERY_LONG  = 4;
     }
 
     module Function 
@@ -180,10 +195,11 @@ module PROJECT
         }
 
         static mode_sequence = [ArcadeModeEnum::SINGLE_RACE: [CourseRoot, CarRoot],
+                                ArcadeModeEnum::QUICK_RACE: [CourseRoot, CarRoot],
                                 ArcadeModeEnum::TIME_ATTACK: [CourseRoot, CarRoot],
                                 ArcadeModeEnum::DRIFT_ATTACK: [CourseRoot, CarRoot],
                                 ArcadeModeEnum::SPLIT_BATTLE: [CourseRoot, CarSplitBaseRoot],
-                                ArcadeModeEnum::MY_GAME: [MyGameSelectRoot, CourseRoot, CarRoot]
+                                ArcadeModeEnum::MY_GAME: [MyGameSelectRoot, CourseRoot, CarRoot],
         ];
 
         attribute mode_;
@@ -271,6 +287,12 @@ module PROJECT
                     var gp = main::gtengine::MGameParameter();
                     gp.deepCopy(gp_);
 
+                    //mm: fix MyGame course select
+                    if (main::gtengine::MSpecDB::NO_CODE64 == gp.event.track.course_code)
+                    {
+                        gp.event.track.course_code = course_data_holder.getCourseCode();
+                    }
+
                     return goRaceSequence(context, gp.event.game_mode, gp, course_data_holder);
                 }
                 else if (self.mode_ != nil)
@@ -280,6 +302,7 @@ module PROJECT
                         case ArcadeModeEnum::TIME_ATTACK:
                             return goRaceSequence(context, gtengine::GameMode::TIME_ATTACK, nil, course_data_holder);
                         case ArcadeModeEnum::SINGLE_RACE:
+                        case ArcadeModeEnum::QUICK_RACE:
                             return goRaceSequence(context, gtengine::GameMode::SINGLE_RACE, nil, course_data_holder);
                         case ArcadeModeEnum::DRIFT_ATTACK:
                             return goRaceSequence(context, gtengine::GameMode::DRIFT_ATTACK, nil, course_data_holder);
@@ -548,6 +571,10 @@ module PROJECT
 
         var difficulty = main::pdiapp::XmlUtil::load_map_and_array("/textdata/gt5/arcade_difficulty.xml", "DifficultyData", "difficulty", "name");
         gDifficultySetting = difficulty.map;
+        gMasterDifficultySettings = [112,105,110,2,7,0];
+
+        var carcategories = main::pdiapp::XmlUtil::load_map_and_array("/textdata/gt5/arcade_carcategories.xml", "CarCategories", "category", "name");
+        gCarCategories = carcategories.map;
 
         gLeaveDetectTime = GAME_STATUS.user_profile.option.timeout_count_to_topmenu;
 
@@ -587,6 +614,7 @@ module PROJECT
         switch (arcade_mode)
         {
             case ArcadeModeEnum::SINGLE_RACE:
+            case ArcadeModeEnum::QUICK_RACE:
                 return GAME_STATUS.user_profile.option.visible_icon_singlerace;
             case ArcadeModeEnum::TIME_ATTACK:
                 return GAME_STATUS.user_profile.option.visible_icon_timetrial;
@@ -667,7 +695,7 @@ module PROJECT
         var rp = gp.event.race_parameter;
         var constraint = gp.event.constraint;
         var difficulty = GAME_STATUS.user_profile.context.arcade_difficulty;
-        var difficulty_name = ["easy", "normal", "pro"];
+        var difficulty_name = ["easy", "normal", "pro", "mm_pro"];
         var course_code = gp.event.track.course_code;
 
         if ("demo" == GetVersionBranch())
@@ -698,22 +726,18 @@ module PROJECT
         }
 
         var result;
-        if (difficulty == PROJECT::DifficultyEnum::EASY)
+        //mm: "Quick Race" uses the fast option screen instead of "Single Race: Easy"
+        if (main::GAME_STATUS.user_profile.context.arcade_game_mode == ArcadeModeEnum::QUICK_RACE)
         {
             if (cp.isATOnly())
             {
                 main::sound.play("next");
                 result = true;
             }
-            else 
-            {
-                if (gp.event.game_mode != gtengine::GameMode::SPLIT_BATTLE)
-                {
-                    OverLapRoot.onEasyModeOption(context);
-                }
 
-                result = EasyModeOptionRoot.open(context, cp, dp);
-            }
+            OverLapRoot.onEasyModeOption(context);
+
+            result = EasyModeOptionRoot.open(context, cp, dp);
         }
         else
         {
@@ -822,7 +846,7 @@ module PROJECT
 
     function applyDifficulty(context, gp)
     {
-        var difficulty_name = ["easy", "normal", "pro"];
+        var difficulty_name = ["easy", "normal", "pro", "mm_pro"];
         var map = gDifficultySetting[difficulty_name[GAME_STATUS.user_profile.context.arcade_difficulty]];
 
         var event = gp.event;
@@ -831,11 +855,48 @@ module PROJECT
 
         entry_set.entry_generate.ai_roughness = GAME_STATUS.user_profile.option.arcade_ai_roughness;
 
-        entry_set.entry_generate.ai_skill_accelerating = map["ai_skill_a"];
-        entry_set.entry_generate.ai_skill_breaking = map["ai_skill_b"];
-        entry_set.entry_generate.ai_skill_cornering = map["ai_skill_c"];
-
-        rp.setBoostParams(map["boost_f"], map["boost_r"], map["boost_fmax"], map["boost_rmax"], map["boost_fmin"], map["boost_rmin"]);
+        if ("mm_pro" == difficulty_name[GAME_STATUS.user_profile.context.arcade_difficulty])
+        {
+            entry_set.entry_generate.ai_skill_accelerating = gMasterDifficultySettings[0];
+            entry_set.entry_generate.ai_skill_breaking = gMasterDifficultySettings[1];
+            entry_set.entry_generate.ai_skill_cornering = gMasterDifficultySettings[2];
+            var boost_f = gMasterDifficultySettings[3];
+            var boost_r = gMasterDifficultySettings[4];
+            var boost_min = 1;
+            var boost_max = 12;
+            switch (gMasterDifficultySettings[5])
+            {
+                default:
+                case MasterDifficultyCatchupDistEnum::VERY_SHORT:
+                    boost_min = 1;
+                    boost_max = 12;
+                    break;
+                case MasterDifficultyCatchupDistEnum::SHORT:
+                    boost_min = 5;
+                    boost_max = 20;
+                    break;
+                case MasterDifficultyCatchupDistEnum::MEDIUM:
+                    boost_min = 10;
+                    boost_max = 30;
+                    break;
+                case MasterDifficultyCatchupDistEnum::LONG:
+                    boost_min = 20;
+                    boost_max = 50;
+                    break;
+                case MasterDifficultyCatchupDistEnum::VERY_LONG:
+                    boost_min = 20;
+                    boost_max = 100;
+                    break;
+            }
+            rp.setBoostParams(boost_f, boost_r, boost_max, boost_max, boost_min, boost_min);
+        }
+        else
+        {
+            entry_set.entry_generate.ai_skill_accelerating = map["ai_skill_a"];
+            entry_set.entry_generate.ai_skill_breaking = map["ai_skill_b"];
+            entry_set.entry_generate.ai_skill_cornering = map["ai_skill_c"];
+            rp.setBoostParams(map["boost_f"], map["boost_r"], map["boost_fmax"], map["boost_rmax"], map["boost_fmin"], map["boost_rmin"]);
+        }
         rp.replace_at_courseout = map["replace_at_courseout"];
     }
 
@@ -863,7 +924,7 @@ module PROJECT
             rp.start_type = gtengine::StartType::ROLLING_DL;
 
 
-            var difficulty_name = ["nascar_easy", "nascar_normal", "nascar_pro"];
+            var difficulty_name = ["nascar_easy", "nascar_normal", "nascar_pro", "nascar_pro"];
             var map = gDifficultySetting[difficulty_name[GAME_STATUS.user_profile.context.arcade_difficulty]];
 
             entry_set.entry_generate.ai_skill = map["ai_skill"];
@@ -889,6 +950,10 @@ module PROJECT
                     else
                         entry_generate.player_pos = entry_generate.entry_num - 1;
 
+                    rp.rolling_player_grid = entry_generate.player_pos;
+                    break;
+                case ArcadeProject::DifficultyEnum::MM_PRO:
+                    entry_generate.player_pos = entry_generate.entry_num - 1;
                     rp.rolling_player_grid = entry_generate.player_pos;
                     break;
             }
@@ -1160,7 +1225,7 @@ module PROJECT
             var rp = gp.event.race_parameter;
             
 
-            if (course_parameter.weather_changeable_)
+            if (course_parameter.weather_changeable_ || gForceWeather)
             {
                 rp.decisive_weather = gtengine::DecisiveWeather::NONE;
             

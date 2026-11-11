@@ -54,6 +54,7 @@ files_to_compile:
   - name: MyHomeProfilePopup.ad
   - name: DrivingWearPopup.ad
   - name: RegulationReportPopup.ad
+  - name: RaceSettingsPopup.ad
   - name: RewardItemListPopup.ad
   - name: DriverDetailPopup.ad
   - name: DeckenPopup.ad

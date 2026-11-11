@@ -39,12 +39,12 @@
 #define BSPEC_DATA_PATH             "textdata/gt5/bspec_driver_list.xml"
 
 // Car List (CarData.ad)
-#define CAR_DATA_VERSION            1312
+#define CAR_DATA_VERSION            1313
 #define CAR_TABLE_NAME              "t_car_data"
 #define CAR_DATA_PATH               "textdata/gt5/carlist.xml"
 
 // Course List (CourseData.ad)
-#define COURSE_DATA_VERSION         2060
+#define COURSE_DATA_VERSION         2061
 #define COURSE_TABLE_NAME           "t_course_data"
 #define COURSE_DATA_PATH            "textdata/gt5/courselist.xml"
 
@@ -82,7 +82,7 @@
 // For all tables that are present in the save file.
 
 // GlobalStatus.ad
-#define GLOBAL_STATUS_VERSION     249
+#define GLOBAL_STATUS_VERSION     250
 
 // Community boards (global_status/GameBbs.ad)
 #define BBS_TABLE_VERSION         2
@@ -117,11 +117,12 @@
 #define NEWS_READ_TABLE_NAME       "t_news_read"
 
 // Garage (global_status/Garage.ad)
-#define GARAGE_TABLE_VERSION       15
+#define GARAGE_TABLE_VERSION       16
 #define GARAGE_TABLE_NAME          "t_garage"
 
 #define GARAGE_MAX_CARS            2000
-#define GARAGE_MAX_FAVORITE        100
+//mm: increase favourite cars max from 200 -> 1000
+#define GARAGE_MAX_FAVORITE        1000
 #define GARAGE_MAX_ONLINE          6
 
 // Import Garage (PSP) (global_status/ImportGarage.ad)

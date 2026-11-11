@@ -177,7 +177,8 @@ module PhotoFileUtil
 
     function getFavoriteMax()
     {
-        return 50;
+        //mm: increase favourite photos max from 50 -> 200
+        return 200;
     }
 
     function getOnlineList(order, by)

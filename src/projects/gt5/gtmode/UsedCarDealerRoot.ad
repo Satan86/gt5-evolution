@@ -44,7 +44,8 @@ module ROOT
             self.U.visible = false;
             self.H.visible = true;
 
-            var text = context.translate(ROOT, "GTModeProject::GTModeRoot", "LABEL_ONLINEUSEDCARDEALER").split("\n").join(" ");
+            var label_key = LoginUtil::isOnline() ? "LABEL_ONLINEUSEDCARDEALER" : "LABEL_SPECIALUSEDCARDEALER";
+            var text = context.translate(ROOT, "GTModeProject::GTModeRoot", label_key).split("\n").join(" ");
 
             self.title.text = text.upcase();
             CarSelect.sort_order.visible = false;
@@ -188,8 +189,10 @@ module ROOT
     {
         if (!self.mode_online)
             return getUsedCarDataOffline(context, sort_order);
-        else
+        else if (LoginUtil::isOnline())
             return getUsedCarDataOnline(context, sort_order);
+        else
+            return getUsedCarDataSpecial(context, sort_order);
     }
 
     method getUsedCarDataOnline(context, sort_order)
@@ -251,7 +254,122 @@ module ROOT
         {
             return [];
         }
+    }
 
+    method getWeek(context)
+    {
+        var current_time = pdiext::getBetterTimeLocal();
+        var md = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+        var y = current_time.year;
+        var m = current_time.month;
+        var d = current_time.day;
+        var td = d;
+        if ((y % 4 == 0 && y % 100 != 0) || (y % 400 == 0))
+            md[1] = 29;
+        for (var j = 0; j < m - 1; j++)
+            td += md[j];
+        var j1 = (y + (y-1)/4 - (y-1)/100 + (y-1)/400) % 7;
+        var w = (td+j1-1)/7;
+        if (j1 <= 4)
+            w++;
+        if (w <= 0 || w > 52)
+            w = 52;
+
+        return w;
+    }
+
+    method getUsedCarDataSpecial(context, sort_order)
+    {
+        var w = getWeek(context);
+        var res = main::pdistd::ReadFile("/textdata/gt5/special_used_car/used_car_list_%{w}.xml");
+        var car_list = Array();
+        var usedcar_version = 0;
+        var usedcar_title = "";
+
+        if (res["result"] != main::pdistd::FileError::OK)
+            return [];
+        else
+        {
+            var buf = res["buffer"];
+            var xml = main::pdistd::MXml();
+            xml.parse(buf);
+
+            var dom = xml.result;
+            var nodelist = dom["UsedCarList"];
+            if (nodelist == nil)
+                return [];
+
+            var node = nodelist[0];
+            usedcar_version = node.getAttribute("version").toInt();
+            usedcar_title = node.getAttribute("title");
+            nodelist = node["car"];
+            if (nodelist == nil)
+                return [];
+
+            for (var i = 0; i < nodelist.size; i++)
+            {
+                var node = nodelist[i];
+                var _car = [];
+
+                _car = [
+                    "usedcar_id": node.getAttribute("usedcar_id").toInt(),
+                    "car_code": node.getAttribute("car_code"),
+                    "color": node.getAttribute("color").toInt(),
+                    "odometer_min": node.getAttribute("odometer_min").toInt(),
+                    "odometer_max": node.getAttribute("odometer_max").toInt(),
+                    "price": node.getAttribute("price").toInt(),
+                ];
+
+                car_list.push(_car);
+            }
+        }
+
+        var currentyear = pdiext::getBetterTimeLocal().year - 2000;
+        var seed_x = ((currentyear * 365) + usedcar_version) * 40 + getSeedPS3();
+
+        var text = usedcar_title; //usedcar_xml[pdistd::MLocale::getLanguage()];
+
+        CarSelect.ToolTip.tip.value = text;
+        CarSelect.ToolTip.tip.resetAction();
+
+        var random = pdistd::MRandom();
+
+        var list = [];
+        foreach (var usedcar in car_list)
+        {
+            var seed = seed_x + usedcar["usedcar_id"];
+            random.mt_seed = seed;
+            var new_flag = UsedCarUtil::checkNewFlagListOnline(seed);
+
+            var cp = main::gtengine::MCarParameter(usedcar["car_code"]);
+            cp.color = getCarColor(usedcar, random);
+
+            var odometer_km = getOdometer(usedcar, random);
+            var price = getPrice(odometer_km, usedcar);
+
+            cp.setNewCar();
+            cp.odometer = odometer_km * 1000;
+
+            var oil_life_km = odometer_km;
+            if (oil_life_km > 5000)
+                oil_life_km = 5000;
+            cp.oil_life = oil_life_km * 1000;
+            cp.engine_life = cp.odometer;
+            cp.body_life = cp.odometer;
+
+            var sold_out = false;
+            var min_seed = 0;
+
+            if (!UsedCarUtil::checkBuyListOnline(seed, usedcar_version))
+                sold_out = true;
+
+            list.push([cp, price, sold_out, new_flag, seed, min_seed]);
+        }
+
+        if (!sort_order)
+            list.sort(function (a, b) { return a[1].toInt() < b[1].toInt() })
+
+        return list;
     }
 
     method getUsedCarDataOffline(context, sort_order)
@@ -361,6 +479,8 @@ module ROOT
             calc_odd -= 300000;
 
         var price_origine = usedcar["price"].toFloat();
+        if (usedcar["price"] == -1)
+            price_origine = gtengine::MSpecDB::getCarPrice(usedcar["car_code"])*0.5;
         var price = price_origine - (((calc_odd.toFloat() / 10000) * price_origine) / 20);
 
         return price;
@@ -476,7 +596,7 @@ module ROOT
 
     function checkDebugCommand(context)
     {
-        if (pdiext::isQABuild())
+        if (true /*pdiext::isQABuild()*/)
         {
             var state = context.getUpdateContext().getPadButtonState(0);
 
@@ -1054,7 +1174,7 @@ module ROOT::CarDetail
                 status = EVENTRESULT_STOP;
         }
 
-        if (pdiext::isQABuild() && event.keysym == CELL_PAD_CTRL_START)
+        if (true /*pdiext::isQABuild()*/ && event.keysym == CELL_PAD_CTRL_START)
         {
             ROOT.buyUsedCar(context, self.cp_, self.price_, self.sold_out_, self.new_flag_, self.seed_, self.min_seed_, true);
             return EVENTRESULT_FILTER;
