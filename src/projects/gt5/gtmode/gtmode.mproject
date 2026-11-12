@@ -32512,6 +32512,7 @@ Project {
                   children[7] {
                     ColorFace {
                       name string{"ImageFace0"}
+					  visible digit{0}
                       geometry rectangle{177 -2 107 108}
                       skew vector{-45 0}
                       color_type_name string{"divide_color"}
@@ -32535,6 +32536,7 @@ Project {
                     }
                     ColorFace {
                       name string{"ImageFace"}
+					  visible digit{0}
                       geometry rectangle{180 -2 107 108}
                       skew vector{-45 0}
                       color[4] {
@@ -32575,6 +32577,7 @@ Project {
                   children[7] {
                     ColorFace {
                       name string{"ImageFace0"}
+					  visible digit{0}
                       geometry rectangle{177 -2 107 108}
                       skew vector{-45 0}
                       color_type_name string{"divide_color"}
@@ -32598,6 +32601,7 @@ Project {
                     }
                     ColorFace {
                       name string{"ImageFace"}
+					  visible digit{0}
                       geometry rectangle{180 -2 107 108}
                       skew vector{-45 0}
                       color[4] {
@@ -32631,6 +32635,7 @@ Project {
                 }
                 HBox {
                   name string{"Level"}
+				  visible digit{0}
                   pack_pad_right digit{24}
                   pack_allocate_y digit{0}
                   pack_expand_x digit{1}
