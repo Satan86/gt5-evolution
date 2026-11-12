@@ -679,7 +679,7 @@ module CarData
                 additional_conditions = [];
 
             additional_conditions += ["car_dealer = 1"];
-            return getCPPListImpl(nil, nil, tuner_label, nil, "purchase_level", "ASC", additional_conditions);
+            return getCPPListImpl(nil, nil, tuner_label, nil, "pp", "DESC", additional_conditions);
         }
 
         function getCarCount(tuner_label, purchase_level, ignore_list)
