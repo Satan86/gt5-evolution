@@ -926,7 +926,7 @@ module ROOT::hidden::CarItem
 
         self.ColorTip::ColorFace.setCarColor(car_code, color);
         var tuner_label = gtengine::MSpecDB::getTunerLabel(car_code);
-        self.manufacturer_name.text = context.translate(ROOT, "TunerName", tuner_label);
+        self.manufacturer_logo.image_path = "piece/tunner_logo_M/%{tuner_label}.img";
 
         self.car_name.text = gtengine::MSpecDB::getCarShortName(car_code);
         self.LV::need_level.text = gtengine::MSpecDB::getCarPurchaseLevel(car_code);

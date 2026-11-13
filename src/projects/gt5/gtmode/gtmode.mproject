@@ -34224,6 +34224,7 @@ Project {
                   children[2] {
                     TextFace {
                       name string{"lv"}
+					  visible digit{0}
                       packable digit{1}
                       pack_pad_right digit{10}
                       pack_pad_top digit{10}
@@ -34244,6 +34245,7 @@ Project {
                     }
                     TextFace {
                       name string{"need_level"}
+					  visible digit{0}
                       packable digit{1}
                       pack_pad_right digit{5}
                       pack_pad_top digit{2}
@@ -35178,6 +35180,7 @@ Project {
                 }
                 ImageFace {
                   name string{"triangle"}
+				  visible digit{0}
                   insensitive digit{1}
                   geometry rectangle{811 30 68 68}
                   opacity digit{0.8}
@@ -35482,18 +35485,13 @@ Project {
                     }
                   }
                 }
-                'FinderItem::CarList::manufacturer_name' {
-                  name string{"manufacturer_name"}
-                  insensitive digit{1}
-                  geometry rectangle{650 15 190 40}
-                  text_color RGBA{200 200 200 255}
-                  font string{"IwataSet_4"}
-                  align digit{5}
-                  scale_x digit{1.57143}
-                  scale_y digit{1.57143}
-                  REFmode digit{0}
-                  adjust_scale digit{1}
-                }
+                ImageFace {
+					name string{"manufacturer_logo"}
+					insensitive digit{1}
+					geometry rectangle{602 14 380 80}
+					from_disk digit{1}
+					tex_keep_aspect digit{1}
+				}
                 TextFace {
                   name string{"car_name"}
                   insensitive digit{1}
@@ -35590,6 +35588,7 @@ Project {
                   children[2] {
                     TextFace {
                       name string{"lv"}
+					  visible digit{0}
                       geometry rectangle{0 0 40 42}
                       text_color RGBA{160 160 160 255}
                       font string{"GTfont_3"}
@@ -35604,6 +35603,7 @@ Project {
                     }
                     TextFace {
                       name string{"need_level"}
+					  visible digit{0}
                       geometry rectangle{42 4 50 30}
                       text_color RGBA{200 200 200 255}
                       font string{"GTfont_3"}
@@ -35617,7 +35617,7 @@ Project {
                 }
                 HBox {
                   name string{"OdoMeter"}
-                  geometry rectangle{591 54 192 40}
+                  geometry rectangle{541 54 192 40}
                   children[3] {
                     TextFace {
                       name string{"km"}
@@ -35651,10 +35651,11 @@ Project {
                 }
                 HBox {
                   name string{"PP"}
+				  packable digit{0}
                   pack_pad_right digit{298}
                   pack_expand_x digit{1}
                   pack_alignment_x digit{1}
-                  geometry rectangle{303.69 43 294.31 57}
+                  geometry rectangle{233.69 43 294.31 57}
                   clip digit{0}
                   children[2] {
                     TextFace {
