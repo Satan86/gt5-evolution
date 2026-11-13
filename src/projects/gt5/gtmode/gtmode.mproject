@@ -26662,6 +26662,7 @@ Project {
                       children[2] {
                         ColorFace {
                           name string{"red"}
+						  visible digit{0}
                           packable digit{1}
                           pack_pad_left digit{100}
                           pack_pad_right digit{-122}
@@ -26677,6 +26678,7 @@ Project {
                         }
                         ColorFace {
                           name string{"veil"}
+						  visible digit{0}
                           packable digit{1}
                           pack_pad_left digit{100}
                           pack_pad_right digit{-122}
@@ -26694,6 +26696,7 @@ Project {
                     }
                     HBox {
                       name string{"Level"}
+					  visible digit{0}
                       is_face digit{1}
                       pack_pad_right digit{13}
                       pack_pad_bottom digit{-6}
@@ -26706,6 +26709,7 @@ Project {
                       children[2] {
                         TextFace {
                           name string{"label"}
+						  visible digit{0}
                           packable digit{1}
                           pack_pad_right digit{12}
                           pack_allocate_y digit{0}
@@ -26722,6 +26726,7 @@ Project {
                         }
                         TextFace {
                           name string{"value"}
+						  visible digit{0}
                           packable digit{1}
                           pack_allocate_y digit{0}
                           pack_shrink_x digit{1}
@@ -28265,6 +28270,7 @@ Project {
                         }
                         ColorFace {
                           name string{"red2"}
+						  visible digit{0}
                           packable digit{1}
                           pack_pad_left digit{440}
                           pack_pad_right digit{-122}
@@ -28279,6 +28285,7 @@ Project {
                         }
                         ColorFace {
                           name string{"veil"}
+						  visible digit{0}
                           geometry rectangle{1590.4 56 95 98}
                           skew vector{-45 0}
                           color[4] {
@@ -28311,6 +28318,7 @@ Project {
                 }
                 HBox {
                   name string{"Level"}
+				  visible digit{0}
                   pack_pad_right digit{11}
                   pack_allocate_y digit{0}
                   pack_expand_x digit{1}
@@ -28334,6 +28342,7 @@ Project {
                   children[2] {
                     TextFace {
                       name string{"label"}
+					  visible digit{0}
                       packable digit{1}
                       pack_pad_right digit{12}
                       pack_allocate_y digit{0}
@@ -28350,6 +28359,7 @@ Project {
                     }
                     TextFace {
                       name string{"value"}
+					  visible digit{0}
                       packable digit{1}
                       pack_allocate_y digit{0}
                       pack_shrink_x digit{1}
