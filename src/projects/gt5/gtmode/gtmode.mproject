@@ -22723,6 +22723,7 @@ Project {
                           children[2] {
                             TextFace {
                               name string{"label"}
+							  visible digit{0}
                               packable digit{1}
                               pack_pad_right digit{12}
                               pack_allocate_y digit{0}
@@ -22738,6 +22739,7 @@ Project {
                             }
                             TextFace {
                               name string{"value"}
+							  visible digit{0}
                               packable digit{1}
                               pack_allocate_y digit{0}
                               pack_shrink_x digit{1}
@@ -22838,6 +22840,7 @@ Project {
                               children[2] {
                                 TextFace {
                                   name string{"label"}
+								  visible digit{0}
                                   packable digit{1}
                                   pack_pad_right digit{12}
                                   pack_allocate_y digit{0}
@@ -22854,6 +22857,7 @@ Project {
                                 }
                                 TextFace {
                                   name string{"value"}
+								  visible digit{0}
                                   packable digit{1}
                                   pack_allocate_y digit{0}
                                   pack_shrink_x digit{1}
@@ -22894,6 +22898,7 @@ Project {
                           children[2] {
                             TextFace {
                               name string{"label"}
+							  visible digit{0}
                               packable digit{1}
                               pack_pad_right digit{12}
                               pack_allocate_y digit{0}
@@ -22909,6 +22914,7 @@ Project {
                             }
                             TextFace {
                               name string{"value"}
+							  visible digit{0}
                               packable digit{1}
                               pack_allocate_y digit{0}
                               pack_shrink_x digit{1}
@@ -23009,6 +23015,7 @@ Project {
                               children[2] {
                                 TextFace {
                                   name string{"label"}
+								  visible digit{0}
                                   packable digit{1}
                                   pack_pad_right digit{12}
                                   pack_allocate_y digit{0}
@@ -23025,6 +23032,7 @@ Project {
                                 }
                                 TextFace {
                                   name string{"value"}
+								  visible digit{0}
                                   packable digit{1}
                                   pack_allocate_y digit{0}
                                   pack_shrink_x digit{1}
@@ -23065,6 +23073,7 @@ Project {
                           children[2] {
                             TextFace {
                               name string{"label"}
+							  visible digit{0}
                               packable digit{1}
                               pack_pad_right digit{12}
                               pack_allocate_y digit{0}
@@ -23080,6 +23089,7 @@ Project {
                             }
                             TextFace {
                               name string{"value"}
+							  visible digit{0}
                               packable digit{1}
                               pack_allocate_y digit{0}
                               pack_shrink_x digit{1}
@@ -23180,6 +23190,7 @@ Project {
                               children[2] {
                                 TextFace {
                                   name string{"label"}
+								  visible digit{0}
                                   packable digit{1}
                                   pack_pad_right digit{12}
                                   pack_allocate_y digit{0}
@@ -23196,6 +23207,7 @@ Project {
                                 }
                                 TextFace {
                                   name string{"value"}
+								  visible digit{0}
                                   packable digit{1}
                                   pack_allocate_y digit{0}
                                   pack_shrink_x digit{1}
@@ -23236,6 +23248,7 @@ Project {
                           children[2] {
                             TextFace {
                               name string{"label"}
+							  visible digit{0}
                               packable digit{1}
                               pack_pad_right digit{12}
                               pack_allocate_y digit{0}
@@ -23251,6 +23264,7 @@ Project {
                             }
                             TextFace {
                               name string{"value"}
+							  visible digit{0}
                               packable digit{1}
                               pack_allocate_y digit{0}
                               pack_shrink_x digit{1}
@@ -23351,6 +23365,7 @@ Project {
                               children[2] {
                                 TextFace {
                                   name string{"label"}
+								  visible digit{0}
                                   packable digit{1}
                                   pack_pad_right digit{12}
                                   pack_allocate_y digit{0}
@@ -23367,6 +23382,7 @@ Project {
                                 }
                                 TextFace {
                                   name string{"value"}
+								  visible digit{0}
                                   packable digit{1}
                                   pack_allocate_y digit{0}
                                   pack_shrink_x digit{1}
@@ -23407,6 +23423,7 @@ Project {
                           children[2] {
                             TextFace {
                               name string{"label"}
+							  visible digit{0}
                               packable digit{1}
                               pack_pad_right digit{12}
                               pack_allocate_y digit{0}
@@ -23422,6 +23439,7 @@ Project {
                             }
                             TextFace {
                               name string{"value"}
+							  visible digit{0}
                               packable digit{1}
                               pack_allocate_y digit{0}
                               pack_shrink_x digit{1}
@@ -23522,6 +23540,7 @@ Project {
                               children[2] {
                                 TextFace {
                                   name string{"label"}
+								  visible digit{0}
                                   packable digit{1}
                                   pack_pad_right digit{12}
                                   pack_allocate_y digit{0}
@@ -23538,6 +23557,7 @@ Project {
                                 }
                                 TextFace {
                                   name string{"value"}
+								  visible digit{0}
                                   packable digit{1}
                                   pack_allocate_y digit{0}
                                   pack_shrink_x digit{1}
@@ -23578,6 +23598,7 @@ Project {
                           children[2] {
                             TextFace {
                               name string{"label"}
+							  visible digit{0}
                               packable digit{1}
                               pack_pad_right digit{12}
                               pack_allocate_y digit{0}
@@ -23593,6 +23614,7 @@ Project {
                             }
                             TextFace {
                               name string{"value"}
+							  visible digit{0}
                               packable digit{1}
                               pack_allocate_y digit{0}
                               pack_shrink_x digit{1}
@@ -23613,6 +23635,7 @@ Project {
                 }
                 TextFace {
                   name string{"need_level"}
+				  visible digit{0}
                   packable digit{1}
                   pack_expand_x digit{1}
                   pack_expand_y digit{1}
