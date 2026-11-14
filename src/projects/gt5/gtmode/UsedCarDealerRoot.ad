@@ -1188,6 +1188,8 @@ module ROOT::CarDetail
         self.cp_.beginInfo();
         var car_code = self.cp_.getCarCode();
         var car_color = self.cp_.color;
+		
+		self.SpecialLogo.image_path = PROJECT::getSpecialLogoPath(car_code);
 
         {
             var rtext = main::pdistd::MRText();

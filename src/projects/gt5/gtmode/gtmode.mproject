@@ -33313,7 +33313,7 @@ Project {
             }
           }
           clip digit{0}
-          children[7] {
+          children[8] {
             HBox {
               name string{"InfoMain"}
               packable digit{0}
@@ -34431,6 +34431,11 @@ Project {
               from_disk digit{1}
               tex_keep_aspect digit{1}
             }
+			ImageFace {
+				name string{"SpecialLogo"}
+				geometry rectangle{900 435 256 90}
+				tex_keep_aspect digit{1}
+			}
             HBox {
               name string{"Buttons"}
               pack_pad_right digit{100}
