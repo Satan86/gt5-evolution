@@ -74353,7 +74353,32 @@ Project {
       name string{"RaceSettingsPopup"}
       has_script digit{1}
       pack_children digit{1}
-      children[2] {
+      actor_list[1] {
+        ScalarInterpolator {
+          name string{"FadeActor"}
+          attribute_name string{"MWidget::opacity"}
+          loop_count digit{1}
+          section[1] {
+            MScalarSection {
+              interpolation_period digit{0.3}
+              end_value digit{1}
+            }
+          }
+        }
+      }
+      children[3] {
+        SBox {
+          name string{"bg"}
+          geometry rectangle{0 0 1920 1080}
+          children[1] {
+            ColorFace {
+              name string{"ColorFace"}
+              color[1] {
+                RGBA{0 0 0 153}
+              }
+            }
+          }
+        }
         VBox {
           name string{"Pane"}
           packable digit{0}
