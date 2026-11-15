@@ -35683,7 +35683,7 @@ Project {
                   pack_pad_right digit{298}
                   pack_expand_x digit{1}
                   pack_alignment_x digit{1}
-                  geometry rectangle{233.69 43 294.31 57}
+                  geometry rectangle{247.69 43 294.31 57}
                   clip digit{0}
                   children[2] {
                     TextFace {
