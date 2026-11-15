@@ -49,6 +49,7 @@ module ROOT
 
             self.title.text = text.upcase();
             CarSelect.sort_order.visible = false;
+			SoundUtil::MenuBGMCrossfadeGroup("dealer_collector", 0.0, 3.0);
         }
         else
         {
@@ -64,6 +65,7 @@ module ROOT
 
             self.title.text = context.translate(ROOT, "PAGE_NAME");
             CarSelect.sort_order.visible = true;
+			SoundUtil::MenuBGMCrossfadeGroup("dealer_used", 0.0, 3.0);
         }
 
         CarSelect.ToolTip.tip.remove();
@@ -71,8 +73,6 @@ module ROOT
 
         ROOT::MyHome.appear(context, true);
         ROOT::CarSelect.hide(context, true);
-
-        SoundUtil::MenuBGMCrossfadeGroup("dealer_used", 0.0, 3.0);
 
         context.pushEvent(main::menu::MFunctionEvent(postInitialize, context));
     }
