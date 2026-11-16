@@ -1596,7 +1596,7 @@ module GTModeProject
 
         
         if (special_logo != nil)
-            return "image/gt5/other/%{special_logo}.dds";
+            return "piece/car_logos/%{special_logo}.dds";
         else
             return "";
     }

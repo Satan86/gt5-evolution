@@ -29948,6 +29948,7 @@ Project {
                 }
                 ImageFace {
                   name string{"SpecialLogo"}
+				  from_disk digit{1}
                   is_face digit{0}
                   geometry rectangle{68 258 256 90}
                   actor_list[1] {
@@ -29965,7 +29966,7 @@ Project {
                       }
                     }
                   }
-                  image_path string{"image/gt5/other/award_pebblebeach.dds"}
+                  image_path string{"piece/car_logos/award_pebblebeach.dds"}
                 }
                 HBox {
                   name string{"Price"}
@@ -31007,8 +31008,9 @@ Project {
                 }
                 ImageFace {
                   name string{"Award"}
+				  from_disk digit{1}
                   geometry rectangle{89 180 256 90}
-                  image_path string{"image/gt5/other/award_pebblebeach.dds"}
+                  image_path string{"piece/car_logos/award_pebblebeach.dds"}
                 }
                 ImageFace {
                   name string{"Maziora"}
@@ -34456,6 +34458,7 @@ Project {
             }
 			ImageFace {
 				name string{"SpecialLogo"}
+				from_disk digit{1}
 				geometry rectangle{900 435 256 90}
 				tex_keep_aspect digit{1}
 			}
@@ -52188,6 +52191,7 @@ Project {
         }
         ImageFace {
           name string{"SpecialLogo"}
+		  from_disk digit{1}
           is_face digit{0}
           packable digit{1}
           geometry rectangle{1034 185 256 90}
@@ -52207,7 +52211,7 @@ Project {
               }
             }
           }
-          image_path string{"image/gt5/other/award_pebblebeach.dds"}
+          image_path string{"piece/car_logos/award_pebblebeach.dds"}
         }
         TextFace {
           name string{"official_name"}
