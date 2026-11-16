@@ -348,6 +348,8 @@ module GTTopRoot
                     "Topgear_intro",
                     "X1_delivery",
                     "allavt_topdemo",
+					"course_select",
+					"menu_top_scene7",
                 ];
 
                 if (Garage2Util::Premium::getCount() > 0)
@@ -377,6 +379,8 @@ module GTTopRoot
                     "top_campo",
                     "top_sangimi",
                     "top_garage",
+					"course_select",
+					"menu_top_scene7",
                 ];
             }
 
