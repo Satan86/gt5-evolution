@@ -450,7 +450,7 @@ module ROOT
         else
         {
             var maxps = ps0;
-            var minps = maxps * 0.5;
+            var minps = maxps * 0.3;
 
             if (minps < 50)
                 minps = 50;
