@@ -43340,6 +43340,7 @@ Project {
                         }
                         'MyHome::Popup::Pane::Tab::HBox::Tab' {
                           name string{"Standard"}
+						  visible digit{0}
                           geometry rectangle{542.94 0 255.92 64}
                           children[4] {
                             'MyHome::Popup::Pane::Tab::HBox::Tab::bg' {

@@ -516,7 +516,7 @@ module Garage2
 
                 |var has_premium, var country, var tuner_label, var drive_train, var year, 
                     var power, var name_jp, var name_en, var power_rpm, var mass| = results;
-                var type = has_premium ? 1 : 2;
+                var type = 1;
                 var blob = main::pdistd::MBlob(cp.serialize());
                 
                 cp.beginInfo();
