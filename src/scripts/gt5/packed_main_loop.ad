@@ -84,6 +84,7 @@
 #include "SpecialEventUtil.ad"
 #include "SeasonalEventPresentUtil.ad"
 #include "GPSData.ad"
+#include "CollectorCarUtil.ad"
 
 // Save data handling
 #include "global_status/GlobalStatus.ad"

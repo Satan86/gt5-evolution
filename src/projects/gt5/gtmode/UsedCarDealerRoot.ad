@@ -159,8 +159,10 @@ module ROOT
                     {
                         if (!self.mode_online)
                             UsedCarUtil::addBuyList(seed, min_seed);
-                        else
-                            UsedCarUtil::addBuyListOnline(seed, min_seed);
+                        else if (LoginUtil::isOnline())
+							UsedCarUtil::addBuyListOnline(seed, min_seed);
+						else
+							CollectorCarUtil::addBuyList(seed, min_seed);
                     }
 
                     CarDeliveryRoot.open(context, cp, garage_id, false);
@@ -192,7 +194,7 @@ module ROOT
         else if (LoginUtil::isOnline())
             return getUsedCarDataOnline(context, sort_order);
         else
-            return getUsedCarDataSpecial(context, sort_order);
+            return getCollectorCarData(context, sort_order);
     }
 
     method getUsedCarDataOnline(context, sort_order)
@@ -278,74 +280,34 @@ module ROOT
         return w;
     }
 
-    method getUsedCarDataSpecial(context, sort_order)
+    method getCollectorCarData(context, sort_order)
     {
-        var w = getWeek(context);
-        var res = main::pdistd::ReadFile("/textdata/gt5/special_used_car/used_car_list_%{w}.xml");
-        var car_list = Array();
-        var usedcar_version = 0;
-        var usedcar_title = "";
+        var list = [];
+        var REQUIRED_NUM = 20;
 
-        if (res["result"] != main::pdistd::FileError::OK)
-            return [];
-        else
-        {
-            var buf = res["buffer"];
-            var xml = main::pdistd::MXml();
-            xml.parse(buf);
-
-            var dom = xml.result;
-            var nodelist = dom["UsedCarList"];
-            if (nodelist == nil)
-                return [];
-
-            var node = nodelist[0];
-            usedcar_version = node.getAttribute("version").toInt();
-            usedcar_title = node.getAttribute("title");
-            nodelist = node["car"];
-            if (nodelist == nil)
-                return [];
-
-            for (var i = 0; i < nodelist.size; i++)
-            {
-                var node = nodelist[i];
-                var _car = [];
-
-                _car = [
-                    "usedcar_id": node.getAttribute("usedcar_id").toInt(),
-                    "car_code": node.getAttribute("car_code"),
-                    "color": node.getAttribute("color").toInt(),
-                    "odometer_min": node.getAttribute("odometer_min").toInt(),
-                    "odometer_max": node.getAttribute("odometer_max").toInt(),
-                    "price": node.getAttribute("price").toInt(),
-                ];
-
-                car_list.push(_car);
-            }
-        }
-
-        var currentyear = pdiext::getBetterTimeLocal().year - 2000;
-        var seed_x = ((currentyear * 365) + usedcar_version) * 40 + getSeedPS3();
-
-        var text = usedcar_title; //usedcar_xml[pdistd::MLocale::getLanguage()];
-
-        CarSelect.ToolTip.tip.value = text;
-        CarSelect.ToolTip.tip.resetAction();
+        var seed = getSeedPS3() + 1000000000;
+        var min_seed = 0;
+        var new_flag = false;
 
         var random = pdistd::MRandom();
 
-        var list = [];
-        foreach (var usedcar in car_list)
+        for (var i = 0; i < REQUIRED_NUM; i++)
         {
-            var seed = seed_x + usedcar["usedcar_id"];
-            random.mt_seed = seed;
-            var new_flag = UsedCarUtil::checkNewFlagListOnline(seed);
+            var seed_x = (seed + (i * 2)) + (GAME_STATUS.user_profile.gameday * 12);
+            random.mt_seed = seed_x;
+            var odds_x = random.getMTInt() % 0x7FFFFFFF;
 
-            var cp = main::gtengine::MCarParameter(usedcar["car_code"]);
-            cp.color = getCarColor(usedcar, random);
+            if (i == 0)
+                min_seed = seed_x;
 
-            var odometer_km = getOdometer(usedcar, random);
-            var price = getPrice(odometer_km, usedcar);
+            new_flag = UsedCarUtil::checkNewFlagList(seed_x);
+
+            var collectorcar = CollectorCarUtil::getCollectorCarRecordByOdds(odds_x);
+            var cp = main::gtengine::MCarParameter(collectorcar["car_code"]);
+            cp.color = getCarColor(collectorcar, random);
+
+            var odometer_km = getOdometer(collectorcar, random);
+            var price = getPrice(odometer_km, collectorcar);
 
             cp.setNewCar();
             cp.odometer = odometer_km * 1000;
@@ -357,17 +319,16 @@ module ROOT
             cp.engine_life = cp.odometer;
             cp.body_life = cp.odometer;
 
-            var sold_out = false;
-            var min_seed = 0;
-
-            if (!UsedCarUtil::checkBuyListOnline(seed, usedcar_version))
-                sold_out = true;
-
-            list.push([cp, price, sold_out, new_flag, seed, min_seed]);
+            if (!CollectorCarUtil::checkBuyList(seed_x))
+                list.push([cp, (price + 0.5).toInt(), true, new_flag, seed_x, min_seed]);
+            else
+                list.push([cp, (price + 0.5).toInt(), false, new_flag, seed_x, min_seed]);
         }
 
-        if (!sort_order)
-            list.sort(function (a, b) { return a[1].toInt() < b[1].toInt() })
+        if (sort_order)
+            list.sort(compareToSeed);
+        else
+            list.sort(compareToPrice);
 
         return list;
     }

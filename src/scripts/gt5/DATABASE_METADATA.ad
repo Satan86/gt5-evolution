@@ -76,6 +76,11 @@
 #define USED_CAR_TABLE_NAME         "t_usedcar"
 #define USED_CAR_DATA_PATH          "textdata/gt5/usedcar.xml"
 
+// Collector Car Dealer Data (CollectorCarUtil.ad)
+#define COLLECTOR_CAR_DATA_VERSION       1
+#define COLLECTOR_CAR_TABLE_NAME         "t_collectorcar"
+#define COLLECTOR_CAR_DATA_PATH          "textdata/gt5/collector_car.xml"
+
 ///////////////////////////////////////////////////////////////////////////////
 //                        Save Data/Global Status                            //
 ///////////////////////////////////////////////////////////////////////////////
