@@ -43728,18 +43728,23 @@ Project {
                 }
                 'FinderItem::CarList::manufacturer_name' {
                   name string{"manufacturer_name"}
+				  geometry rectangle{209 12 640 38.27}
                 }
                 'FinderItem::CarList::car_name' {
                   name string{"car_name"}
+				  geometry rectangle{209 44 640 38.27}
                 }
                 'FinderItem::CarList::ps' {
                   name string{"ps"}
+				  geometry rectangle{209 76 640 38.27}
                 }
                 'FinderItem::CarList::type' {
                   name string{"type"}
+				  visible digit{0}
                   children[2] {
                     'FinderItem::CarList::type::Icon' {
                       name string{"Icon"}
+					  visible digit{0}
                       children[2] {
                         'FinderItem::CarList::type::Icon::ColorFace' {
                           name string{"ColorFace"}
@@ -43800,7 +43805,9 @@ Project {
                 }
                 'FinderItem::CarList::manufacturer_logo' {
                   name string{"manufacturer_logo"}
+				  geometry rectangle{730 18 150 90}
                   cache digit{1}
+				  tex_keep_aspect digit{1}
                 }
                 'FinderItem::CarList::focusRing' {
                   name string{"focusRing"}
