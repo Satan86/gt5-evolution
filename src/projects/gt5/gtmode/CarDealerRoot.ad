@@ -350,22 +350,21 @@ module ROOT::DealerSelect
 
         ROOT::BalloonTip.set_value(context, item_w, tuner_name, 68);
 
-        var a_level = GAME_STATUS.user_profile.getAspecLevel();
-        var b_level = GAME_STATUS.user_profile.getBspecLevel();
+        var credits = GAME_STATUS.user_profile.cash;
 
-        var search_level = (a_level > b_level) ? a_level : b_level;
+		var ignore_carlist = [];
+		var tuner_cars = CarData::CarDealerGT5::getCarList(tuner_label);
 
-        var ignore_carlist = [];
-        var tuner_cars = CarData::CarDealerGT5::getCarList(tuner_label);
+		foreach (var car in tuner_cars)
+		{
+			var price = main::gtengine::MSpecDB::getCarPrice(car.car_code);
 
-        foreach (var car in tuner_cars)
-        {
-            if (!ROOT::checkUnlockCar(tuner_label, car.car_code))
-                ignore_carlist.push(car.car_code);
-        }
+			if (!ROOT::checkUnlockCar(tuner_label, car.car_code) || price > credits)
+				ignore_carlist.push(car.car_code);
+		}
 
-        var car_count = CarData::CarDealerGT5::getCarCount(tuner_label, search_level, ignore_carlist);
-        self.HBox::car_count.text = car_count;
+		var car_count = CarData::CarDealerGT5::getCarCount(tuner_label, nil, ignore_carlist);
+		self.HBox::car_count.text = car_count;
 
         self.chase_actor_target_ = item_w;
     }
