@@ -1913,7 +1913,7 @@ module GTModeProjectComponent::FinderItem::CarList
 
     method setInfo(context, car, garage_id)
     {
-        FinderItem._set_car_info(context, self, car, garage_id, "M", "S");
+        FinderItem._set_car_info(context, self, car, garage_id, "M", "M");
     }
     method resetInfo(context)
     {
