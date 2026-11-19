@@ -11,6 +11,7 @@ module ROOT
 
     static sDealerList
     static sCaptureMode
+    static sShowAllCars = true
 
     method open(context)
     {
@@ -29,6 +30,7 @@ module ROOT
     method onInitialize(context)
     {
         sCaptureMode = false;
+        sShowAllCars = true;
 
         self.ButtonHelpGT5.set(context, 
         [
@@ -252,7 +254,8 @@ module ROOT::DealerSelect
         ROOT.ButtonHelpGT5.set(context, 
         [
             [ButtonHelpGT5.getEnterButtonName(), context.translate(ROOT, "Component", "Enter")],
-            [ButtonHelpGT5.getCancelButtonName(), context.translate(ROOT, "Component", "Cancel")]
+            [ButtonHelpGT5.getCancelButtonName(), context.translate(ROOT, "Component", "Cancel")],
+            ["Triangle", sShowAllCars == false ? "Show All Cars" : "Show Affordable Cars"],
         ]);
 
         ROOT::veil::FadeActor.reverse = false;
@@ -334,6 +337,41 @@ module ROOT::DealerSelect
         }
     }
 
+    method onKeyPress(context, event)
+    {
+        if (event.keysym == CELL_PAD_CTRL_TRIANGLE)
+        {
+            sShowAllCars = !sShowAllCars;
+            var initial_data = makeInitialData(context);
+            if (initial_data.candidates_.size == 0)
+            {
+                sShowAllCars = !sShowAllCars;
+                main::sound.play("disable");
+                DialogUtil::openConfirmDialog(context, DialogUtil::ERROR, "There are no affordable cars available.");
+                return;
+            }
+            ROOT.ButtonHelpGT5.set(context,
+            [
+                [ButtonHelpGT5.getEnterButtonName(), context.translate(ROOT, "Component", "Enter")],
+                [ButtonHelpGT5.getCancelButtonName(), context.translate(ROOT, "Component", "Cancel")],
+                ["Triangle", sShowAllCars == false ? "Show All Cars" : "Show Affordable Cars"],
+            ]);
+            main::sound.play("tab_switch");
+            PROJECT::ignorePadEvent(true);
+            self.finder_.replaceFolder(context, initial_data);
+            ROOT.setFocus(nil);
+            var do_focus = method(args)
+            {
+                var context = args[0];
+                Thread::Sleep(0.05);
+                self.finder_.setFocusIndex(0);
+                context.pushEvent(main::menu::MFunctionEvent(self.finder_.onFocus, context, ROOT));
+                PROJECT::ignorePadEvent(false);
+            }
+            Thread(self.*do_focus, [context]).start();
+        }
+    }
+
     method cb_init_dealer(context, candidate_data, item_w, arg)
     {
         var tuner_label = candidate_data.value_;
@@ -374,6 +412,25 @@ module ROOT::DealerSelect
         var candidate_data = folder_data.getItemData();
         var dealer = candidate_data.value_;
 
+        var cpp_list = CarData::CarDealerGT5::getCarList(dealer);
+        var has_cars = false;
+        foreach (var cpp in cpp_list)
+        {
+            if (!sShowAllCars && main::gtengine::MSpecDB::getCarPrice(cpp.car_code) > GAME_STATUS.user_profile.cash)
+                continue;
+            has_cars = true;
+            break;
+        }
+
+        if (!has_cars)
+        {
+            main::sound.play("disable");
+            DialogUtil::openConfirmDialog(context, DialogUtil::ERROR, sShowAllCars ?
+                "This dealership has no cars available." :
+                "This dealership has no affordable cars.\nPress [Triangle] to show all cars.");
+            return;
+        }
+
         self.hide(context, false);
 
         ROOT::CarSelect.setDealer(context, dealer);
@@ -396,6 +453,16 @@ module ROOT::DealerSelect
 
         foreach (var car_dealer in car_dealers)
         {
+            if (!sShowAllCars)
+            {
+                var has_affordable_car = false;
+                foreach (var cpp in CarData::CarDealerGT5::getCarList(car_dealer))
+                {
+                    if (main::gtengine::MSpecDB::getCarPrice(cpp.car_code) <= GAME_STATUS.user_profile.cash) { has_affordable_car = true; break; }
+                }
+                if (!has_affordable_car) continue;
+            }
+
             var candidate_data = UIKitProject::FinderRoot.CandidateData();
             candidate_data.value_ = car_dealer;
             candidate_data.label_ = context.translate(ROOT, "TunerName", car_dealer);
@@ -849,6 +916,9 @@ module ROOT::CarSelect
 
         foreach (var cpp in cpp_list)
         {
+            if (!sShowAllCars && main::gtengine::MSpecDB::getCarPrice(cpp.car_code) > GAME_STATUS.user_profile.cash)
+                continue;
+
             if (ROOT::checkUnlockCar(tuner_label, cpp.car_code))
             {
                 var candidate_data = UIKitProject::FinderRoot.CandidateData(cpp);
