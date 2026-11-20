@@ -1005,8 +1005,11 @@ module ROOT
 
             self.Info::tuner_logo.on_delay_load_complete = *self.*delay_load_complete;
             self.Info::tuner_logo.image_path = "piece/tunner_logo_L/%{tuner_label}.img";
+			var car_label = main::gtengine::MSpecDB::getCarLabel(car_code);
+			self.Info::SpecialLogo.image_path = "piece/car_logos/%{car_label}.dds";
             self.Info::flag.image_path = "piece/flag_menu/%{country_code}.img";
             self.Info::tuner_name.text = context.translate(ROOT, "TunerNameI18n", tuner_label);
+			
 
             var is_ps3 = main::gtengine::MSpecDB::checkGenericFlag("has_premium_model", car_code);
             self.Info::premium.visible = is_ps3;

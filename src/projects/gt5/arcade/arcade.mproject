@@ -3196,7 +3196,7 @@ Project {
               }
             }
           }
-          children[6] {
+          children[7] {
             ImageFace {
               name string{"flag"}
               geometry rectangle{94 650 40 60}
@@ -3254,6 +3254,14 @@ Project {
               from_disk digit{1}
               tex_keep_aspect digit{1}
             }
+			ImageFace {
+				name string{"SpecialLogo"}
+				geometry rectangle{1034 185 256 90}
+				scale vector{1.2 1.2}
+				block digit{0}
+				from_disk digit{1}
+				tex_keep_aspect digit{1}
+			}
             HBox {
               name string{"PP"}
               pack_expand_x digit{1}
