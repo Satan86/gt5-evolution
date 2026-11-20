@@ -899,7 +899,6 @@ module ROOT
         ROOT::sRidingCar.rainX = 0.0;
         ROOT::sRidingCar.dirtiness = 0.0;
         ROOT::UpdateRidingCar();
-        GameItemUtil::ItemBox::delete2(ROOT::sPaintItem);
 
         ROOT::sPaintItem = nil;
         ROOT::sNeedCapture = true;
@@ -1029,7 +1028,6 @@ module ROOT
         ROOT::sRidingCar.rainX = 0.0;
         ROOT::sRidingCar.dirtiness = 0.0;
         ROOT::UpdateRidingCar();
-        GameItemUtil::ItemBox::delete2(ROOT::sPaintItem);
 
         ROOT::sPaintItem = nil;
         ROOT::sNeedCapture = true;

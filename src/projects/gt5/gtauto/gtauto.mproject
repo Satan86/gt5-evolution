@@ -22891,6 +22891,7 @@ Project {
                                         }
                                         HBox {
                                           name string{"Count"}
+										  visible digit{0}
                                           pack_expand_x digit{1}
                                           pack_fill_x digit{1}
                                           geometry rectangle{0 96 320 48}
@@ -23560,6 +23561,7 @@ Project {
                 }
                 'FinderItem::Detail::keyword' {
                   name string{"keyword"}
+				  visible digit{0}
                   pack_pad_right digit{32}
                   geometry rectangle{864 9 0 54}
                   text_color color_name{"basic_color_selected"}
