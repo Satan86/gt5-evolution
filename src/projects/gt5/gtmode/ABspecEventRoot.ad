@@ -85,6 +85,15 @@ module ROOT
 
         HeaderGT5::HBox::AspecLevel.visible = !self.is_bspec_;
         HeaderGT5::HBox::BspecLevel.visible = self.is_bspec_;
+		var license = LicenseUtil::getString().downcase();
+
+		if (license == "")
+			license = "none";
+
+		HeaderGT5::HBox::AspecLevel::ImageFace.image_path =
+			"piece/license_icon/%{license}.img";
+
+		HeaderGT5::HBox::AspecLevel::Indicator.visible = false;
 
         GameDetail::Info::HBox::DriverList.visible = self.is_bspec_;
 
@@ -907,8 +916,6 @@ module ROOT::hidden::GameSelectItem
     {
         self.Flyer::ImageFace.image_path = "piece/flyer/r%{file_id}.img";
         self.Flyer::ImageFace.opacity = 0.0;
-
-        self.Level::value.text = need_level;
 
         if (item_index != nil)
             self.Flyer::Cover::MoveActor.setStartDuration(0, sMoveDelayBase.toFloat() * item_index);

@@ -4669,6 +4669,10 @@ Project {
                     }
                     'Header::HeaderGT5::HBox::AspecLevel::ImageFace' {
                       name string{"ImageFace"}
+                      pack_pad_left digit{0}
+                      geometry rectangle{0 30 64 50}
+                      opacity digit{1}
+                      from_disk digit{1}
                     }
                     'Header::HeaderGT5::HBox::AspecLevel::Indicator' {
                       name string{"Indicator"}
@@ -5405,6 +5409,10 @@ Project {
                     }
                     'Header::HeaderGT5::HBox::AspecLevel::ImageFace' {
                       name string{"ImageFace"}
+                      pack_pad_left digit{0}
+                      geometry rectangle{0 30 64 50}
+                      opacity digit{1}
+                      from_disk digit{1}
                     }
                     'Header::HeaderGT5::HBox::AspecLevel::Indicator' {
                       name string{"Indicator"}
@@ -7109,6 +7117,10 @@ Project {
                     }
                     'Header::HeaderGT5::HBox::AspecLevel::ImageFace' {
                       name string{"ImageFace"}
+                      pack_pad_left digit{0}
+                      geometry rectangle{0 30 64 50}
+                      opacity digit{1}
+                      from_disk digit{1}
                     }
                     'Header::HeaderGT5::HBox::AspecLevel::Indicator' {
                       name string{"Indicator"}
@@ -8305,6 +8317,10 @@ Project {
                     }
                     'Header::HeaderGT5::HBox::AspecLevel::ImageFace' {
                       name string{"ImageFace"}
+                      pack_pad_left digit{0}
+                      geometry rectangle{0 30 64 50}
+                      opacity digit{1}
+                      from_disk digit{1}
                     }
                     'Header::HeaderGT5::HBox::AspecLevel::Indicator' {
                       name string{"Indicator"}
@@ -9303,6 +9319,10 @@ Project {
                     }
                     'Header::HeaderGT5::HBox::AspecLevel::ImageFace' {
                       name string{"ImageFace"}
+                      pack_pad_left digit{0}
+                      geometry rectangle{0 30 64 50}
+                      opacity digit{1}
+                      from_disk digit{1}
                     }
                     'Header::HeaderGT5::HBox::AspecLevel::Indicator' {
                       name string{"Indicator"}
@@ -10695,6 +10715,10 @@ Project {
                     }
                     'Header::HeaderGT5::HBox::AspecLevel::ImageFace' {
                       name string{"ImageFace"}
+                      pack_pad_left digit{0}
+                      geometry rectangle{0 30 64 50}
+                      opacity digit{1}
+                      from_disk digit{1}
                     }
                     'Header::HeaderGT5::HBox::AspecLevel::Indicator' {
                       name string{"Indicator"}
@@ -11893,6 +11917,10 @@ Project {
                     }
                     'Header::HeaderGT5::HBox::AspecLevel::ImageFace' {
                       name string{"ImageFace"}
+                      pack_pad_left digit{0}
+                      geometry rectangle{0 30 64 50}
+                      opacity digit{1}
+                      from_disk digit{1}
                     }
                     'Header::HeaderGT5::HBox::AspecLevel::Indicator' {
                       name string{"Indicator"}
@@ -12828,6 +12856,10 @@ Project {
                     }
                     'Header::HeaderGT5::HBox::AspecLevel::ImageFace' {
                       name string{"ImageFace"}
+                      pack_pad_left digit{0}
+                      geometry rectangle{0 30 64 50}
+                      opacity digit{1}
+                      from_disk digit{1}
                     }
                     'Header::HeaderGT5::HBox::AspecLevel::Indicator' {
                       name string{"Indicator"}
@@ -14530,6 +14562,10 @@ Project {
                     }
                     'Header::HeaderGT5::HBox::AspecLevel::ImageFace' {
                       name string{"ImageFace"}
+                      pack_pad_left digit{0}
+                      geometry rectangle{0 30 64 50}
+                      opacity digit{1}
+                      from_disk digit{1}
                     }
                     'Header::HeaderGT5::HBox::AspecLevel::Indicator' {
                       name string{"Indicator"}
@@ -15465,6 +15501,10 @@ Project {
                     }
                     'Header::HeaderGT5::HBox::AspecLevel::ImageFace' {
                       name string{"ImageFace"}
+                      pack_pad_left digit{0}
+                      geometry rectangle{0 30 64 50}
+                      opacity digit{1}
+                      from_disk digit{1}
                     }
                     'Header::HeaderGT5::HBox::AspecLevel::Indicator' {
                       name string{"Indicator"}
@@ -22287,6 +22327,10 @@ Project {
                     }
                     'Header::HeaderGT5::HBox::AspecLevel::ImageFace' {
                       name string{"ImageFace"}
+                      pack_pad_left digit{0}
+                      geometry rectangle{0 30 64 50}
+                      opacity digit{1}
+                      from_disk digit{1}
                     }
                     'Header::HeaderGT5::HBox::AspecLevel::Indicator' {
                       name string{"Indicator"}
@@ -24016,6 +24060,10 @@ Project {
                     }
                     'Header::HeaderGT5::HBox::AspecLevel::ImageFace' {
                       name string{"ImageFace"}
+                      pack_pad_left digit{0}
+                      geometry rectangle{0 30 64 50}
+                      opacity digit{1}
+                      from_disk digit{1}
                     }
                     'Header::HeaderGT5::HBox::AspecLevel::Indicator' {
                       name string{"Indicator"}
@@ -24547,6 +24595,10 @@ Project {
                     }
                     'Header::HeaderGT5::HBox::AspecLevel::ImageFace' {
                       name string{"ImageFace"}
+                      pack_pad_left digit{0}
+                      geometry rectangle{0 30 64 50}
+                      opacity digit{1}
+                      from_disk digit{1}
                     }
                     'Header::HeaderGT5::HBox::AspecLevel::Indicator' {
                       name string{"Indicator"}
@@ -25229,6 +25281,10 @@ Project {
                     }
                     'Header::HeaderGT5::HBox::AspecLevel::ImageFace' {
                       name string{"ImageFace"}
+                      pack_pad_left digit{0}
+                      geometry rectangle{0 30 64 50}
+                      opacity digit{1}
+                      from_disk digit{1}
                     }
                     'Header::HeaderGT5::HBox::AspecLevel::Indicator' {
                       name string{"Indicator"}

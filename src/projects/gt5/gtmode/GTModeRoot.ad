@@ -289,8 +289,17 @@ module GTModeRoot
 
     function showHeader(context, show)
     {
+		var license = LicenseUtil::getString().downcase();
+
+		if (license == "")
+			license = "none";
+
+		HeaderGT5::HBox::AspecLevel::ImageFace.image_path =
+			"piece/license_icon/%{license}.img";
+		
         HeaderGT5::HBox::AspecLevel.visible = show;
-        HeaderGT5::HBox::BspecLevel.visible = show;
+		HeaderGT5::HBox::AspecLevel::Indicator.visible = false;
+        HeaderGT5::HBox::BspecLevel.visible = false;
         HeaderGT5::HBox::Credits.visible = show;
         HeaderGT5::HBox::RidingCar.visible = show;
     }
@@ -1255,7 +1264,6 @@ module GTModeRoot
                 method onActivate(context)
                 {
                     CHECK_NOT_DEMO();
-                    CHECK_ONLINE_PROMPT();
                     
                     main::sound.play("ok");
 

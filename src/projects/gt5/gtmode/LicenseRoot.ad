@@ -26,6 +26,17 @@ module LicenseRoot
 
     method onInitialize(context)
     {
+		var license = LicenseUtil::getString().downcase();
+
+		if (license == "")
+			license = "none";
+
+		HeaderGT5::HBox::AspecLevel::ImageFace.image_path =
+			"piece/license_icon/%{license}.img";
+
+		HeaderGT5::HBox::AspecLevel::Indicator.visible = false;
+		HeaderGT5::HBox::BspecLevel.visible = false;
+		
         LicenseUtil::initializeRecord();
         ROOT::ButtonHelpGT5.set(context, 
         [
