@@ -2181,7 +2181,7 @@ module GTModeRoot
             var event_categories = ["BEGINNER", "AMATEUR", "PROFESSIONAL", "EXPERT", "EXTREME", "ENDURANCE"].reverse();
             foreach (var category in event_categories)
             {
-                var need_level = ABspecUtil::getMinimumNeedLevel(ABspecUtil::ASPEC_CATEGORY[category], false);
+                var need_level = ABspecUtil::getMaximumNeedLevel(ABspecUtil::ASPEC_CATEGORY[category], false);
                 if (GAME_STATUS.user_profile.getAspecLevel() >= need_level)
                 {
                     var image_path = "image/gt5/myhome/world_aspec_%s.dds".format(category.downcase());

@@ -196,6 +196,26 @@ module ABspecUtil
 
         return min;
     }
+	
+	function getMaximumNeedLevel(category, bspec = false)
+    {
+        var max = -1;
+        var game_count = getCategoryGameCount(category, bspec);
+        var game_data_map = getGameDataMap(bspec);
+
+        for (var i = 0; i < game_count; i++)
+        {
+            var game_id = getGameId(category, i);
+            var game_data = game_data_map[game_id];
+            if (game_data == nil)
+                continue;
+
+            if (max < game_data["level"])
+                max = game_data["level"];
+        }
+
+        return max;
+    }
 
     function getGameId(category, game_index)
     {
