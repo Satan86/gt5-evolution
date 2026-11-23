@@ -10,6 +10,20 @@ module ROOT
     hidden.visible = false;
 
     #include "OnlineRaceFunction.ad"
+	
+	function getLicenseNameForLevel(need_level)
+    {
+        var licenses = [
+            5:  "B",
+            10: "A",
+            15: "International C",
+            20: "International B",
+            25: "International A",
+            40: "Super"
+        ];
+
+        return licenses[need_level];
+    }
 
     method open(context)
     {
@@ -1222,7 +1236,7 @@ module ROOT
                 {
                     main::sound.play("disable");
 
-                    var msg = context.translate(ROOT, "YOU_DONT_HAVE_ENOUGH_LEVEL_A").build(need_aspec_level);
+                    var msg = context.translate(ROOT, "YOU_DONT_HAVE_ENOUGH_LEVEL_A").build(ROOT.getLicenseNameForLevel(need_aspec_level));
                     DialogUtil::openConfirmDialog(context, DialogUtil::ERROR, msg);
                     return;
                 }

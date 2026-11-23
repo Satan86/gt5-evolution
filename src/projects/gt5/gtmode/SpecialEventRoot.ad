@@ -34,7 +34,7 @@ module ROOT
             self.text_basename_ = text_basename;
         }
     }   
-
+	
     static sKART = SPEventInfo(1, SpecialEventUtil::EVENT_TYPE::GT_KART_CMP, "kart", 0, 3, [0, 5, 10], [2, 3, 5], nil, "kart");  
     static sGORDON = SPEventInfo(2, SpecialEventUtil::EVENT_TYPE::JEFF_G_DS, "gordon", 5, 3, [5, 10, 15], [2, 4, 3], "NASCAR_school_intro", "gordon");  
     static sSTIG = SPEventInfo(3, SpecialEventUtil::EVENT_TYPE::STIG_CHG, "stig", 5, 3, [5, 10, 15], [3, 3, 3], "Topgear_intro", "stig_C");    
@@ -112,6 +112,20 @@ module ROOT
         var event_file_path = "textdata/gt5/special_event/%s%d%s.xml".format(sp_event_code, game_id, ext);   
         return event_file_path;
     }   
+	
+	function getLicenseNameForLevel(need_level)
+	{
+		var licenses = [
+			5:  "B",
+			10: "A",
+			15: "International C",
+			20: "International B",
+			25: "International A",
+			40: "Super"
+		];
+
+		return licenses[need_level];
+	}
 
     method canEnterEvent(need_level)
     {
@@ -359,7 +373,7 @@ module ROOT::SPEventSelect
         {
             main::sound.play("disable");    
 
-            var msg = context.translate(ROOT, "MESSAGE_YOU_DONT_HAVE_ENOUGH_LEVEL").build(sp_event_info.need_level_);   
+            var msg = context.translate(ROOT, "MESSAGE_YOU_DONT_HAVE_ENOUGH_LEVEL").build(ROOT.getLicenseNameForLevel(sp_event_info.need_level_)); 
 
             DialogUtil::openConfirmDialog(context, DialogUtil::ERROR, msg);
             return EVENTRESULT_FILTER;
@@ -614,7 +628,7 @@ module ROOT::CategorySelect
         {
             main::sound.play("disable");
 
-            var msg = context.translate(ROOT, "MESSAGE_YOU_DONT_HAVE_ENOUGH_LEVEL").build(need_category_level);
+            var msg = context.translate(ROOT, "MESSAGE_YOU_DONT_HAVE_ENOUGH_LEVEL").build(ROOT.getLicenseNameForLevel(need_category_level));
             DialogUtil::openConfirmDialog(context, DialogUtil::ERROR, msg);
 
             return EVENTRESULT_FILTER;
