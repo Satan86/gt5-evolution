@@ -130,9 +130,8 @@ module ROOT
     method canEnterEvent(need_level)
     {
         var current_a_level = GAME_STATUS.user_profile.getAspecLevel();
-        var current_b_level = GAME_STATUS.user_profile.getBspecLevel(); 
 
-        return (need_level <= current_a_level) || (need_level <= current_b_level);
+        return need_level <= current_a_level
     }   
 
     function loadGP(context, path)
