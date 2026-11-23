@@ -1989,20 +1989,20 @@ module ROOT
                     if (event.regulation.need_bspec_level > -1 && event.regulation.need_aspec_level > -1)
                     {
                         self.Level::value.text = event.regulation.need_aspec_level.toString();
-                        self.Level.visible = true;
-                        self.triangleAB.visible = true;
+                        self.Level.visible = false;
+                        self.triangleAB.visible = false;
                     }
                     else if (event.regulation.need_aspec_level > -1)
                     {
                         self.Level::value.text = event.regulation.need_aspec_level.toString();
-                        self.Level.visible = true;
-                        self.triangleA.visible = true;
+                        self.Level.visible = false;
+                        self.triangleA.visible = false;
                     }
                     else if (event.regulation.need_bspec_level > -1)
                     {
                         self.Level::value.text = event.regulation.need_bspec_level.toString();
-                        self.Level.visible = true;
-                        self.triangleB.visible = true;
+                        self.Level.visible = false;
+                        self.triangleB.visible = false;
                     }
 
                     if (event.game_mode == gtengine::GameMode::EVENT_RACE || 
