@@ -429,7 +429,7 @@ module RewardUtil
             exp = calculateBonus(total_point, bonus_ratio);
 
             if (!is_bspec)
-                DialogUtil::openPrizeAspecExpDialog(context, exp, true, bonus_args);
+                DialogUtil::openPrizeAspecExpDialog(context, exp, true, bonus_args, nil, true);
             else
                 DialogUtil::openPrizeBspecExpDialog(context, exp, true, bonus_args);
         }
@@ -444,7 +444,7 @@ module RewardUtil
             exp = calculateBonus(exp, bonus_ratio);
     
             if (exp > 0)
-                DialogUtil::openPrizeAspecExpDialog(context, exp, true, bonus_args);
+                DialogUtil::openPrizeAspecExpDialog(context, exp, true, bonus_args, nil, true);
         }
         else
         {
@@ -639,7 +639,7 @@ module RewardUtil
         }
 
         if (exp > 0)
-            DialogUtil::openPrizeAspecExpDialog(context, exp, true, bonus_args, visible_trophies);
+            DialogUtil::openPrizeAspecExpDialog(context, exp, true, bonus_args, visible_trophies, true);
 
         // Grim Action Log
         var license_id = GLOBAL_STATUS.user_profile.context.license_id;
@@ -713,7 +713,7 @@ module RewardUtil
         }
 
         if (exp > 0)
-            DialogUtil::openPrizeAspecExpDialog(context, exp, true, bonus_args, visible_trophies);
+            DialogUtil::openPrizeAspecExpDialog(context, exp, true, bonus_args, visible_trophies, true);
 
         // Grim Action Log
         var course_code = gp.event.track.course_code;
