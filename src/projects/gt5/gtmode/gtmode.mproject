@@ -39259,6 +39259,7 @@ Project {
                     }
                     ColorFace {
                       name string{"ImageFace"}
+					  visible digit{0}
                       geometry rectangle{246 404 146 126}
                       skew vector{-45 0}
                       color_type_name string{"divide_color"}
@@ -39282,6 +39283,7 @@ Project {
                     }
                     ColorFace {
                       name string{"black_triangle"}
+					  visible digit{0}
                       geometry rectangle{250.13 404 83.22 126}
                       skew vector{-45 0}
                       color[4] {
@@ -39316,6 +39318,7 @@ Project {
                       children[2] {
                         TextFace {
                           name string{"label"}
+						  visible digit{0}
                           packable digit{1}
                           pack_pad_right digit{10}
                           pack_allocate_y digit{0}
@@ -39333,6 +39336,7 @@ Project {
                         }
                         TextFace {
                           name string{"value"}
+						  visible digit{0}
                           packable digit{1}
                           pack_pad_right digit{12}
                           pack_allocate_y digit{0}
@@ -40686,6 +40690,7 @@ Project {
                     }
                     ColorFace {
                       name string{"ImageFace"}
+					  visible digit{0}
                       geometry rectangle{246 404 146 126}
                       skew vector{-45 0}
                       color_type_name string{"divide_color"}
@@ -40709,6 +40714,7 @@ Project {
                     }
                     ColorFace {
                       name string{"black_triangle"}
+					  visible digit{0}
                       geometry rectangle{250.13 404 83.22 126}
                       skew vector{-45 0}
                       color[4] {
@@ -40720,6 +40726,7 @@ Project {
                     }
                     HBox {
                       name string{"Level"}
+					  visible digit{0}
                       pack_allocate_y digit{0}
                       pack_expand_x digit{1}
                       pack_shrink_x digit{1}
@@ -41137,6 +41144,7 @@ Project {
                 }
                 'FinderItem::CarThumb::effect' {
                   name string{"triangle_black"}
+				  visible digit{0}
                   packable digit{1}
                   geometry rectangle{17 10 158 88}
                   clip digit{1}
@@ -41223,6 +41231,7 @@ Project {
                   children[2] {
                     TextFace {
                       name string{"label"}
+					  visible digit{0}
                       packable digit{1}
                       pack_pad_right digit{10}
                       pack_allocate_y digit{0}
@@ -41240,6 +41249,7 @@ Project {
                     }
                     TextFace {
                       name string{"value"}
+					  visible digit{0}
                       packable digit{1}
                       pack_allocate_y digit{0}
                       pack_shrink_x digit{1}
